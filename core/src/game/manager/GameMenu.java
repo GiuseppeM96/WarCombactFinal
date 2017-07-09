@@ -39,6 +39,7 @@ import game.screens.WaitScreen;
 public class GameMenu extends Game {
 
 	//start
+	
 	static public String className;
 	public MyServer server;
 	public boolean startGameNet=false;

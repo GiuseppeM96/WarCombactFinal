@@ -21,6 +21,10 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.controllers.Controller;
+import com.badlogic.gdx.controllers.ControllerListener;
+import com.badlogic.gdx.controllers.Controllers;
+import com.badlogic.gdx.controllers.PovDirection;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -30,6 +34,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -63,7 +68,7 @@ import game.pools.GameConfig;
 import game.pools.ImagePool;
 import game.pools.MusicPool;
 
-public class GameManagerScreen implements Screen {
+public class GameManagerScreen implements Screen,ControllerListener {
 	Music music;
 	public World worldGame;
 	SpriteBatch worldBatch;
@@ -77,7 +82,12 @@ public class GameManagerScreen implements Screen {
 	float shotAnimationTime = 0.f;
 	float diedAnimationTime = 0.f;
 	int introDuration = 200;
-
+	Controllers controller= new Controllers();
+	static boolean  gameIsInPause=false;
+	 int currentAxis=0;
+	 float valueMov=0;
+	 PovDirection povDirection; 
+	
 	public GameManagerScreen(World world, GameMenu game, Vector2 camPosition) {
 		super();
 		intro = true;
@@ -90,43 +100,48 @@ public class GameManagerScreen implements Screen {
 		gameCam.position.x = camPosition.x;
 		gameCam.position.y = camPosition.y;
 		viewport = new ScreenViewport(gameCam);
+		controller.addListener(this);
 		updateCam();
 	}
 
 	private void update(float dt) {
 		if (!worldGame.player.died) {
-			if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
+			if (Gdx.input.isKeyPressed(Input.Keys.UP) || povDirection== PovDirection.north) {
 				moveAndCheckCollision(0, dt);
-			} else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+			} else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) || povDirection== PovDirection.east) {
 				moveAndCheckCollision(1, dt);
-			} else if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
+			} else if (Gdx.input.isKeyPressed(Input.Keys.LEFT) || povDirection== PovDirection.west) {
 				moveAndCheckCollision(3, dt);
-			} else if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
+			} else if (Gdx.input.isKeyPressed(Input.Keys.DOWN) || povDirection== PovDirection.south) {
 				moveAndCheckCollision(2, dt);
-			} else
+			} else{
 				statePlayerTime = 0;
-			if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) {
+			}
+			if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE) || gameIsInPause) {
 				ImagePool.camera.zoom = 1.0f;
 				gameMenu.start = false;
 				gameMenu.swap(0);
 			}
-			if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
+			if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE) || worldGame.player.ControllerHasShoted) {
 				worldGame.player.shoting = true;
+			//	worldGame.player.ControllerHasShoted=false;
 			}
-			if (Gdx.input.isKeyJustPressed(Input.Keys.X)) {
-				if(SettingsMenu.isAudioEnable)
+			if (Gdx.input.isKeyJustPressed(Input.Keys.X) || worldGame.player.ControllerHasChangedWeapon) {
+				if (SettingsMenu.isAudioEnable)
 					MusicPool.reloadSound.play();
 				World.player.changeWeapon();
+				worldGame.player.ControllerHasChangedWeapon=false;
 			}
-			if (Gdx.input.isKeyPressed(Input.Keys.Z)) {
+			if (Gdx.input.isKeyPressed(Input.Keys.Z) || worldGame.player.ControllerHasChangedVelocity) {
 				World.player.changeSpeed(ConstantField.PLAYER_SUPER_VELOCITY);
-			} else
+			} else{
 				World.player.changeSpeed(ConstantField.PLAYER_STD_VELOCITY);
+			}	
 			if (World.player.shoting) {
 				if (shotAnimationTime > 0.3 && !World.playerShot) {
 					worldGame.playerHasShot();
 					System.out.println(SettingsMenu.isAudioEnable);
-					if(SettingsMenu.isAudioEnable)
+					if (SettingsMenu.isAudioEnable)
 						MusicPool.shotGunSound.play();
 					World.playerShot = true;
 				}
@@ -212,8 +227,10 @@ public class GameManagerScreen implements Screen {
 			worldGame.objects.remove(currentObject);
 		} else if (currentObject instanceof Enemy) {
 			World.player.lifePoints -= 1;
-		} else if (levelIsCompeted(currentObject))
+		} else if (levelIsCompeted(currentObject)){
+			Gdx.input.setInputProcessor(null);
 			gameMenu.levelUp();
+		}
 		else if (i == 0)
 			worldGame.movePlayerDown(dt);
 		else if (i == 1)
@@ -628,5 +645,69 @@ public class GameManagerScreen implements Screen {
 	public void dispose() {
 		// TODO Auto-generated method stub
 
+	}
+
+	@Override
+	public void connected(Controller controller) {
+	
+	}
+
+	@Override
+	public void disconnected(Controller controller) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public boolean buttonDown(Controller controller, int buttonCode) {
+		if(buttonCode==2)
+			worldGame.player.ControllerHasChangedWeapon=true;
+		else if(buttonCode==3)
+			worldGame.player.ControllerHasShoted=true;
+		else if(buttonCode == 6)
+			worldGame.player.ControllerHasChangedVelocity=true;
+		else if(buttonCode == 9)
+			gameIsInPause=true;
+		
+		return false;
+	}
+
+	@Override
+	public boolean buttonUp(Controller controller, int buttonCode) {
+		if(buttonCode==3)
+			worldGame.player.ControllerHasShoted=false;
+		else if(buttonCode == 6)
+			worldGame.player.ControllerHasChangedVelocity=false;
+		return false;
+
+	}
+
+	@Override
+	public boolean axisMoved(Controller controller, int axisCode, float value) {
+		return false;
+	}
+
+	@Override
+	public boolean povMoved(Controller controller, int povCode, PovDirection value) {
+		povDirection=value;
+		return false;
+	}
+
+	@Override
+	public boolean xSliderMoved(Controller controller, int sliderCode, boolean value) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean ySliderMoved(Controller controller, int sliderCode, boolean value) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean accelerometerMoved(Controller controller, int accelerometerCode, Vector3 value) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }
