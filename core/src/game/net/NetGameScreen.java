@@ -61,7 +61,11 @@ public class NetGameScreen implements Screen,ActionListener{
 	Timer matchTimer;
 	
 	
-	
+	/**
+	 * Constructor 
+	 * @param ip indicates the server ip where you try to connect
+	 * @param gameMenu indicates the game application
+	 */
 	public NetGameScreen(String ip,GameMenu gameMenu) {
 		server_ip=ip;
 		matchTimer=new Timer(120000, this);
@@ -88,6 +92,10 @@ public class NetGameScreen implements Screen,ActionListener{
 		listen.start();
 		batch=new SpriteBatch();
 	}
+	
+	/**
+	 * Set cam position at player position 
+	 */
 	private void updateCam() {
 		int xPlayer = (int) (worldGame.currentPlayer.getPosition().x + 23);
 		int yPlayer = (int) (worldGame.currentPlayer.getPosition().y + 25);
@@ -123,6 +131,9 @@ public class NetGameScreen implements Screen,ActionListener{
 		batch.end();
 	}
 
+	/**
+	 * Draw small map that represents all game map 
+	 */
 	private void drawNavigationMap() {
 		float x = gameCam.position.x;
 		float y = gameCam.position.y;
@@ -141,6 +152,10 @@ public class NetGameScreen implements Screen,ActionListener{
 					reduceYEnemy - ImagePool.navigationEnemy.getHeight() / 2,ImagePool.navigationEnemy.getWidth()*gameCam.viewportWidth/GameConfig.SCREEN_WIDTH,ImagePool.navigationEnemy.getHeight()*gameCam.viewportHeight/GameConfig.SCREEN_HEIGHT);
 		}		
 	}
+	
+	/**
+	 * Draws the information about player life, number of munitions and score 
+	 */
 	private void drawInfoBar() {
 		
 		float x = gameCam.position.x;
@@ -157,16 +172,28 @@ public class NetGameScreen implements Screen,ActionListener{
 			batch.draw(ImagePool.life100, x - 300*viewport.getWorldWidth()/GameConfig.SCREEN_WIDTH, y + 200*viewport.getWorldHeight()/GameConfig.SCREEN_HEIGHT, (190 * worldGame.currentPlayer.lifePoints) / 1000, 33);
 		}
 	}
+	/**
+	 * 
+	 * @return Current Weapon Texture 
+	 */
 	private Texture getPlayerWeapon() {
 		if (worldGame.currentPlayer.weaponType.equals("ShotGun"))
 			return ImagePool.shotGun;
 		else
 			return ImagePool.machineGun;
 	}
+	
+	/**
+	 * Call the shot update function of NetWorld
+	 */
 	private void updateShots() {
 		worldGame.updateShots();
-		
 	}
+	
+	/**
+	 * Handle input and update world  
+	 * @param dt time interval
+	 */
 	private void update(float dt) {
 		if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
 			moveAndCheckCollision(0, dt);
@@ -205,6 +232,11 @@ public class NetGameScreen implements Screen,ActionListener{
 			out.flush();
 		}
 	}
+		/**
+		 * update the state of parameter currentPlayer
+		 * @param currentPlayer NetCharacter who we wants to evolve
+		 * @param dt time interval
+		 */
 		private void updatePlayerAnimation(NetCharacter currentPlayer,float dt) {
 		if (currentPlayer.shoting && !currentPlayer.died) {
 			if (currentPlayer.shotAnimationTime > 0.3 && !currentPlayer.shoted) {
@@ -232,6 +264,9 @@ public class NetGameScreen implements Screen,ActionListener{
 		}
 		
 	}
+	/**
+	 * reset cam position at the position of currentPlayer's spawnPoint 
+	 */
 	private void resetCam() {
 		Vector2 pos=new Vector2(worldGame.spawnPoints.get(worldGame.currentPlayer.code % worldGame.spawnPoints.size()).position);
 		gameCam.position.x = pos.x;
@@ -245,20 +280,22 @@ public class NetGameScreen implements Screen,ActionListener{
 		else if(gameCam.position.y+viewport.getScreenHeight()/2>GameConfig.MAP_SIZE.y)
 			gameCam.position.y=GameConfig.MAP_SIZE.y-viewport.getScreenHeight()/2;
 	}
-	private void addShots() {
-		
-		while(!canRemove){}
-		canDraw=false;
-		worldGame.shots.addAll(worldGame.newShots);
-		canDraw=true;
-		worldGame.newShots.clear();		
-	}
+	
+	/**
+	 * Communicate to the server that we have shot 
+	 */
 	private void sendShots() {
 
 		out.println(2+";"+worldGame.currentPlayer.code+";"+worldGame.currentPlayer.getPosition().x+";"+worldGame.currentPlayer.getPosition().y+";"+0+";");
 		out.flush();
 		
 	}
+	
+	/**
+	 * Move currentPlayer and check if it collide with other objects
+	 * @param dir indicates direction code
+	 * @param dt time interval
+	 */
 	private void moveAndCheckCollision(int dir, float dt) {
 		
 		worldGame.currentPlayer.move(dir, dt);
@@ -287,6 +324,9 @@ public class NetGameScreen implements Screen,ActionListener{
 			worldGame.currentPlayer.setDirection(dir);
 		}
 	}
+	/**
+	 * Draw all objects in the world 
+	 */
 	private void drawWorld() {
 		canRemove=false;
 		if(canDraw){
@@ -349,6 +389,10 @@ public class NetGameScreen implements Screen,ActionListener{
 		}
 		canRemove=true;
 	}
+	/**
+	 * Draw parameter currentPlayer depending currentPlayer state  
+	 * @param player NetCharacter that we want draw
+	 */
 	private void drawPlayer(NetCharacter player) {
 		if (!player.died)
 			switch (player.getFrame()) {
@@ -393,6 +437,12 @@ public class NetGameScreen implements Screen,ActionListener{
 		}
 		
 	}
+	
+	/**
+	 * find Texture of parameter s
+	 * @param s 
+	 * @return Texture depending value of s
+	 */
 	private Texture getLetterImage(Letter s) {
 		switch (s.getValue()) {
 		case 'a':
@@ -420,6 +470,7 @@ public class NetGameScreen implements Screen,ActionListener{
 		}
 		return null;
 	}
+	
 	
 	@Override
 	public void resize(int width, int height) {

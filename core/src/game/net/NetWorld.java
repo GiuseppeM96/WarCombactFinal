@@ -78,6 +78,11 @@ public class NetWorld {
 	public void addcurrentPlayer(ArrayList<NetCharacter> lst){
 		otherPlayers.addAll(lst);
 	}
+	/**
+	 * Read file and populate world
+	 * @param fileMap file that contains the information of world's object
+	 * @throws IOException
+	 */
 	private void loadObjectFromFile(File fileMap) throws IOException {
 		FileReader reader =new FileReader(fileMap);
 		BufferedReader buffer = new BufferedReader(reader);
@@ -110,12 +115,23 @@ public class NetWorld {
 		}
 		buffer.close();
 	}
+	/**
+	 * Creates an objects that have this code type and set it position
+	 * @param codtype Object code type 
+	 * @param codx code of x position
+	 * @param cody code of y position
+	 * @return A new instance of the class with that code located in position codx,cody 
+	 */
 	private StaticObject createNewObject(String codtype, String codx, String cody) {
 		StaticObject tmp = getObject(codtype);
 		tmp.setPosition(new Vector2(convert(codx), convert(cody)));
 		return tmp;
 	}
-	
+	/**
+	 * Convert a string to int 
+	 * @param cod string who we wants convert
+	 * @return string converted to int
+	 */
 	private int convert(String cod) {
 		char[] tmp =cod.toCharArray();
 		int result=0;
@@ -125,6 +141,11 @@ public class NetWorld {
 		}
 		return result;
 	}
+	/**
+	 * 
+	 * @param codType code of the object that we need 
+	 * @return A new instance of the class that have that code
+	 */
 	private StaticObject getObject(String codType) {
 		
 		switch(codType){
@@ -182,7 +203,11 @@ public class NetWorld {
 			return null;
 		}
 	}
-
+	/**
+	 * check if the parameter o collide with each other object in the world
+	 * @param o StaticObject who we wants know if it collides 
+	 * @return StaticObject that collied with o
+	 */
 	public StaticObject checkCollisionObject(StaticObject o){
 		int i=0;
 		for(StaticObject s: objects){
@@ -210,7 +235,11 @@ public class NetWorld {
 		}
 		return null;
 	}
-
+	
+	/**
+	 * Add new shot of parameter currentPlayer
+	 * @param currentPlayer NetCharacter that have shot
+	 */
 	public void playerHasShot(NetCharacter currentPlayer) {
 		if(!currentPlayer.hasNotShots()){
 			for(int i=0;i<currentPlayer.getCurrentWeapon().getNumShots();i++){
@@ -224,7 +253,9 @@ public class NetWorld {
 			currentPlayer.updateNumShots();
 		}
 	}
-
+	/**
+	 * It evolves shots and check their collision
+	 */
 	public void updateShots() {
 		ArrayList<Shot> shotDied = new ArrayList<Shot>();
 		for(Shot tmp:shots){
@@ -243,6 +274,8 @@ public class NetWorld {
 								tmp.visible=false;
 							}
 						}
+						else if(tmp.codeOwner==currentPlayer.code)
+							score+=10;
 					}
 					else if(collisionObject != null)
 						tmp.visible=false;
@@ -253,7 +286,10 @@ public class NetWorld {
 		}
 		shots.removeAll(shotDied);
 	}
-
+	/**
+	 * check if the current player is alive
+	 * @return True if player is alive False in the other case
+	 */
 	public boolean currentPlayerIsAlive() {
 		if(currentPlayer.lifePoints<= 0)
 			return false;
