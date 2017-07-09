@@ -1,0 +1,497 @@
+package game.net;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.net.Socket;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+
+import javax.swing.Timer;
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
+
+import game.manager.GameMenu;
+import game.object.AddLifePoints;
+import game.object.AddMachineGunShots;
+import game.object.AddShotGunShots;
+import game.object.Bash;
+import game.object.BigHut;
+import game.object.BlackHouse;
+import game.object.Castle;
+import game.object.Enemy;
+import game.object.Hut;
+import game.object.Letter;
+import game.object.Map;
+import game.object.Shot;
+import game.object.StaticObject;
+import game.object.Tree;
+import game.object.Well;
+import game.pools.ConstantField;
+import game.pools.GameConfig;
+import game.pools.ImagePool;
+
+public class NetGameScreen implements Screen,ActionListener{
+
+	SpriteBatch batch;
+	NetWorld worldGame;
+	Socket s;
+	String server_ip="127.0.0.1";
+	int port=12345;
+	PrintWriter out;
+	ClientReciverMessage listen;
+	boolean wait=true;
+	public boolean canRemove=false;
+	public boolean canDraw=true;
+	public OrthographicCamera gameCam;
+	Viewport viewport;
+	float shotAnimationTime=0.f;
+	private BitmapFont score;
+	GameMenu gameMenu;
+	Timer matchTimer;
+	
+	
+	
+	public NetGameScreen(String ip,GameMenu gameMenu) {
+		server_ip=ip;
+		matchTimer=new Timer(120000, this);
+		this.gameMenu=gameMenu;
+		try {
+			s=new Socket(server_ip, port);
+			out=new PrintWriter(s.getOutputStream());
+			score=new BitmapFont();
+			worldGame=new NetWorld(-1);
+			gameCam = new OrthographicCamera(GameConfig.SCREEN_WIDTH, GameConfig.SCREEN_HEIGHT);
+			gameCam.position.x = GameConfig.SCREEN_WIDTH/2;
+			gameCam.position.y = GameConfig.SCREEN_HEIGHT/2;
+			viewport = new ScreenViewport(gameCam);
+			updateCam();
+			
+		} catch (UnknownHostException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		listen=new ClientReciverMessage(s,this);
+		listen.start();
+		batch=new SpriteBatch();
+	}
+	private void updateCam() {
+		int xPlayer = (int) (worldGame.currentPlayer.getPosition().x + 23);
+		int yPlayer = (int) (worldGame.currentPlayer.getPosition().y + 25);
+		if (!(xPlayer - gameCam.viewportWidth / 2 < 0 || xPlayer + gameCam.viewportWidth / 2 > 2816))
+			gameCam.position.x = xPlayer;
+		if (!(yPlayer - gameCam.viewportHeight / 2 < 0 || yPlayer + gameCam.viewportHeight / 2 > 2212))
+			gameCam.position.y = yPlayer;
+		gameCam.update();		
+	}
+	@Override
+	public void show() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void render(float delta) {
+		
+		batch.begin();
+		batch.setProjectionMatrix(gameCam.combined);
+		update(delta);
+		if(wait){	
+			batch.draw(ImagePool.introLevelEven, 0, 0,GameConfig.SCREEN_WIDTH,GameConfig.SCREEN_WIDTH);
+		}
+		else{
+			batch.draw(ImagePool.mapTwo, 0, 0);
+			drawWorld();
+			drawInfoBar();
+			drawNavigationMap();
+			updateShots();
+			updateCam();
+		}
+		batch.end();
+	}
+
+	private void drawNavigationMap() {
+		float x = gameCam.position.x;
+		float y = gameCam.position.y;
+		float reduceXPlayer = worldGame.currentPlayer.getPosition().x;
+		float reduceYPlayer = worldGame.currentPlayer.getPosition().y;
+		reduceXPlayer = ((reduceXPlayer * ImagePool.navigationMap.getWidth()*gameCam.viewportWidth/GameConfig.SCREEN_WIDTH) / GameConfig.MAP_SIZE.x) + x - viewport.getWorldWidth()/ 2;
+		reduceYPlayer = ((reduceYPlayer * ImagePool.navigationMap.getHeight()*gameCam.viewportHeight/GameConfig.SCREEN_HEIGHT) / GameConfig.MAP_SIZE.y) + y - viewport.getWorldHeight()/ 2;
+		batch.draw(ImagePool.navigationPlayer, reduceXPlayer - ImagePool.navigationPlayer.getWidth() / 2,
+				reduceYPlayer - ImagePool.navigationPlayer.getHeight() / 2,ImagePool.navigationPlayer.getWidth()*gameCam.viewportWidth/GameConfig.SCREEN_WIDTH,ImagePool.navigationPlayer.getHeight()*gameCam.viewportHeight/GameConfig.SCREEN_HEIGHT);
+		for (NetCharacter e : worldGame.otherPlayers) {
+			float reduceXEnemy = e.getPosition().x;
+			float reduceYEnemy = e.getPosition().y;
+			reduceXEnemy = ((reduceXEnemy * ImagePool.navigationMap.getWidth()*gameCam.viewportWidth/GameConfig.SCREEN_WIDTH) / GameConfig.MAP_SIZE.x) + x - viewport.getWorldWidth()/ 2;
+			reduceYEnemy = ((reduceYEnemy * ImagePool.navigationMap.getHeight()*gameCam.viewportHeight/GameConfig.SCREEN_HEIGHT) / GameConfig.MAP_SIZE.y) + y - viewport.getWorldHeight()/ 2;
+			batch.draw(ImagePool.navigationEnemy, reduceXEnemy - ImagePool.navigationEnemy.getWidth() / 2,
+					reduceYEnemy - ImagePool.navigationEnemy.getHeight() / 2,ImagePool.navigationEnemy.getWidth()*gameCam.viewportWidth/GameConfig.SCREEN_WIDTH,ImagePool.navigationEnemy.getHeight()*gameCam.viewportHeight/GameConfig.SCREEN_HEIGHT);
+		}		
+	}
+	private void drawInfoBar() {
+		
+		float x = gameCam.position.x;
+		float y = gameCam.position.y;
+		Texture currentWeapon = getPlayerWeapon();
+		batch.draw(ImagePool.bar,x-viewport.getWorldWidth()/2,y+200*viewport.getWorldHeight()/GameConfig.SCREEN_HEIGHT,ImagePool.bar.getWidth()*gameCam.viewportWidth/GameConfig.MAP_SIZE.x,ImagePool.bar.getHeight());
+		batch.draw(currentWeapon, x - 100*viewport.getWorldWidth()/GameConfig.SCREEN_WIDTH, y + 200*viewport.getWorldHeight()/GameConfig.SCREEN_HEIGHT);
+		batch.draw(ImagePool.navigationMap,x- viewport.getWorldWidth()/2, y-viewport.getWorldHeight() / 2,ImagePool.navigationMap.getWidth()*gameCam.viewportWidth/GameConfig.SCREEN_WIDTH,ImagePool.navigationMap.getHeight()*gameCam.viewportHeight/GameConfig.SCREEN_HEIGHT);
+		int numShots=worldGame.currentPlayer.getNumTotShot();
+		int numShotsAvailable=worldGame.currentPlayer.getNumShot();
+		score.draw(batch, "COLPI A SEGNO " + worldGame.score+"  MORTE  "+worldGame.diedTimes, x+ 70*viewport.getWorldWidth()/GameConfig.SCREEN_WIDTH, y + 220*viewport.getWorldHeight()/GameConfig.SCREEN_HEIGHT);
+		score.draw(batch, "       "+numShotsAvailable+"  /  "+numShots, x - 100*viewport.getWorldWidth()/GameConfig.SCREEN_WIDTH+currentWeapon.getWidth(), y + 220*viewport.getWorldHeight()/GameConfig.SCREEN_HEIGHT);
+		if (worldGame.currentPlayer.lifePoints > 0) {
+			batch.draw(ImagePool.life100, x - 300*viewport.getWorldWidth()/GameConfig.SCREEN_WIDTH, y + 200*viewport.getWorldHeight()/GameConfig.SCREEN_HEIGHT, (190 * worldGame.currentPlayer.lifePoints) / 1000, 33);
+		}
+	}
+	private Texture getPlayerWeapon() {
+		if (worldGame.currentPlayer.weaponType.equals("ShotGun"))
+			return ImagePool.shotGun;
+		else
+			return ImagePool.machineGun;
+	}
+	private void updateShots() {
+		worldGame.updateShots();
+		
+	}
+	private void update(float dt) {
+		if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
+			moveAndCheckCollision(0, dt);
+			worldGame.currentPlayer.stateAnimationTime+=dt;
+		} else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+			moveAndCheckCollision(1, dt);
+			worldGame.currentPlayer.stateAnimationTime+=dt;
+		} else if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
+			moveAndCheckCollision(3, dt);
+			worldGame.currentPlayer.stateAnimationTime+=dt;
+		} else if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
+			moveAndCheckCollision(2, dt);
+			worldGame.currentPlayer.stateAnimationTime+=dt;
+		}
+		if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
+			worldGame.currentPlayer.shoting = true;
+			sendShots();
+		}
+		if (Gdx.input.isKeyJustPressed(Input.Keys.X)){
+			worldGame.currentPlayer.changeWeapon();
+			out.println(3+";"+worldGame.currentPlayer.code+";"+0+";"+0+";"+0+";");
+			out.flush();
+		}
+		if (Gdx.input.isKeyPressed(Input.Keys.Z)) {
+			worldGame.currentPlayer.changeSpeed(ConstantField.PLAYER_SUPER_VELOCITY);
+		} else
+			worldGame.currentPlayer.changeSpeed(ConstantField.PLAYER_STD_VELOCITY);
+		updatePlayerAnimation(worldGame.currentPlayer,dt);
+		for(NetCharacter c: worldGame.otherPlayers){
+			updatePlayerAnimation(c, dt);
+			
+		}
+		if (!worldGame.currentPlayerIsAlive()) {
+			worldGame.currentPlayer.died = true;
+			out.println(4+";"+worldGame.currentPlayer.code+";"+0+";"+0+";"+0+";");
+			out.flush();
+		}
+	}
+		private void updatePlayerAnimation(NetCharacter currentPlayer,float dt) {
+		if (currentPlayer.shoting && !currentPlayer.died) {
+			if (currentPlayer.shotAnimationTime > 0.3 && !currentPlayer.shoted) {
+				worldGame.playerHasShot(currentPlayer);
+				currentPlayer.shoted= true;
+				currentPlayer.shotAnimationTime += dt;
+			}
+			else if (currentPlayer.shotAnimationTime > 0.6) {
+				currentPlayer.shoting = false;
+				currentPlayer.shotAnimationTime = 0.f;
+				currentPlayer.shoted = false;
+			}
+			else currentPlayer.shotAnimationTime += dt;
+		}
+		else if(currentPlayer.died){
+			if (currentPlayer.diedAnimationTime > 0.9) {
+				currentPlayer.reGenerate();
+				if(currentPlayer.code==worldGame.currentPlayer.code){
+					worldGame.diedTimes++;
+					resetCam();
+				}
+				currentPlayer.setPosition(new Vector2(worldGame.spawnPoints.get(currentPlayer.code%worldGame.spawnPoints.size()).position));
+			}
+			else currentPlayer.diedAnimationTime+=dt;
+		}
+		
+	}
+	private void resetCam() {
+		Vector2 pos=new Vector2(worldGame.spawnPoints.get(worldGame.currentPlayer.code % worldGame.spawnPoints.size()).position);
+		gameCam.position.x = pos.x;
+		gameCam.position.y = pos.y;
+		if(gameCam.position.x-viewport.getScreenWidth()/2 < 0)
+			gameCam.position.x=viewport.getScreenWidth()/2;
+		else if(gameCam.position.x+viewport.getScreenWidth()/2>GameConfig.MAP_SIZE.x)
+			gameCam.position.x=GameConfig.MAP_SIZE.x-viewport.getScreenWidth()/2;
+		if(gameCam.position.y-viewport.getScreenHeight() < 0)
+			gameCam.position.y=viewport.getScreenHeight()/2;
+		else if(gameCam.position.y+viewport.getScreenHeight()/2>GameConfig.MAP_SIZE.y)
+			gameCam.position.y=GameConfig.MAP_SIZE.y-viewport.getScreenHeight()/2;
+	}
+	private void addShots() {
+		
+		while(!canRemove){}
+		canDraw=false;
+		worldGame.shots.addAll(worldGame.newShots);
+		canDraw=true;
+		worldGame.newShots.clear();		
+	}
+	private void sendShots() {
+
+		out.println(2+";"+worldGame.currentPlayer.code+";"+worldGame.currentPlayer.getPosition().x+";"+worldGame.currentPlayer.getPosition().y+";"+0+";");
+		out.flush();
+		
+	}
+	private void moveAndCheckCollision(int dir, float dt) {
+		
+		worldGame.currentPlayer.move(dir, dt);
+		
+		StaticObject collidedObject=worldGame.checkCollisionObject(worldGame.currentPlayer);
+		if(collidedObject == null){ 
+			worldGame.currentPlayer.stateAnimationTime+=dt;
+			out.println(0+";"+worldGame.currentPlayer.code+";"+worldGame.currentPlayer.getVelocity()+";"+dt+";"+dir+";");
+			out.flush();
+		}
+		else if(collidedObject instanceof AddLifePoints){
+			out.println(1+";"+0+";"+(int)collidedObject.getPosition().x+";"+(int)collidedObject.getPosition().y+";"+0+";");
+		}
+		else if(collidedObject instanceof AddShotGunShots){
+			out.println(1+";"+1+";"+(int)collidedObject.getPosition().x+";"+(int)collidedObject.getPosition().y+";"+0+";");
+		}
+		else if(collidedObject instanceof AddMachineGunShots){
+			out.println(1+";"+2+";"+(int)collidedObject.getPosition().x+";"+(int)collidedObject.getPosition().y+";"+0+";");
+		}
+		else if(collidedObject instanceof Shot){
+			if(((Shot)collidedObject).codeOwner != worldGame.currentPlayer.code)
+				worldGame.currentPlayer.lifePoints-=10;
+		}
+		else{
+			worldGame.currentPlayer.move((dir+2)%4, dt);
+			worldGame.currentPlayer.setDirection(dir);
+		}
+	}
+	private void drawWorld() {
+		canRemove=false;
+		if(canDraw){
+			ArrayList<StaticObject> objects;
+			objects = worldGame.objects;
+			Texture tmp = null;
+			int cont=0;
+			for (StaticObject s : objects) {
+				boolean trov = false;
+				if (s instanceof Map)
+					if (((Map) s).type == 1)
+						tmp = ImagePool.mapOne;
+					else if(((Map)s).type==2)
+						tmp = ImagePool.mapTwo;
+					else tmp=ImagePool.mapThree;
+				if (s instanceof AddLifePoints)
+					tmp = ImagePool.addLife;
+				else if (s instanceof AddShotGunShots)
+					tmp = ImagePool.shotGun;
+				else if (s instanceof AddMachineGunShots)
+					tmp = ImagePool.machineGun;
+				else if (s instanceof Bash)
+					tmp = ImagePool.bash;
+				else if (s instanceof BigHut)
+					tmp = ImagePool.bigHut;
+				else if (s instanceof BlackHouse)
+					tmp = ImagePool.casino;
+				else if (s instanceof Castle)
+					tmp = ImagePool.castle;
+				
+				else if (s instanceof Letter) {
+					tmp = getLetterImage((Letter) s);
+				} else if (s instanceof Hut)
+					tmp = ImagePool.hut;
+				else if (s instanceof Tree) {
+					tmp = ImagePool.tree;
+					batch.draw(ImagePool.treeAnimation.getKeyFrame(((Tree) s).animationTime, true), s.getPosition().x,
+							(int) s.getPosition().y);
+					trov = true;
+				} else if (s instanceof NetCharacter) {
+					tmp=ImagePool.people;
+				}
+				if (!trov){
+					batch.draw(tmp, (int) s.getPosition().x, (int) s.getPosition().y);
+				}
+			}
+			for(Well w:worldGame.spawnPoints){
+				batch.draw(ImagePool.well, w.getPosition().x, w.getPosition().y);
+			}
+			drawPlayer(worldGame.currentPlayer);
+			for(NetCharacter c: worldGame.otherPlayers){
+				drawPlayer(c);
+			}
+			for(Shot sh:worldGame.shots){
+				if (sh.getTarget() >= 0)
+					if (sh.getDirection().x == 0)
+						batch.draw(ImagePool.verticalShot, sh.getPosition().x, sh.getPosition().y);
+					else batch.draw(ImagePool.shot, sh.getPosition().x, sh.getPosition().y);
+			}
+		}
+		canRemove=true;
+	}
+	private void drawPlayer(NetCharacter player) {
+		if (!player.died)
+			switch (player.getFrame()) {
+			case 0:
+				if (player.shoting)
+					batch.draw(ImagePool.shotPlayerAnimationUp.getKeyFrame(player.shotAnimationTime, true),
+							player.getPosition().x, (int) player.getPosition().y);
+				else
+					batch.draw(ImagePool.playerAnimationUp.getKeyFrame(player.stateAnimationTime, true),
+							player.getPosition().x, (int) player.getPosition().y);
+				break;
+			case 1:
+				if (player.shoting)
+					batch.draw(ImagePool.shotPlayerAnimationRight.getKeyFrame(player.shotAnimationTime, true),
+							player.getPosition().x, (int) player.getPosition().y);
+				else
+					batch.draw(ImagePool.playerAnimationRight.getKeyFrame(player.stateAnimationTime, true),
+							player.getPosition().x, (int) player.getPosition().y);
+				break;
+			case 2:
+				if (player.shoting)
+					batch.draw(ImagePool.shotPlayerAnimationDown.getKeyFrame(player.shotAnimationTime, true),
+							player.getPosition().x, (int) player.getPosition().y);
+				else
+					batch.draw(ImagePool.playerAnimationDown.getKeyFrame(player.stateAnimationTime, true),
+							player.getPosition().x, (int) player.getPosition().y);
+				break;
+			case 3:
+				if (player.shoting)
+					batch.draw(ImagePool.shotPlayerAnimationLeft.getKeyFrame(player.shotAnimationTime, true),
+							player.getPosition().x, (int) player.getPosition().y);
+				else
+					batch.draw(ImagePool.playerAnimationLeft.getKeyFrame(player.stateAnimationTime, true),
+							player.getPosition().x, (int) player.getPosition().y);
+				break;
+			default:
+				break;
+			}
+		else {
+			batch.draw(ImagePool.playerAnimationDied.getKeyFrame(player.diedAnimationTime, true),
+					player.getPosition().x, player.getPosition().y);
+		}
+		
+	}
+	private Texture getLetterImage(Letter s) {
+		switch (s.getValue()) {
+		case 'a':
+			return ImagePool.A;
+		case 'e':
+			return ImagePool.E;
+		case 'g':
+			return ImagePool.G;
+		case 'h':
+			return ImagePool.H;
+		case 'i':
+			return ImagePool.I;
+		case 'l':
+			return ImagePool.L;
+		case 'n':
+			return ImagePool.N;
+		case 'o':
+			return ImagePool.O;
+		case 'p':
+			return ImagePool.P;
+		case 's':
+			return ImagePool.S;
+		case 'v':
+			return ImagePool.V;
+		}
+		return null;
+	}
+	
+	@Override
+	public void resize(int width, int height) {
+		if (width > gameCam.viewportWidth) {
+			if (gameCam.position.x - width / 2 < 0)
+				gameCam.position.x = width / 2;
+			else if (gameCam.position.x + width / 2 > GameConfig.MAP_SIZE.x)
+				gameCam.position.x = GameConfig.MAP_SIZE.x - width / 2;
+		}
+		else
+		{
+			if (worldGame.currentPlayer.getPosition().x - width / 2 < 0)
+				gameCam.position.x = width / 2;
+			else if (worldGame.currentPlayer.getPosition().x + width / 2 > GameConfig.MAP_SIZE.x)
+				gameCam.position.x = GameConfig.MAP_SIZE.x - width / 2;
+			
+		}
+		if (height > gameCam.viewportHeight) {
+
+			if (gameCam.position.y - height / 2 < 0)
+				gameCam.position.y = height / 2;
+
+			else if (gameCam.position.y + height / 2 > GameConfig.MAP_SIZE.y)
+				gameCam.position.y = GameConfig.MAP_SIZE.y - height / 2;
+		}
+		else
+		{
+			if (worldGame.currentPlayer.getPosition().y - height / 2 < 0)
+				gameCam.position.y = height / 2;
+			else if (worldGame.currentPlayer.getPosition().y + height / 2 > GameConfig.MAP_SIZE.y)
+				gameCam.position.y = GameConfig.MAP_SIZE.y - height / 2;
+		}
+		viewport.update(width, height);
+
+	}
+		
+
+	@Override
+	public void pause() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void resume() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void hide() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void dispose() {
+		
+	}
+	public void removeObjects(StaticObject sb) {
+			while(!canRemove){}
+			canDraw=false;
+			worldGame.objects.remove(sb);
+			canDraw=true;
+	
+	}
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		out.println(5+";"+gameMenu.userInfo.getName()+";"+(((int)worldGame.score/worldGame.diedTimes)+1)+";"+0+";"+0+";");
+		out.flush();
+		//gameMenu.swap(12);
+	}
+
+}
+

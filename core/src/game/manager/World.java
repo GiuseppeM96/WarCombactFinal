@@ -1,0 +1,495 @@
+package game.manager;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.ObjectInputStream.GetField;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Objects;
+import java.util.Vector;
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.assets.loaders.MusicLoader;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.math.Vector2;
+
+import game.object.AddLifePoints;
+import game.object.AddMachineGunShots;
+import game.object.AddShotGunShots;
+import game.object.Bash;
+import game.object.BigHut;
+import game.object.BlackHouse;
+import game.object.Castle;
+import game.object.Character;
+import game.object.Enemy;
+import game.object.Hut;
+import game.object.Letter;
+import game.object.Map;
+import game.object.ShotEnemy;
+import game.object.ShotPlayer;
+import game.object.StaticObject;
+import game.object.Tree;
+import game.object.Well;
+import game.pools.GameConfig;
+import game.pools.ImagePool;
+import game.threads.EnemyThread;
+import game.personalAI.*;
+
+public class World {
+	static public Class<? extends Enemy> classe;
+	public String mission;
+	public int found;
+	static public ArrayList<StaticObject> objects = new ArrayList<StaticObject>();
+	static public ArrayList<Enemy> enemies = new ArrayList<Enemy>();
+	static public ArrayList<Enemy> newEnemies = new ArrayList<Enemy>();
+	static public Character player = new Character();
+	static public ArrayList<ShotPlayer> shotsPlayer = new ArrayList<ShotPlayer>();
+	static public ArrayList<ShotEnemy> shotsEnemy = new ArrayList<ShotEnemy>();
+	static public int level;
+	public boolean levelCompleted = false;
+	static Well well;
+	Map gameMap = new Map(level);
+	public EnemyThread enemiesOne;
+	public String className;
+	public static int score = 0;
+
+	public static boolean playerShot = false;
+	public static boolean enemyAdded = false;
+
+	public World(int i, Vector2 playerPosition, String className) {
+
+		// consentire all'user di selezionare l'intelligenza, poi dopo fare il
+		// seguito in base a cosa selezionato
+		// per beppe, sotto carico la classe nemico giusto per lasciare tutto
+		// com'era altrimenti volendo basta mettere come package quello delle
+		// intelligenze e il nome della classe e funziona lo stesso
+		this.className = className;
+
+		if (className == "Enemy" || className == null)
+			try {
+				classe = (Class<? extends Enemy>) Class.forName("game.object.Enemy");
+			} catch (ClassNotFoundException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		else {
+			try {
+				classe = (Class<? extends Enemy>) Class.forName(className);
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			// I check that the class extends Enemy
+			if (!checkThatObjectIsAnEnemy()) {
+				try {
+					classe = (Class<? extends Enemy>) Class.forName("game.object.Enemy");
+				} catch (ClassNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+
+		found = 1;
+		switch (i) {
+		case 1:
+			mission = "HELP";
+			break;
+		case 2:
+			mission = "POISON";
+			break;
+		case 3:
+			mission = "SAVEVILLAGE";
+			break;
+		default:
+			break;
+		}
+		level = i;
+		initWorld(playerPosition);
+		enemiesOne = new EnemyThread(player.getPosition());
+	}
+
+	private boolean checkThatObjectIsAnEnemy() {
+		if (classe.isInterface())
+			return false;
+		try {
+			if (classe.getMethod("getMoveDirection", Vector2.class) != null && classe.getMethod("shotAI") != null && classe.getMethod("getType")!=null )
+				return true;
+		} catch (NoSuchMethodException e) {
+			e.printStackTrace();
+		} catch (SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	public Map getGameMap() {
+		return gameMap;
+	}
+
+	public void setGameMap(Map gameMap) {
+		this.gameMap = gameMap;
+	}
+
+	public void movePlayerUp(float dt) {
+		player.move(0, dt);
+	}
+
+	public void movePlayerDown(float dt) {
+		player.move(2, dt);
+	}
+
+	public void movePlayerRight(float dt) {
+		player.move(1, dt);
+	}
+
+	public void movePlayerLeft(float dt) {
+		player.move(3, dt);
+	}
+
+	public void initWorld(Vector2 playerPosition) {
+
+		player.setPosition(playerPosition);
+		File worldFile = new File(getLevelFile(level));
+		try {
+			loadObjectFromFile(worldFile);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	private void loadObjectFromFile(File fileMap) throws IOException {
+		FileReader reader =new FileReader(fileMap);
+		BufferedReader buffer = new BufferedReader(reader);
+		if(GameMenu.loadGame){
+			String line=buffer.readLine();
+			try {
+				classe=(Class<? extends Enemy>) Class.forName(line);
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			GameMenu.className=line;
+		}
+		String line=buffer.readLine();
+		while(line!= null){
+			String type = new String(),codx = new String(),cody = new String();
+			char [] arrayLine = new char[line.length()];
+			line.getChars(0, line.length(), arrayLine, 0);
+			int i = 0;
+			for (; arrayLine[i]!=';';i++) {
+				type+=arrayLine[i];
+			}
+			i++;
+			for (; arrayLine[i]!=';';i++) {
+				codx+=arrayLine[i];
+			}
+			i++;
+			for (; arrayLine[i]!=';';i++) {
+				cody+=arrayLine[i];
+			}
+			if(type.equals("i")){
+				score=convert(codx);
+				player.lifePoints=convert(cody);
+			}
+			else if(type.equals("l")){
+				level=convert(codx);
+				found=convert(cody);
+			}
+			else{
+				StaticObject tmp=createNewObject(type,codx,cody);
+				if(tmp instanceof Map)
+					gameMap=(Map) tmp;
+				else if(tmp instanceof Enemy){
+				//	((Enemy)tmp).setAI(50);
+					enemies.add((Enemy)tmp);
+				}
+				else if(tmp instanceof Well)
+					well=(Well)tmp;
+				else if(tmp instanceof Character){
+					player=(Character)tmp;
+				}
+				else
+					objects.add(tmp);
+			
+			}
+			line=buffer.readLine();
+		}
+		buffer.close();
+	}
+
+	private StaticObject createNewObject(String codtype, String codx, String cody) {
+		StaticObject tmp = getObject(codtype);
+		tmp.setPosition(new Vector2(convert(codx), convert(cody)));
+		return tmp;
+	}
+
+	private int convert(String cod) {
+		char[] tmp = cod.toCharArray();
+		int result = 0;
+		for (int i = 0; i < tmp.length; i++) {
+			result *= 10;
+			result += tmp[i] - '0';
+		}
+		return result;
+	}
+
+	private StaticObject getObject(String codType) {
+
+		switch (codType) {
+		case "0":
+			return new Map(3);
+		case "1":
+			return new Map(1);
+		case "2":
+			return new Map(2);
+		case "3":
+			return new Hut();
+		case "4":
+			return new Castle();
+		case "5":
+			return new BlackHouse();
+		case "6":
+			return new BigHut();
+		case "7":
+			return new Bash();
+		case "8":
+			return new Tree();
+		case "9":
+			return new AddMachineGunShots();
+		case "10":
+			return new AddShotGunShots();
+		case "11":
+			return new AddLifePoints();
+		case "12":
+			try {
+				return classe.newInstance();
+			} catch (InstantiationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		case "13":
+			return new Letter('a');
+		case "14":
+			return new Letter('e');
+		case "15":
+			return new Letter('g');
+		case "16":
+			return new Letter('h');
+		case "17":
+			return new Letter('i');
+		case "18":
+			return new Letter('l');
+		case "19":
+			return new Letter('n');
+		case "20":
+			return new Letter('o');
+		case "21":
+			return new Letter('p');
+		case "22":
+			return new Letter('s');
+		case "23":
+			return new Letter('v');
+		case "24":
+			return new Well();
+		case "25":
+			return new Character();
+		default:
+			return null;
+		}
+	}
+
+	public String getLevelFile(int level) {
+		if (!GameMenu.loadGame) {
+			switch (level) {
+			case 1:
+				return "src/LevelOne.txt";
+			case 2:
+				return "src/LevelTwo.txt";
+			case 3:
+				return "src/LevelThree.txt";
+			case 4:
+				return "src/FreeLevel.txt";
+			default:
+				return null;
+			}
+		} else {
+			if (GameMenu.free) {
+				return "src/Free/" + GameMenu.userInfo.userName + ".txt";
+			}
+			return "src/Story/" + GameMenu.userInfo.userName + ".txt";
+
+		}
+	}
+
+	public ArrayList<StaticObject> getListObject() {
+		ArrayList<StaticObject> allObjects = new ArrayList<StaticObject>();
+		allObjects.add(gameMap);
+		if (well != null)
+			allObjects.add(well);
+		allObjects.addAll(objects);
+		allObjects.addAll(enemies);
+		allObjects.add(player);
+		allObjects.addAll(shotsPlayer);
+		allObjects.addAll(shotsEnemy);
+		return allObjects;
+	}
+
+	public static StaticObject checkCollisionObject(StaticObject o) {
+		ArrayList<StaticObject> tmpObjects = new ArrayList<StaticObject>(objects);
+		int i = 0;
+		for (StaticObject s : tmpObjects) {
+			if (o.collide(s))
+				return objects.get(i);
+			i++;
+		}
+		if (!(o instanceof Enemy))
+			if (o.collide(well))
+				return well;
+		tmpObjects.clear();
+		if (o instanceof ShotPlayer || o instanceof Character) {
+			tmpObjects = new ArrayList<StaticObject>(enemies);
+			i = 0;
+			for (StaticObject e : tmpObjects) {
+				if (o.collide(e))
+					return enemies.get(i);
+				i++;
+			}
+			tmpObjects.clear();
+		}
+		if (o instanceof Enemy) {
+			tmpObjects = new ArrayList<StaticObject>(shotsPlayer);
+			i = 0;
+			for (StaticObject e : tmpObjects) {
+				if (o.collide(e))
+					return shotsPlayer.get(i);
+				i++;
+			}
+			tmpObjects.clear();
+			if (o.collide(player))
+				return player;
+		}
+		if (o instanceof ShotEnemy)
+			if (o.collide(player))
+				return player;
+		return null;
+	}
+
+	public void playerHasShot() {
+		ArrayList<ShotPlayer> newShots = new ArrayList<ShotPlayer>();
+		if (!player.hasNotShots()) {
+			for (int i = 0; i < player.getCurrentWeapon().getNumShots(); i++) {
+				ShotPlayer tmp = new ShotPlayer(i - player.getCurrentWeapon().getNumShots() + 1,
+						player.getCurrentWeapon());
+				newShots.add(tmp);
+
+			}
+			shotsPlayer.addAll(newShots);
+			player.updateNumShots();
+		}
+	}
+
+	public void damageEnemy(StaticObject collisionObject, ShotPlayer tmp) {
+		((Enemy) collisionObject).alive = false;
+	}
+
+	public void updateShots() {
+		ArrayList<ShotPlayer> shotPlayerDied = new ArrayList<ShotPlayer>();
+		ArrayList<ShotEnemy> shotEnemyDied = new ArrayList<ShotEnemy>();
+		for (ShotPlayer tmp : shotsPlayer) {
+			if (tmp.getTarget() >= 50 || !tmp.visible
+					|| !(tmp.getPosition().x >= 0 && tmp.getPosition().y >= 0
+							&& tmp.getPosition().x < GameConfig.MAP_SIZE.x - ImagePool.shot.getWidth()
+							&& tmp.getPosition().y < GameConfig.MAP_SIZE.y - ImagePool.shot.getHeight())) {
+				shotPlayerDied.add(tmp);
+			} else {
+				if (tmp.getTarget() >= 0) {
+					tmp.visible = true;
+					StaticObject collisionObject = checkCollisionObject(tmp);
+					if (collisionObject != null)
+						tmp.visible = false;
+					if (collisionObject instanceof Enemy) {
+						damageEnemy(collisionObject, tmp);
+						score += 100;
+					}
+				}
+				tmp.setTarget(tmp.getTarget() + 1);
+				tmp.move(tmp.getCodDirection(), Gdx.graphics.getDeltaTime());
+			}
+		}
+		shotsPlayer.removeAll(shotPlayerDied);
+		int cont = 0;
+		for (ShotEnemy tmp : shotsEnemy) {
+			if (tmp.getTarget() >= 50 || !tmp.visible) {
+				shotEnemyDied.add(tmp);
+			} else {
+				if (tmp.getTarget() >= 0) {
+					tmp.visible = true;
+					StaticObject collisionObject = checkCollisionObject(tmp);
+					if (collisionObject != null)
+						tmp.visible = false;
+					if (collisionObject instanceof Character) {
+						player.lifePoints -= 30;
+					}
+				}
+				if (tmp.visible) {
+					tmp.setTarget(tmp.getTarget() + 1);
+					tmp.move(tmp.getCodDirection(), Gdx.graphics.getDeltaTime());
+				}
+			}
+		}
+		shotsEnemy.removeAll(shotEnemyDied);
+	}
+
+	private void damageCharacter() {
+		// TODO Auto-generated method stub
+
+	}
+
+	public void stopEnemy() {
+
+		enemiesOne.stop();
+	}
+
+	public void resumeEnemy() {
+		enemiesOne = new EnemyThread(player.getPosition());
+	}
+
+	public boolean playerIsAlive() {
+		if (player.lifePoints <= 0)
+			return false;
+		return true;
+	}
+
+	public synchronized void clear(){
+		score=0;
+		enemiesOne.stopThread = true;
+		objects.clear();
+		well = null;
+		enemies.removeAll(enemies);
+		shotsEnemy.clear();
+		shotsPlayer.clear();
+	}
+
+	public void generateEnemy() {
+		Enemy e = new Enemy();
+		Vector2 position = new Vector2(well.getPosition());
+		e.setPosition(position);
+		e.setDirection(2);
+		enemiesOne.stopThread = true;
+		while (enemiesOne.isAlive()) {
+		}
+		enemies.add(e);
+		enemiesOne = new EnemyThread(player.getPosition());
+		enemiesOne.start();
+	}
+
+}
