@@ -119,6 +119,7 @@ public class GameManagerScreen implements Screen,ControllerListener {
 			}
 			if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE) || gameIsInPause) {
 				ImagePool.camera.zoom = 1.0f;
+				gameIsInPause=false;
 				gameMenu.start = false;
 				gameMenu.swap(0);
 			}

@@ -20,6 +20,10 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.controllers.Controller;
+import com.badlogic.gdx.controllers.ControllerListener;
+import com.badlogic.gdx.controllers.Controllers;
+import com.badlogic.gdx.controllers.PovDirection;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -29,6 +33,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -61,7 +66,9 @@ import game.pools.ImagePool;
 import game.pools.MusicPool;
 import game.threads.EnemyThread;
 
-public class FreeGameScreen implements Screen, ActionListener {
+public class FreeGameScreen implements Screen, ActionListener,ControllerListener {
+	
+	Controllers controller;
 	Music music;
 	public World worldGame;
 	SpriteBatch worldBatch;
@@ -75,10 +82,16 @@ public class FreeGameScreen implements Screen, ActionListener {
 	BitmapFont lifePerCent;
 	float shotAnimationTime = 0.f;
 	float diedAnimationTime = 0.f;
-	static public boolean draw = true;
+	private boolean gameIsInPause;
+	private PovDirection povDirection;
+	static public boolean draw ;
 
 	public FreeGameScreen(GameMenu game, World world) {
 		super();
+		controller = new Controllers();
+		controller.addListener(this);
+		gameIsInPause=false;
+		draw=true;
 		worldGame = world;
 		timer = new Timer(5000, this);
 		timerIncreaseDifficult = new Timer(60000, this);
@@ -99,31 +112,34 @@ public class FreeGameScreen implements Screen, ActionListener {
 
 	private void update(float dt) {
 		if (!worldGame.player.died) {
-			if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
+			if (Gdx.input.isKeyPressed(Input.Keys.UP) || povDirection== PovDirection.north) {
 				moveAndCheckCollision(0, dt);
-			} else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+			} else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) || povDirection== PovDirection.east) {
 				moveAndCheckCollision(1, dt);
-			} else if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
+			} else if (Gdx.input.isKeyPressed(Input.Keys.LEFT) || povDirection== PovDirection.west) {
 				moveAndCheckCollision(3, dt);
-			} else if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
+			} else if (Gdx.input.isKeyPressed(Input.Keys.DOWN) || povDirection== PovDirection.south) {
 				moveAndCheckCollision(2, dt);
 			} else
 				statePlayerTime = 0;
-			if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) {
+			if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE)  || gameIsInPause) {
 				ImagePool.camera.zoom = 1.0f;
 				gameMenu.start = false;
+				gameIsInPause=false;
 				timer.stop();
 				gameMenu.swap(0);
 			}
-			if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
+			if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE) || worldGame.player.ControllerHasShoted) {
 				worldGame.player.shoting = true;
 			}
-			if (Gdx.input.isKeyJustPressed(Input.Keys.X)){
+			if (Gdx.input.isKeyJustPressed(Input.Keys.X) || worldGame.player.ControllerHasChangedWeapon){
 				if(SettingsMenu.isAudioEnable)
 					MusicPool.reloadSound.play();
 				World.player.changeWeapon();
+				worldGame.player.ControllerHasChangedWeapon=false;
+
 			}
-			if (Gdx.input.isKeyPressed(Input.Keys.Z)) {
+			if (Gdx.input.isKeyPressed(Input.Keys.Z) || worldGame.player.ControllerHasChangedVelocity) {
 				World.player.changeSpeed(ConstantField.PLAYER_SUPER_VELOCITY);
 			} else
 				World.player.changeSpeed(ConstantField.PLAYER_STD_VELOCITY);
@@ -546,5 +562,71 @@ public class FreeGameScreen implements Screen, ActionListener {
 		}
 		else worldGame.generateEnemy();
 
+	}
+
+	@Override
+	public void connected(Controller controller) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void disconnected(Controller controller) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public boolean buttonDown(Controller controller, int buttonCode) {
+		if(buttonCode==2)
+			worldGame.player.ControllerHasChangedWeapon=true;
+		else if(buttonCode==3)
+			worldGame.player.ControllerHasShoted=true;
+		else if(buttonCode == 6)
+			worldGame.player.ControllerHasChangedVelocity=true;
+		else if(buttonCode == 9)
+			gameIsInPause=true;
+		
+		return false;
+	}
+
+	@Override
+	public boolean buttonUp(Controller controller, int buttonCode) {
+		if(buttonCode==3)
+			worldGame.player.ControllerHasShoted=false;
+		else if(buttonCode == 6)
+			worldGame.player.ControllerHasChangedVelocity=false;
+		return false;
+
+	}
+
+	@Override
+	public boolean axisMoved(Controller controller, int axisCode, float value) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean povMoved(Controller controller, int povCode, PovDirection value) {
+		povDirection=value;
+		return false;
+	}
+
+	@Override
+	public boolean xSliderMoved(Controller controller, int sliderCode, boolean value) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean ySliderMoved(Controller controller, int sliderCode, boolean value) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean accelerometerMoved(Controller controller, int accelerometerCode, Vector3 value) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }
