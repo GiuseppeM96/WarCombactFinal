@@ -13,15 +13,21 @@ import javax.swing.Timer;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.controllers.Controller;
+import com.badlogic.gdx.controllers.ControllerListener;
+import com.badlogic.gdx.controllers.Controllers;
+import com.badlogic.gdx.controllers.PovDirection;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 import game.manager.GameMenu;
+import game.manager.World;
 import game.object.AddLifePoints;
 import game.object.AddMachineGunShots;
 import game.object.AddShotGunShots;
@@ -43,8 +49,9 @@ import game.pools.ImagePool;
 import game.pools.MusicPool;
 import game.screens.SettingsMenu;
 
-public class NetGameScreen implements Screen,ActionListener{
+public class NetGameScreen implements Screen,ActionListener,ControllerListener{
 
+	Controllers controller;
 	SpriteBatch batch;
 	NetWorld worldGame;
 	Socket s;
@@ -61,6 +68,8 @@ public class NetGameScreen implements Screen,ActionListener{
 	private BitmapFont score;
 	GameMenu gameMenu;
 	Timer matchTimer;
+	private PovDirection povDirection;
+	private boolean gameIsInPause;
 	
 	
 	/**
@@ -69,7 +78,8 @@ public class NetGameScreen implements Screen,ActionListener{
 	 * @param gameMenu indicates the game application
 	 */
 	public NetGameScreen(String ip,GameMenu gameMenu) {
-		System.out.println(ip);
+		controller = new Controllers();
+		controller.addListener(this);
 		server_ip=ip;
 		port=12345;
 		ClientReciverMessage listen;
@@ -196,11 +206,7 @@ public class NetGameScreen implements Screen,ActionListener{
 	 * Call the shot update function of NetWorld
 	 */
 	private void updateShots() {
-		while(!canRemove){}
-		canDraw=false;
 		worldGame.updateShots();
-		canDraw=true;
-		
 	}
 	
 	/**
@@ -208,29 +214,32 @@ public class NetGameScreen implements Screen,ActionListener{
 	 * @param dt time interval
 	 */
 	private void update(float dt) {
-		if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
+		if (Gdx.input.isKeyPressed(Input.Keys.UP) || povDirection== PovDirection.north) {
 			moveAndCheckCollision(0, dt);
 			worldGame.currentPlayer.stateAnimationTime+=dt;
-		} else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+		} else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) || povDirection== PovDirection.east) {
 			moveAndCheckCollision(1, dt);
 			worldGame.currentPlayer.stateAnimationTime+=dt;
-		} else if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
+		} else if (Gdx.input.isKeyPressed(Input.Keys.LEFT) || povDirection== PovDirection.west) {
 			moveAndCheckCollision(3, dt);
 			worldGame.currentPlayer.stateAnimationTime+=dt;
-		} else if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
+		} else if (Gdx.input.isKeyPressed(Input.Keys.DOWN) || povDirection== PovDirection.south) {
 			moveAndCheckCollision(2, dt);
 			worldGame.currentPlayer.stateAnimationTime+=dt;
 		}
-		if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
+		if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE) || worldGame.currentPlayer.controllerHasShoted ) {
 			worldGame.currentPlayer.shoting = true;
 			sendShots();
 		}
-		if (Gdx.input.isKeyJustPressed(Input.Keys.X)){
+		if (Gdx.input.isKeyJustPressed(Input.Keys.X) || worldGame.currentPlayer.controllerHasChangedWeapon){
+			if (SettingsMenu.isAudioEnable)
+				MusicPool.reloadSound.play();
 			worldGame.currentPlayer.changeWeapon();
+			worldGame.currentPlayer.controllerHasChangedWeapon=false;
 			out.println(3+";"+worldGame.currentPlayer.code+";"+0+";"+0+";"+0+";");
 			out.flush();
 		}
-		if (Gdx.input.isKeyPressed(Input.Keys.Z)) {
+		if (Gdx.input.isKeyPressed(Input.Keys.Z) || worldGame.currentPlayer.controllerHasChangedVelocity) {
 			worldGame.currentPlayer.changeSpeed(ConstantField.PLAYER_SUPER_VELOCITY);
 		} else
 			worldGame.currentPlayer.changeSpeed(ConstantField.PLAYER_STD_VELOCITY);
@@ -320,14 +329,22 @@ public class NetGameScreen implements Screen,ActionListener{
 			worldGame.currentPlayer.stateAnimationTime+=dt;
 			out.println(0+";"+worldGame.currentPlayer.code+";"+worldGame.currentPlayer.getVelocity()+";"+dt+";"+dir+";");
 			out.flush();
+			if(SettingsMenu.isAudioEnable)
+				MusicPool.walkingSound.play();
 		}
 		else if(collidedObject instanceof AddLifePoints){
+			if(SettingsMenu.isAudioEnable)
+				MusicPool.addLifePoints.play();
 			out.println(1+";"+0+";"+(int)collidedObject.getPosition().x+";"+(int)collidedObject.getPosition().y+";"+0+";");
 		}
 		else if(collidedObject instanceof AddShotGunShots){
+			if(SettingsMenu.isAudioEnable)
+				MusicPool.addShotSound.play();
 			out.println(1+";"+1+";"+(int)collidedObject.getPosition().x+";"+(int)collidedObject.getPosition().y+";"+0+";");
 		}
 		else if(collidedObject instanceof AddMachineGunShots){
+			if(SettingsMenu.isAudioEnable)
+				MusicPool.addShotSound.play();
 			out.println(1+";"+2+";"+(int)collidedObject.getPosition().x+";"+(int)collidedObject.getPosition().y+";"+0+";");
 		}
 		else if(collidedObject instanceof Shot){
@@ -554,9 +571,74 @@ public class NetGameScreen implements Screen,ActionListener{
 	}
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		out.println(5+";"+gameMenu.userInfo.getName()+";"+(((int)worldGame.score/(worldGame.diedTimes+1))+1)+";"+0+";"+0+";");
+		out.println(5+";"+gameMenu.userInfo.getName()+";"+(((int)worldGame.score/worldGame.diedTimes)+1)+";"+0+";"+0+";");
 		out.flush();
 		//gameMenu.swap(12);
+	}
+
+	@Override
+	public void connected(Controller controller) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void disconnected(Controller controller) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public boolean buttonDown(Controller controller, int buttonCode) {
+		if(buttonCode==2)
+			worldGame.currentPlayer.controllerHasChangedWeapon=true;
+		else if(buttonCode==3)
+			worldGame.currentPlayer.controllerHasShoted=true;
+		else if(buttonCode == 6)
+			worldGame.currentPlayer.controllerHasChangedVelocity=true;
+		else if(buttonCode == 9)
+			gameIsInPause=true;
+		
+		return false;
+	}
+
+	@Override
+	public boolean buttonUp(Controller controller, int buttonCode) {
+		if(buttonCode==3)
+			worldGame.currentPlayer.controllerHasShoted=false;
+		else if(buttonCode == 6)
+			worldGame.currentPlayer.controllerHasChangedVelocity=false;		
+		return false;
+	}
+
+	@Override
+	public boolean axisMoved(Controller controller, int axisCode, float value) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean povMoved(Controller controller, int povCode, PovDirection value) {
+		povDirection=value;
+		return false;
+	}
+
+	@Override
+	public boolean xSliderMoved(Controller controller, int sliderCode, boolean value) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean ySliderMoved(Controller controller, int sliderCode, boolean value) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean accelerometerMoved(Controller controller, int accelerometerCode, Vector3 value) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 }

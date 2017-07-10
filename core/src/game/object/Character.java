@@ -14,9 +14,9 @@ public class Character extends DynamicObject {
 	public int shotGunShots=60;
 	public boolean shoting=false;
 	public boolean died=false;
-	public boolean ControllerHasChangedWeapon;
-	public boolean ControllerHasShoted;
-	public boolean ControllerHasChangedVelocity;
+	public boolean controllerHasChangedWeapon;
+	public boolean controllerHasShoted;
+	public boolean controllerHasChangedVelocity;
 	
 	public Character() {
 		super();

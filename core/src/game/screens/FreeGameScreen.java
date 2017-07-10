@@ -129,17 +129,17 @@ public class FreeGameScreen implements Screen, ActionListener,ControllerListener
 				timer.stop();
 				gameMenu.swap(0);
 			}
-			if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE) || worldGame.player.ControllerHasShoted) {
+			if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE) || worldGame.player.controllerHasShoted) {
 				worldGame.player.shoting = true;
 			}
-			if (Gdx.input.isKeyJustPressed(Input.Keys.X) || worldGame.player.ControllerHasChangedWeapon){
+			if (Gdx.input.isKeyJustPressed(Input.Keys.X) || worldGame.player.controllerHasChangedWeapon){
 				if(SettingsMenu.isAudioEnable)
 					MusicPool.reloadSound.play();
 				World.player.changeWeapon();
-				worldGame.player.ControllerHasChangedWeapon=false;
+				worldGame.player.controllerHasChangedWeapon=false;
 
 			}
-			if (Gdx.input.isKeyPressed(Input.Keys.Z) || worldGame.player.ControllerHasChangedVelocity) {
+			if (Gdx.input.isKeyPressed(Input.Keys.Z) || worldGame.player.controllerHasChangedVelocity) {
 				World.player.changeSpeed(ConstantField.PLAYER_SUPER_VELOCITY);
 			} else
 				World.player.changeSpeed(ConstantField.PLAYER_STD_VELOCITY);
@@ -585,11 +585,11 @@ public class FreeGameScreen implements Screen, ActionListener,ControllerListener
 		
 		if(inputIsValid){
 			if(buttonCode==2)
-				worldGame.player.ControllerHasChangedWeapon=true;
+				worldGame.player.controllerHasChangedWeapon=true;
 			else if(buttonCode==3)
-				worldGame.player.ControllerHasShoted=true;
+				worldGame.player.controllerHasShoted=true;
 			else if(buttonCode == 6)
-				worldGame.player.ControllerHasChangedVelocity=true;
+				worldGame.player.controllerHasChangedVelocity=true;
 			else if(buttonCode == 9)
 				gameIsInPause=true;
 		}	
@@ -605,9 +605,9 @@ public class FreeGameScreen implements Screen, ActionListener,ControllerListener
 		
 		if(inputIsValid){
 			if(buttonCode==3)
-				worldGame.player.ControllerHasShoted=false;
+				worldGame.player.controllerHasShoted=false;
 			else if(buttonCode == 6)
-				worldGame.player.ControllerHasChangedVelocity=false;
+				worldGame.player.controllerHasChangedVelocity=false;
 		}
 		return false;
 

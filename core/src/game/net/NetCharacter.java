@@ -26,12 +26,18 @@ public class NetCharacter extends DynamicObject {
 	public float stateAnimationTime;
 	public float diedAnimationTime;
 	public boolean moving;
+	public static boolean controllerHasShoted;
+	public static boolean controllerHasChangedVelocity;
+	public static boolean controllerHasChangedWeapon;
 	
 	/**
 	 * Create a new net player
 	 */
 	public NetCharacter() {
 		super();
+		controllerHasChangedVelocity = false;
+		controllerHasShoted = false;
+		controllerHasChangedWeapon = false;
 		currentWeapon=new Weapon();
 		lifePoints=1000;
 		machineGunShots=100;
