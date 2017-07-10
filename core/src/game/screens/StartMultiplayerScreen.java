@@ -3,12 +3,17 @@ package game.screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.controllers.Controller;
+import com.badlogic.gdx.controllers.ControllerListener;
+import com.badlogic.gdx.controllers.Controllers;
+import com.badlogic.gdx.controllers.PovDirection;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -19,12 +24,13 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import game.manager.GameMenu;
 import game.pools.ImagePool;
 
-public class StartMultiplayerScreen implements Screen{
+public class StartMultiplayerScreen implements Screen,ControllerListener{
 
 	
 	
 	private GameMenu gameMenu;
 
+	Controllers controller;
 	private TextButton createMatch;
 	private TextButton existingMatch;
 	private TextButton back;
@@ -44,6 +50,10 @@ public class StartMultiplayerScreen implements Screen{
 	Viewport viewport;
 	SpriteBatch batch;
 
+	private boolean hasPressedEnter;
+
+	private int controllerMoveDirection;
+
 
 	
 	/*
@@ -55,6 +65,10 @@ public class StartMultiplayerScreen implements Screen{
 	 * */
 	public StartMultiplayerScreen(GameMenu gameMenu) {
 		this.gameMenu = gameMenu;
+		controller = new Controllers();
+		controller.addListener(this);
+		hasPressedEnter = false;
+		controllerMoveDirection = -1;
 		batch = new SpriteBatch();
 
 		macchinaSprite = new Sprite(ImagePool.macchina);
@@ -153,7 +167,8 @@ public class StartMultiplayerScreen implements Screen{
 	}
 
 	private void update() {
-		if(Gdx.input.isKeyJustPressed(Input.Keys.ENTER)){
+		if(Gdx.input.isKeyJustPressed(Input.Keys.ENTER) || hasPressedEnter){
+			hasPressedEnter = false;
 			if(itemSelected.x == 1)
 				gameMenu.swap(0);
 			else{
@@ -171,32 +186,32 @@ public class StartMultiplayerScreen implements Screen{
 			}
 		}
 		boolean selectedIsMoved=false;
-		if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) 
+		if (Gdx.input.isKeyPressed(Input.Keys.LEFT) || controllerMoveDirection == 3) 
 			joystickSprite.setTexture(ImagePool.joystickLeft);
-		else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) 
+		else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) || controllerMoveDirection == 1) 
 			joystickSprite.setTexture(ImagePool.joystickRight);
-		else if (Gdx.input.isKeyPressed(Input.Keys.UP)) 
+		else if (Gdx.input.isKeyPressed(Input.Keys.UP) || controllerMoveDirection == 0) 
 			joystickSprite.setTexture(ImagePool.joystickUp);
-		else if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) 
+		else if (Gdx.input.isKeyPressed(Input.Keys.DOWN) || controllerMoveDirection == 2) 
 			joystickSprite.setTexture(ImagePool.joystickDown);
 		else
 			joystickSprite.setTexture(ImagePool.joystick);
 
 	
-		if(Gdx.input.isKeyJustPressed(Input.Keys.RIGHT)){
+		if(Gdx.input.isKeyJustPressed(Input.Keys.RIGHT) || controllerMoveDirection == 1){
 			if(itemSelected.x==0 && itemSelected.y==0){
 				itemSelected.y++;
 				selectedIsMoved=true;
 			}
 		}
-		else if(Gdx.input.isKeyJustPressed(Input.Keys.LEFT)){
+		else if(Gdx.input.isKeyJustPressed(Input.Keys.LEFT) || controllerMoveDirection == 3){
 			if(itemSelected.x==0 && itemSelected.y==1){
 				itemSelected.y--;
 				selectedIsMoved=true;
 
 			}
 		}
-		else if(Gdx.input.isKeyJustPressed(Input.Keys.DOWN)){
+		else if(Gdx.input.isKeyJustPressed(Input.Keys.DOWN) || controllerMoveDirection == 2){
 			if(itemSelected.x==0){
 				itemSelected.x=1;
 				itemSelected.y=0;
@@ -204,14 +219,14 @@ public class StartMultiplayerScreen implements Screen{
 
 			}
 		}
-		else if(Gdx.input.isKeyJustPressed(Input.Keys.UP)){
+		else if(Gdx.input.isKeyJustPressed(Input.Keys.UP) || controllerMoveDirection == 0){
 			if(itemSelected.x==1){
 				selectedIsMoved=true;
 				itemSelected.x=0;
 
 			}
 		}
-		
+		controllerMoveDirection = -1;
 		if(selectedIsMoved){
 			selectedSprite.setSize(vectorDimension[(int) itemSelected.x][(int) itemSelected.y].x, vectorDimension[(int) itemSelected.x][(int) itemSelected.y].y);
 			selectedSprite.setPosition(vectorPosition[(int) itemSelected.x][(int) itemSelected.y].x, vectorPosition[(int) itemSelected.x][(int) itemSelected.y].y);
@@ -250,6 +265,78 @@ public class StartMultiplayerScreen implements Screen{
 	public void dispose() {
 		stage.dispose();
 		
+	}
+
+	@Override
+	public void connected(Controller controller) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void disconnected(Controller controller) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public boolean buttonDown(Controller controller, int buttonCode) {
+		System.out.println(buttonCode);
+
+		if(buttonCode == 0 && gameMenu.getScreen().getClass().getName().contains("StartMultiplayerScreen"))
+		{
+				hasPressedEnter = true;
+		}
+		return false;
+	}
+
+	@Override
+	public boolean buttonUp(Controller controller, int buttonCode) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean axisMoved(Controller controller, int axisCode, float value) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean povMoved(Controller controller, int povCode, PovDirection value) {
+		boolean inputIsValid = false;
+
+		if (gameMenu.getScreen().getClass().getName().contains("StartMultiplayerScreen"))
+			inputIsValid = true;
+
+		if (inputIsValid) {
+			if (value == PovDirection.north)
+				controllerMoveDirection = 0;
+			else if (value == PovDirection.east)
+				controllerMoveDirection = 1;
+			else if (value == PovDirection.south)
+				controllerMoveDirection = 2;
+			else if (value == PovDirection.west)
+				controllerMoveDirection = 3;
+		}		return false;
+	}
+
+	@Override
+	public boolean xSliderMoved(Controller controller, int sliderCode, boolean value) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean ySliderMoved(Controller controller, int sliderCode, boolean value) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean accelerometerMoved(Controller controller, int accelerometerCode, Vector3 value) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 }

@@ -3,6 +3,10 @@ package game.screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.controllers.Controller;
+import com.badlogic.gdx.controllers.ControllerListener;
+import com.badlogic.gdx.controllers.Controllers;
+import com.badlogic.gdx.controllers.PovDirection;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -12,6 +16,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -24,9 +29,13 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import game.manager.GameMenu;
 import game.pools.ImagePool;
 
-public class GameModMenu implements Screen {
+public class GameModMenu implements Screen, ControllerListener {
 
 	private GameMenu gameMenu;
+
+	Controllers controller;
+	int controllerMoveDirection;
+	private boolean hasPressedEnter;
 
 	BitmapFont font;
 
@@ -50,17 +59,21 @@ public class GameModMenu implements Screen {
 	SpriteBatch batch = new SpriteBatch();
 
 	TextField name;
-	
+
 	public GameModMenu(GameMenu gameMenu) {
 
 		this.gameMenu = gameMenu;
+		controllerMoveDirection = -1;
+		controller = new Controllers();
+		controller.addListener(this);
+		hasPressedEnter = false;
 		gameIsStarting = false;
 		animation = 0;
 		font = new BitmapFont();
 		macchinaSprite = new Sprite(ImagePool.macchina);
 		joystickSprite = new Sprite(ImagePool.joystick);
 		selectedSprite = new Sprite(ImagePool.selected);
-		backGround= new Sprite(ImagePool.backGround);
+		backGround = new Sprite(ImagePool.backGround);
 		name = new TextField("", ImagePool.skin);
 		name.setMessageText("_____");
 		name.setFocusTraversal(true);
@@ -138,7 +151,7 @@ public class GameModMenu implements Screen {
 	}
 
 	private void draw() {
-		backGround.draw(batch);		
+		backGround.draw(batch);
 		macchinaSprite.draw(batch);
 		joystickSprite.draw(batch);
 		selectedSprite.draw(batch);
@@ -164,23 +177,23 @@ public class GameModMenu implements Screen {
 			} else {
 				ImagePool.camera.zoom -= 0.004;
 			}
-			if(animation>=400){
-				animation=-1;
-				gameIsStarting=false;
-				if(itemSelected.y==0){
-					gameMenu.free=false;
+			if (animation >= 400) {
+				animation = -1;
+				gameIsStarting = false;
+				if (itemSelected.y == 0) {
+					gameMenu.free = false;
 					gameMenu.loadGame();
 					gameMenu.intro(GameMenu.currentLevel);
-				}
-				else{
-					gameMenu.free=true;
+				} else {
+					gameMenu.free = true;
 					gameMenu.intro(4);
 				}
-			
+
 			}
 			animation++;
 		}
-		if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
+		if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER) || hasPressedEnter) {
+			hasPressedEnter = false;
 			Gdx.input.setInputProcessor(null);
 			switch ((int) itemSelected.x) {
 			case 0:
@@ -188,17 +201,17 @@ public class GameModMenu implements Screen {
 				gameMenu.userInfo.setName(name.getText());
 				break;
 			case 1:
-				GameMenu.loadGame=false;
+				GameMenu.loadGame = false;
 				gameMenu.swap(0);
 				break;
 			default:
 				break;
-				/* continuare con matrice con il set screen dello swap */
+			/* continuare con matrice con il set screen dello swap */
 			}
 		}
-		if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
+		if (Gdx.input.isKeyPressed(Input.Keys.LEFT) || controllerMoveDirection == 3) {
 			joystickSprite.setTexture(ImagePool.joystickLeft);
-			if (Gdx.input.isKeyJustPressed(Input.Keys.LEFT))
+			if (Gdx.input.isKeyJustPressed(Input.Keys.LEFT) || controllerMoveDirection == 3)
 				if (itemSelected.y > 0) {
 					itemSelected.y--;
 					selectedSprite.setPosition(matrixPosition[(int) itemSelected.x][(int) itemSelected.y].x,
@@ -207,9 +220,9 @@ public class GameModMenu implements Screen {
 							matrixDimension[(int) itemSelected.x][(int) itemSelected.y].y);
 				}
 
-		} else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+		} else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) || controllerMoveDirection == 1) {
 			joystickSprite.setTexture(ImagePool.joystickRight);
-			if (Gdx.input.isKeyJustPressed(Input.Keys.RIGHT))
+			if (Gdx.input.isKeyJustPressed(Input.Keys.RIGHT) || controllerMoveDirection == 1)
 				if (itemSelected.y < 1 && itemSelected.x == 0) {
 					itemSelected.y++;
 					selectedSprite.setPosition(matrixPosition[(int) itemSelected.x][(int) itemSelected.y].x,
@@ -217,27 +230,32 @@ public class GameModMenu implements Screen {
 					selectedSprite.setSize(matrixDimension[(int) itemSelected.x][(int) itemSelected.y].x,
 							matrixDimension[(int) itemSelected.x][(int) itemSelected.y].y);
 				}
-		} else if (Gdx.input.isKeyJustPressed(Input.Keys.UP)) {
+		} else if (Gdx.input.isKeyPressed(Input.Keys.UP) || controllerMoveDirection == 0) {
 			joystickSprite.setTexture(ImagePool.joystickUp);
-			if (itemSelected.x == 1) {
-				itemSelected.x = 0;
-				selectedSprite.setPosition(matrixPosition[(int) itemSelected.x][(int) itemSelected.y].x,
-						matrixPosition[(int) itemSelected.x][(int) itemSelected.y].y);
-				selectedSprite.setSize(matrixDimension[(int) itemSelected.x][(int) itemSelected.y].x,
-						matrixDimension[(int) itemSelected.x][(int) itemSelected.y].y);
+			if (Gdx.input.isKeyJustPressed(Input.Keys.UP) || controllerMoveDirection == 0) {
+				if (itemSelected.x == 1) {
+					itemSelected.x = 0;
+					selectedSprite.setPosition(matrixPosition[(int) itemSelected.x][(int) itemSelected.y].x,
+							matrixPosition[(int) itemSelected.x][(int) itemSelected.y].y);
+					selectedSprite.setSize(matrixDimension[(int) itemSelected.x][(int) itemSelected.y].x,
+							matrixDimension[(int) itemSelected.x][(int) itemSelected.y].y);
+				}
 			}
-		} else if (Gdx.input.isKeyJustPressed(Input.Keys.DOWN)) {
+		} else if (Gdx.input.isKeyPressed(Input.Keys.DOWN) || controllerMoveDirection == 2) {
 			joystickSprite.setTexture(ImagePool.joystickDown);
-			if (itemSelected.x == 0) {
-				itemSelected.x++;
-				itemSelected.y = 0;
-				selectedSprite.setPosition(matrixPosition[(int) itemSelected.x][(int) itemSelected.y].x,
-						matrixPosition[(int) itemSelected.x][(int) itemSelected.y].y);
-				selectedSprite.setSize(matrixDimension[(int) itemSelected.x][(int) itemSelected.y].x,
-						matrixDimension[(int) itemSelected.x][(int) itemSelected.y].y);
+			if (Gdx.input.isKeyJustPressed(Input.Keys.DOWN) || controllerMoveDirection == 2) {
+				if (itemSelected.x == 0) {
+					itemSelected.x++;
+					itemSelected.y = 0;
+					selectedSprite.setPosition(matrixPosition[(int) itemSelected.x][(int) itemSelected.y].x,
+							matrixPosition[(int) itemSelected.x][(int) itemSelected.y].y);
+					selectedSprite.setSize(matrixDimension[(int) itemSelected.x][(int) itemSelected.y].x,
+							matrixDimension[(int) itemSelected.x][(int) itemSelected.y].y);
+				}
 			}
 		} else
 			joystickSprite.setTexture(ImagePool.joystick);
+		controllerMoveDirection = -1;
 
 	}
 
@@ -252,8 +270,6 @@ public class GameModMenu implements Screen {
 		// TODO Auto-generated method stub
 
 	}
-	
-	
 
 	@Override
 	public void resume() {
@@ -270,5 +286,73 @@ public class GameModMenu implements Screen {
 	@Override
 	public void dispose() {
 		stage.dispose();
+	}
+
+	@Override
+	public void connected(Controller controller) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void disconnected(Controller controller) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public boolean buttonDown(Controller controller, int buttonCode) {
+	
+		if (buttonCode == 0 && gameMenu.getScreen().getClass().getName().contains("GameModMenu"))
+			hasPressedEnter = true;
+		return false;
+	}
+
+	@Override
+	public boolean buttonUp(Controller controller, int buttonCode) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean axisMoved(Controller controller, int axisCode, float value) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean povMoved(Controller controller, int povCode, PovDirection value) {
+		boolean inputIsValid=false;
+		if(gameMenu.getScreen().getClass().getName().contains("GameModMenu"))
+			inputIsValid=true;
+		if(inputIsValid){
+			if (value == PovDirection.north )
+				controllerMoveDirection = 0;
+			else if (value == PovDirection.east)
+				controllerMoveDirection = 1;
+			else if (value == PovDirection.south)
+				controllerMoveDirection = 2;
+			else if (value == PovDirection.west)
+				controllerMoveDirection = 3;
+		}
+		return false;
+	}
+
+	@Override
+	public boolean xSliderMoved(Controller controller, int sliderCode, boolean value) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean ySliderMoved(Controller controller, int sliderCode, boolean value) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean accelerometerMoved(Controller controller, int accelerometerCode, Vector3 value) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }

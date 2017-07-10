@@ -47,8 +47,8 @@ public class ChooseAIscreen implements Screen, ControllerListener {
 	private int itemSelected;
 
 	public Stage stage;
-	Viewport viewport ;
-	SpriteBatch batch ;
+	Viewport viewport;
+	SpriteBatch batch;
 
 	TextField name;
 	private boolean hasPressedEnter;
@@ -61,7 +61,7 @@ public class ChooseAIscreen implements Screen, ControllerListener {
 		viewport = new ExtendViewport(500, 500, ImagePool.camera);
 		controller = new Controllers();
 		controller.addListener(this);
-		hasPressedEnter=false;
+		hasPressedEnter = false;
 		macchinaSprite = new Sprite(ImagePool.macchina);
 		joystickSprite = new Sprite(ImagePool.joystick);
 		selectedSprite = new Sprite(ImagePool.selected);
@@ -144,17 +144,17 @@ public class ChooseAIscreen implements Screen, ControllerListener {
 
 	private void update() {
 		boolean selectedIsMoved = false;
-		if ((Gdx.input.isKeyJustPressed(Input.Keys.RIGHT) || controllerMoveDirection == 1) && !choosed )
+		if ((Gdx.input.isKeyJustPressed(Input.Keys.RIGHT) || controllerMoveDirection == 1) && !choosed)
 			if (itemSelected < 2) {
 				selectedIsMoved = true;
 				itemSelected++;
-				controllerMoveDirection=0;
+				controllerMoveDirection = 0;
 			}
-		if ((Gdx.input.isKeyJustPressed(Input.Keys.LEFT) || controllerMoveDirection == 3) && !choosed )
+		if ((Gdx.input.isKeyJustPressed(Input.Keys.LEFT) || controllerMoveDirection == 3) && !choosed)
 			if (itemSelected > 0) {
 				selectedIsMoved = true;
 				itemSelected--;
-				controllerMoveDirection=0;
+				controllerMoveDirection = 0;
 			}
 		if (selectedIsMoved) {
 			selectedSprite.setSize(vectorDimension[itemSelected].x, vectorDimension[itemSelected].y);
@@ -162,10 +162,11 @@ public class ChooseAIscreen implements Screen, ControllerListener {
 
 		}
 		if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER) || hasPressedEnter) {
-			hasPressedEnter=false;
-			if (itemSelected == 1)
+			hasPressedEnter = false;
+			if (itemSelected == 1) {
+				Gdx.input.setInputProcessor(null);
 				gameMenu.swap(0);
-			else if (!choosed)
+			} else if (!choosed)
 				choosed = true;
 			else if (choosed) {
 				if (itemSelected == 0) {
@@ -176,6 +177,7 @@ public class ChooseAIscreen implements Screen, ControllerListener {
 				name.setText("");
 				name.setMessageText("_____");
 				choosed = false;
+				Gdx.input.setInputProcessor(null);
 				gameMenu.swap(3);
 			}
 		}
@@ -252,7 +254,7 @@ public class ChooseAIscreen implements Screen, ControllerListener {
 
 	@Override
 	public boolean buttonDown(Controller controller, int buttonCode) {
-		if(buttonCode == 0)
+		if (buttonCode == 0 && gameMenu.getScreen().getClass().getName().contains("ChooseAIscreen"))
 			hasPressedEnter = true;
 		return false;
 	}
@@ -270,14 +272,21 @@ public class ChooseAIscreen implements Screen, ControllerListener {
 
 	@Override
 	public boolean povMoved(Controller controller, int povCode, PovDirection value) {
-		if (value == PovDirection.north)
-			controllerMoveDirection = 0;
-		else if (value == PovDirection.east)
-			controllerMoveDirection = 1;
-		else if (value == PovDirection.south)
-			controllerMoveDirection = 2;
-		else if (value == PovDirection.west)
-			controllerMoveDirection = 3;
+		boolean inputIsValid = false;
+
+		if (gameMenu.getScreen().getClass().getName().contains("ChooseAIscreen"))
+			inputIsValid = true;
+
+		if (inputIsValid) {
+			if (value == PovDirection.north)
+				controllerMoveDirection = 0;
+			else if (value == PovDirection.east)
+				controllerMoveDirection = 1;
+			else if (value == PovDirection.south)
+				controllerMoveDirection = 2;
+			else if (value == PovDirection.west)
+				controllerMoveDirection = 3;
+		}
 		return false;
 	}
 

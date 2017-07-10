@@ -172,7 +172,7 @@ public class CastleScreen implements Screen, ControllerListener {
 
 	@Override
 	public boolean buttonDown(Controller controller, int buttonCode) {
-		if (buttonCode == 0)
+		if (buttonCode == 0 && gameMenu.getScreen().getClass().getName().contains("CastleScreen"))
 			hasPressedEnter = true;
 		return false;
 	}

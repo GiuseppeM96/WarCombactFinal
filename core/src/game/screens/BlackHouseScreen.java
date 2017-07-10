@@ -150,8 +150,8 @@ public class BlackHouseScreen implements Screen, ControllerListener {
 
 	@Override
 	public boolean buttonDown(Controller controller, int buttonCode) {
-		System.out.println(buttonCode);
-		if (buttonCode == 0)
+	
+		if (buttonCode == 0 && gameMenu.getScreen().getClass().getName().contains("BlackHouseScreen"))
 			hasPressedEnter = true;
 		return false;
 	}

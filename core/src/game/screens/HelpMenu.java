@@ -3,6 +3,10 @@ package game.screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.controllers.Controller;
+import com.badlogic.gdx.controllers.ControllerListener;
+import com.badlogic.gdx.controllers.Controllers;
+import com.badlogic.gdx.controllers.PovDirection;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -12,6 +16,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -22,8 +27,9 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import game.manager.GameMenu;
 import game.pools.ImagePool;
 
-public class HelpMenu implements Screen {
+public class HelpMenu implements Screen,ControllerListener {
 
+	Controllers controller;
 	int currentPage;
 	private GameMenu gameMenu;
 
@@ -40,11 +46,17 @@ public class HelpMenu implements Screen {
 	SpriteBatch batch;
 
 	private TextButton back;
+	private int controllerMoveDirection;
+	private boolean hasPressedEnter;
 
 	public HelpMenu(GameMenu gameMenu) {
+		
 		this.gameMenu = gameMenu;
+		controller = new Controllers();
+		controller.addListener(this);
+		controllerMoveDirection = -1;
 		batch = new SpriteBatch();
-
+		
 		macchinaSprite = new Sprite(ImagePool.macchina);
 		joystickSprite = new Sprite(ImagePool.joystick);
 		selectedSprite = new Sprite(ImagePool.selected);
@@ -92,24 +104,25 @@ public class HelpMenu implements Screen {
 	}
 
 	private void update() {
-		if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER))
+		if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER) || hasPressedEnter)
 			gameMenu.swap(0);
-		if (Gdx.input.isKeyPressed(Input.Keys.LEFT)){
+		if (Gdx.input.isKeyPressed(Input.Keys.LEFT) || controllerMoveDirection == 3){
 			if(currentPage==2)
 				currentPage--;
 			joystickSprite.setTexture(ImagePool.joystickLeft);
 		}
-		else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)){
+		else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) || controllerMoveDirection == 1){
 			if(currentPage==1)
 				currentPage++;
 			joystickSprite.setTexture(ImagePool.joystickRight);
 		}
-		else if (Gdx.input.isKeyPressed(Input.Keys.UP))
+		else if (Gdx.input.isKeyPressed(Input.Keys.UP) || controllerMoveDirection == 0)
 			joystickSprite.setTexture(ImagePool.joystickUp);
-		else if (Gdx.input.isKeyPressed(Input.Keys.DOWN))
+		else if (Gdx.input.isKeyPressed(Input.Keys.DOWN) || controllerMoveDirection == 2)
 			joystickSprite.setTexture(ImagePool.joystickDown);
 		else
 			joystickSprite.setTexture(ImagePool.joystick);
+		controllerMoveDirection = -1;
 	}
 
 	private void draw() {
@@ -180,6 +193,75 @@ public class HelpMenu implements Screen {
 	@Override
 	public void dispose() {
 		stage.dispose();
+	}
+
+	@Override
+	public void connected(Controller controller) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void disconnected(Controller controller) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public boolean buttonDown(Controller controller, int buttonCode) {
+		if( buttonCode == 0 && gameMenu.getScreen().getClass().getName().contains("HelpMenu"))
+				hasPressedEnter = true;
+		return false;
+	}
+
+	@Override
+	public boolean buttonUp(Controller controller, int buttonCode) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean axisMoved(Controller controller, int axisCode, float value) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean povMoved(Controller controller, int povCode, PovDirection value) {
+		boolean inputIsValid = false;
+
+		if (gameMenu.getScreen().getClass().getName().contains("HelpMenu"))
+			inputIsValid = true;
+
+		if (inputIsValid) {
+			if (value == PovDirection.north)
+				controllerMoveDirection = 0;
+			else if (value == PovDirection.east)
+				controllerMoveDirection = 1;
+			else if (value == PovDirection.south)
+				controllerMoveDirection = 2;
+			else if (value == PovDirection.west)
+				controllerMoveDirection = 3;
+		}		
+		return false;
+	}
+
+	@Override
+	public boolean xSliderMoved(Controller controller, int sliderCode, boolean value) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean ySliderMoved(Controller controller, int sliderCode, boolean value) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean accelerometerMoved(Controller controller, int accelerometerCode, Vector3 value) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 }

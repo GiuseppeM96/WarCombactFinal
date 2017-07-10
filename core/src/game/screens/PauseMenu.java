@@ -5,6 +5,10 @@ import java.io.IOException;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.controllers.Controller;
+import com.badlogic.gdx.controllers.ControllerListener;
+import com.badlogic.gdx.controllers.Controllers;
+import com.badlogic.gdx.controllers.PovDirection;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -12,6 +16,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -21,10 +26,12 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import game.manager.GameMenu;
 import game.pools.ImagePool;
 
-public class PauseMenu implements Screen {
+public class PauseMenu implements Screen,ControllerListener {
 
 	private GameMenu gameMenu;
 
+	Controllers controller;
+	
 	int checkPause = 0;
 	private Vector2[][] matrixPosition;
 	private Vector2[][] matrixDimension;
@@ -49,8 +56,17 @@ public class PauseMenu implements Screen {
 
 	SpriteBatch batch;
 
+	private boolean hasPressedEnter;
+
+	private int controllerMoveDirection;
+
 	public PauseMenu(GameMenu gameMenu) {
 		this.gameMenu = gameMenu;
+		
+		controller = new Controllers();
+		controller.addListener(this);
+		controllerMoveDirection = -1;
+		
 		batch = new SpriteBatch();
 
 		macchinaSprite = new Sprite(ImagePool.macchina);
@@ -143,8 +159,9 @@ public class PauseMenu implements Screen {
 	}
 
 	private void update() {
-		if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
+		if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER) || hasPressedEnter) {
 			Gdx.input.setInputProcessor(null);
+			hasPressedEnter=false;
 			switch ((int) itemSelected.x) {
 			case 0:
 				switch ((int) itemSelected.y) {
@@ -181,9 +198,9 @@ public class PauseMenu implements Screen {
 				}
 			}
 		}
-		if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
+		if (Gdx.input.isKeyPressed(Input.Keys.LEFT)  || controllerMoveDirection == 3) {
 			joystickSprite.setTexture(ImagePool.joystickLeft);
-			if (Gdx.input.isKeyJustPressed(Input.Keys.LEFT))
+			if (Gdx.input.isKeyJustPressed(Input.Keys.LEFT)  || controllerMoveDirection == 3)
 				if (itemSelected.y > Math.abs((int)itemSelected.x-1)) {
 					itemSelected.y--;
 					selectedSprite.setPosition(matrixPosition[(int) itemSelected.x][(int) itemSelected.y].x,
@@ -192,9 +209,9 @@ public class PauseMenu implements Screen {
 							matrixDimension[(int) itemSelected.x][(int) itemSelected.y].y);
 				}
 
-		} else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+		} else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)  || controllerMoveDirection == 1) {
 			joystickSprite.setTexture(ImagePool.joystickRight);
-			if (Gdx.input.isKeyJustPressed(Input.Keys.RIGHT))
+			if (Gdx.input.isKeyJustPressed(Input.Keys.RIGHT)  || controllerMoveDirection == 1)
 				if (itemSelected.y <= 1) {
 					itemSelected.y++;
 					selectedSprite.setPosition(matrixPosition[(int) itemSelected.x][(int) itemSelected.y].x,
@@ -202,21 +219,23 @@ public class PauseMenu implements Screen {
 					selectedSprite.setSize(matrixDimension[(int) itemSelected.x][(int) itemSelected.y].x,
 							matrixDimension[(int) itemSelected.x][(int) itemSelected.y].y);
 				}
-		} else if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
+		} else if (Gdx.input.isKeyPressed(Input.Keys.UP)  || controllerMoveDirection == 0) {
 			joystickSprite.setTexture(ImagePool.joystickUp);
-			if (itemSelected.x > 0) {
-				 if(itemSelected.y==0)
-					itemSelected.y++;
-				itemSelected.x--;
-				selectedSprite.setPosition(matrixPosition[(int) itemSelected.x][(int) itemSelected.y].x,
-						matrixPosition[(int) itemSelected.x][(int) itemSelected.y].y);
-				selectedSprite.setSize(matrixDimension[(int) itemSelected.x][(int) itemSelected.y].x,
-						matrixDimension[(int) itemSelected.x][(int) itemSelected.y].y);
+			if (Gdx.input.isKeyJustPressed(Input.Keys.UP)  || controllerMoveDirection == 0){
+				if (itemSelected.x > 0) {
+					 if(itemSelected.y==0)
+						itemSelected.y++;
+					itemSelected.x--;
+					selectedSprite.setPosition(matrixPosition[(int) itemSelected.x][(int) itemSelected.y].x,
+							matrixPosition[(int) itemSelected.x][(int) itemSelected.y].y);
+					selectedSprite.setSize(matrixDimension[(int) itemSelected.x][(int) itemSelected.y].x,
+							matrixDimension[(int) itemSelected.x][(int) itemSelected.y].y);
+				}
 			}
-		} else if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
+		} else if (Gdx.input.isKeyPressed(Input.Keys.DOWN)  || controllerMoveDirection == 2)  {
 			joystickSprite.setTexture(ImagePool.joystickDown);
-			if (Gdx.input.isKeyJustPressed(Input.Keys.DOWN)) {
-				if (itemSelected.x < 1) {
+			if (Gdx.input.isKeyJustPressed(Input.Keys.DOWN)  || controllerMoveDirection == 2) {
+				if (itemSelected.x < 1) { 
 					 if(itemSelected.y==0)
 						itemSelected.y++;
 					itemSelected.x++;
@@ -229,6 +248,7 @@ public class PauseMenu implements Screen {
 			}
 		} else
 			joystickSprite.setTexture(ImagePool.joystick);
+		controllerMoveDirection = -1;
 
 	}
 
@@ -276,6 +296,74 @@ public class PauseMenu implements Screen {
 	public void dispose() {
 		stage.dispose();
 
+	}
+
+	@Override
+	public void connected(Controller controller) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void disconnected(Controller controller) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public boolean buttonDown(Controller controller, int buttonCode) {
+		if (buttonCode == 0 && gameMenu.getScreen().getClass().getName().contains("PauseMenu"))
+			hasPressedEnter = true;
+		return false;
+	}
+
+	@Override
+	public boolean buttonUp(Controller controller, int buttonCode) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean axisMoved(Controller controller, int axisCode, float value) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean povMoved(Controller controller, int povCode, PovDirection value) {
+		boolean inputIsValid = false;
+
+		if (gameMenu.getScreen().getClass().getName().contains("PauseMenu"))
+			inputIsValid = true;
+
+		if (inputIsValid) {
+			if (value == PovDirection.north)
+				controllerMoveDirection = 0;
+			else if (value == PovDirection.east)
+				controllerMoveDirection = 1;
+			else if (value == PovDirection.south)
+				controllerMoveDirection = 2;
+			else if (value == PovDirection.west)
+				controllerMoveDirection = 3;
+		}		return false;
+	}
+
+	@Override
+	public boolean xSliderMoved(Controller controller, int sliderCode, boolean value) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean ySliderMoved(Controller controller, int sliderCode, boolean value) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean accelerometerMoved(Controller controller, int accelerometerCode, Vector3 value) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 }

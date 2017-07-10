@@ -12,11 +12,16 @@ import java.io.PrintWriter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.controllers.Controller;
+import com.badlogic.gdx.controllers.ControllerListener;
+import com.badlogic.gdx.controllers.Controllers;
+import com.badlogic.gdx.controllers.PovDirection;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -26,8 +31,9 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import game.manager.GameMenu;
 import game.pools.ImagePool;
 
-public class ScoreMenu implements Screen {
+public class ScoreMenu implements Screen,ControllerListener {
 	GameMenu gameMenu;
+	Controllers controller;
 	private Sprite macchinaSprite;
 	private Sprite joystickSprite;
 	private Sprite selectedSprite;
@@ -42,9 +48,11 @@ public class ScoreMenu implements Screen {
 	int playerScore;
 	String[] bestPlayer;
 	int[] bestPlayerScore;
+	private boolean hasPressedEnter;
 
 	public ScoreMenu(GameMenu gameMenu) throws IOException {
 
+		hasPressedEnter = false;
 		this.gameMenu = gameMenu;
 		this.playerName = "";
 		this.playerScore = gameMenu.world.score;
@@ -116,6 +124,8 @@ public class ScoreMenu implements Screen {
 			printWriter.println(bestPlayer[i] + ";" + bestPlayerScore[i]);
 		}
 		printWriter.flush();
+		controller = new Controllers();
+		controller.addListener(this);
 	}
 
 	public void updateTop5() {
@@ -157,7 +167,8 @@ public class ScoreMenu implements Screen {
 	}
 
 	private void update() {
-		if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
+		if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER) || hasPressedEnter) {
+			hasPressedEnter = false;
 			Gdx.input.setInputProcessor(null);
 			gameMenu.start=true;
 			gameMenu.swap(0);
@@ -219,5 +230,60 @@ public class ScoreMenu implements Screen {
 	@Override
 	public void dispose() {
 		stage.dispose();
+	}
+
+	@Override
+	public void connected(Controller controller) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void disconnected(Controller controller) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public boolean buttonDown(Controller controller, int buttonCode) {
+		if(buttonCode == 0 && gameMenu.getScreen().getClass().getName().contains("ScoreMenu"))
+				hasPressedEnter = true;
+		return false;
+	}
+
+	@Override
+	public boolean buttonUp(Controller controller, int buttonCode) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean axisMoved(Controller controller, int axisCode, float value) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean povMoved(Controller controller, int povCode, PovDirection value) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean xSliderMoved(Controller controller, int sliderCode, boolean value) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean ySliderMoved(Controller controller, int sliderCode, boolean value) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean accelerometerMoved(Controller controller, int accelerometerCode, Vector3 value) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }

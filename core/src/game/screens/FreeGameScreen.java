@@ -578,24 +578,37 @@ public class FreeGameScreen implements Screen, ActionListener,ControllerListener
 
 	@Override
 	public boolean buttonDown(Controller controller, int buttonCode) {
-		if(buttonCode==2)
-			worldGame.player.ControllerHasChangedWeapon=true;
-		else if(buttonCode==3)
-			worldGame.player.ControllerHasShoted=true;
-		else if(buttonCode == 6)
-			worldGame.player.ControllerHasChangedVelocity=true;
-		else if(buttonCode == 9)
-			gameIsInPause=true;
+		boolean inputIsValid=false;
 		
+		if(gameMenu.getScreen().getClass().getName().contains("FreeGameScreen"))
+			inputIsValid=true;
+		
+		if(inputIsValid){
+			if(buttonCode==2)
+				worldGame.player.ControllerHasChangedWeapon=true;
+			else if(buttonCode==3)
+				worldGame.player.ControllerHasShoted=true;
+			else if(buttonCode == 6)
+				worldGame.player.ControllerHasChangedVelocity=true;
+			else if(buttonCode == 9)
+				gameIsInPause=true;
+		}	
 		return false;
 	}
 
 	@Override
 	public boolean buttonUp(Controller controller, int buttonCode) {
-		if(buttonCode==3)
-			worldGame.player.ControllerHasShoted=false;
-		else if(buttonCode == 6)
-			worldGame.player.ControllerHasChangedVelocity=false;
+		boolean inputIsValid=false;
+		
+		if(gameMenu.getScreen().getClass().getName().contains("FreeGameScreen"))
+			inputIsValid=true;
+		
+		if(inputIsValid){
+			if(buttonCode==3)
+				worldGame.player.ControllerHasShoted=false;
+			else if(buttonCode == 6)
+				worldGame.player.ControllerHasChangedVelocity=false;
+		}
 		return false;
 
 	}
@@ -608,7 +621,8 @@ public class FreeGameScreen implements Screen, ActionListener,ControllerListener
 
 	@Override
 	public boolean povMoved(Controller controller, int povCode, PovDirection value) {
-		povDirection=value;
+		if(gameMenu.getScreen().getClass().getName().contains("FreeGameScreen"))
+				povDirection=value;
 		return false;
 	}
 
