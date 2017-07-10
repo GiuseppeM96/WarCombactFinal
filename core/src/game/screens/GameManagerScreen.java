@@ -1,6 +1,5 @@
 package game.screens;
 
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -9,11 +8,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 import java.util.logging.Level;
-
 import javax.swing.text.Position;
-
 import org.ietf.jgss.GSSManager;
-
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
@@ -84,12 +80,21 @@ public class GameManagerScreen implements Screen,ControllerListener {
 	int introDuration = 200;
 	Controllers controller= new Controllers();
 	static boolean  gameIsInPause=false;
-	 int currentAxis=0;
-	 float valueMov=0;
-	 PovDirection povDirection; 
-	
+	int currentAxis=0;
+	float valueMov=0;
+	PovDirection povDirection; 
+	boolean canDraw;
+	boolean canRemove;
+	/**
+	 * create a screen game 
+	 * @param world indicates the world of this game screen 
+	 * @param game indicates game application
+	 * @param camPosition indicates where camera will be located
+	 */
 	public GameManagerScreen(World world, GameMenu game, Vector2 camPosition) {
 		super();
+		canDraw=true;
+		canRemove=false;
 		intro = true;
 		worldGame = world;
 		gameMenu = game;
@@ -103,7 +108,10 @@ public class GameManagerScreen implements Screen,ControllerListener {
 		controller.addListener(this);
 		updateCam();
 	}
-
+	/**
+	 * Handle input and update world  
+	 * @param dt time interval
+	 */
 	private void update(float dt) {
 		if (!worldGame.player.died) {
 			if (Gdx.input.isKeyPressed(Input.Keys.UP) || povDirection== PovDirection.north) {
@@ -141,7 +149,6 @@ public class GameManagerScreen implements Screen,ControllerListener {
 			if (World.player.shoting) {
 				if (shotAnimationTime > 0.3 && !World.playerShot) {
 					worldGame.playerHasShot();
-					System.out.println(SettingsMenu.isAudioEnable);
 					if (SettingsMenu.isAudioEnable)
 						MusicPool.shotGunSound.play();
 					World.playerShot = true;
@@ -176,11 +183,21 @@ public class GameManagerScreen implements Screen,ControllerListener {
 			}
 		}
 	}
-
+	/**
+	 * Call the shot update function of NetWorld
+	 */
 	private void updateShots() {
+		while(!canRemove){}
+		canDraw=false;
 		worldGame.updateShots();
+		canDraw=true;
+		
 	}
-
+	/**
+	 * Move currentPlayer and check if it collide with other objects
+	 * @param i indicates direction code
+	 * @param dt time interval
+	 */
 	private void moveAndCheckCollision(int i, float dt) {
 		StaticObject currentObject;
 		if (i == 0)
@@ -242,6 +259,11 @@ public class GameManagerScreen implements Screen,ControllerListener {
 			worldGame.movePlayerRight(dt);
 	}
 
+	/**
+	 * check if game level is completed
+	 * @param currentObject object that collide with palyer
+	 * @return
+	 */
 	private boolean levelIsCompeted(StaticObject currentObject) {
 		if (worldGame.levelCompleted && currentObject instanceof Castle
 				&& (worldGame.level == 1 || worldGame.level == 3))
@@ -250,19 +272,10 @@ public class GameManagerScreen implements Screen,ControllerListener {
 			return true;
 		return false;
 	}
-
-	private StaticObject getCheckCollisionObject() {
-		for (StaticObject s : worldGame.enemies) {
-			if (worldGame.player.collide(s))
-				return s;
-		}
-		for (StaticObject s : worldGame.objects) {
-			if (worldGame.player.collide(s))
-				return s;
-		}
-		return null;
-	}
-
+	
+	/**
+	 * Set cam position at player position 
+	 */
 	public void updateCam() {
 		int xPlayer = (int) (worldGame.player.getPosition().x + 23);
 		int yPlayer = (int) (worldGame.player.getPosition().y + 25);
@@ -272,194 +285,206 @@ public class GameManagerScreen implements Screen,ControllerListener {
 			gameCam.position.y = yPlayer;
 		gameCam.update();
 	}
-
+	
+	/**
+	 * Draw all objects in the world 
+	 */
 	private void drawWorld() {
-		ArrayList<StaticObject> objects;
-		objects = worldGame.getListObject();
-		Texture tmp = null;
-		int cont = 0;
-		for (StaticObject s : objects) {
-			boolean trov = false;
-			if (s instanceof Map)
-				if (((Map) s).type == 1)
-					tmp = ImagePool.mapOne;
-				else if (((Map) s).type == 2)
-					tmp = ImagePool.mapTwo;
-				else
-					tmp = ImagePool.mapThree;
-			if (s instanceof AddLifePoints)
-				tmp = ImagePool.addLife;
-			else if (s instanceof AddShotGunShots)
-				tmp = ImagePool.shotGun;
-			else if (s instanceof AddMachineGunShots)
-				tmp = ImagePool.machineGun;
-			else if (s instanceof Bash)
-				tmp = ImagePool.bash;
-			else if (s instanceof BigHut)
-				tmp = ImagePool.bigHut;
-			else if (s instanceof BlackHouse)
-				tmp = ImagePool.casino;
-			else if (s instanceof Castle)
-				tmp = ImagePool.castle;
-			else if (s instanceof ShotPlayer) {
-				if (((ShotPlayer) s).getTarget() >= 0)
-					if (((ShotPlayer) s).getDirection().x == 0) {
-						if (worldGame.level == 3)
-
-							tmp = ImagePool.winterVerticalShot;
-						else
-							tmp = ImagePool.verticalShot;
-					} else {
-						if (worldGame.level == 3)
-							tmp = ImagePool.winterShot;
-						else
-							tmp = ImagePool.shot;
+		if(canDraw){
+			canRemove=false;
+			ArrayList<StaticObject> objects;
+			objects = worldGame.getListObject();
+			Texture tmp = null;
+			int cont = 0;
+			for (StaticObject s : objects) {
+				boolean trov = false;
+				if (s instanceof Map)
+					if (((Map) s).type == 1)
+						tmp = ImagePool.mapOne;
+					else if (((Map) s).type == 2)
+						tmp = ImagePool.mapTwo;
+					else
+						tmp = ImagePool.mapThree;
+				if (s instanceof AddLifePoints)
+					tmp = ImagePool.addLife;
+				else if (s instanceof AddShotGunShots)
+					tmp = ImagePool.shotGun;
+				else if (s instanceof AddMachineGunShots)
+					tmp = ImagePool.machineGun;
+				else if (s instanceof Bash)
+					tmp = ImagePool.bash;
+				else if (s instanceof BigHut)
+					tmp = ImagePool.bigHut;
+				else if (s instanceof BlackHouse)
+					tmp = ImagePool.casino;
+				else if (s instanceof Castle)
+					tmp = ImagePool.castle;
+				else if (s instanceof ShotPlayer) {
+					if (((ShotPlayer) s).getTarget() >= 0)
+						if (((ShotPlayer) s).getDirection().x == 0) {
+							if (worldGame.level == 3)
+	
+								tmp = ImagePool.winterVerticalShot;
+							else
+								tmp = ImagePool.verticalShot;
+						} else {
+							if (worldGame.level == 3)
+								tmp = ImagePool.winterShot;
+							else
+								tmp = ImagePool.shot;
+						}
+					else
+						trov = true;
+				} else if (s instanceof ShotEnemy) {
+					if (((ShotEnemy) s).getTarget() >= 0)
+						if (((ShotEnemy) s).getDirection().x == 0){
+							if (worldGame.level == 3)
+	
+								tmp = ImagePool.winterVerticalShot;
+							else
+								tmp = ImagePool.verticalShot;
+						}
+						else{
+							if (worldGame.level == 3)
+								tmp = ImagePool.winterShot;
+							else
+								tmp = ImagePool.shot;
+						}
+					else
+						trov = true;
+				} else if (s instanceof Letter) {
+					tmp = getLetterImage((Letter) s);
+				} else if (s instanceof Enemy) {
+					try {
+						switch ((int) World.classe.getMethod("getMoveDirection", Vector2.class).invoke(s,
+								World.player.getPosition())) {// (((Enemy)
+																// s).getMoveDirection(worldGame.player.getPosition()))
+																// {
+						case 0:
+							if (((Enemy) s).shoting)
+								worldBatch.draw(
+										ImagePool.shotEnemyAnimationUp.getKeyFrame(((Enemy) s).shotAnimationTime, true),
+										s.getPosition().x, (int) s.getPosition().y);
+							else
+								worldBatch.draw(ImagePool.enemyAnimationUp.getKeyFrame(((Enemy) s).stateEnemyTime, true),
+										s.getPosition().x, (int) s.getPosition().y);
+							break;
+						case 1:
+							if (((Enemy) s).shoting)
+								worldBatch.draw(
+										ImagePool.shotEnemyAnimationRight.getKeyFrame(((Enemy) s).shotAnimationTime, true),
+										s.getPosition().x, (int) s.getPosition().y);
+							else
+								worldBatch.draw(ImagePool.enemyAnimationRight.getKeyFrame(((Enemy) s).stateEnemyTime, true),
+										s.getPosition().x, (int) s.getPosition().y);
+							break;
+						case 2:
+							if (((Enemy) s).shoting)
+								worldBatch.draw(
+										ImagePool.shotEnemyAnimationDown.getKeyFrame(((Enemy) s).shotAnimationTime, true),
+										s.getPosition().x, (int) s.getPosition().y);
+							else
+								worldBatch.draw(ImagePool.enemyAnimationDown.getKeyFrame(((Enemy) s).stateEnemyTime, true),
+										s.getPosition().x, (int) s.getPosition().y);
+							break;
+						case 3:
+							if (((Enemy) s).shoting)
+								worldBatch.draw(
+										ImagePool.shotEnemyAnimationLeft.getKeyFrame(((Enemy) s).shotAnimationTime, true),
+										s.getPosition().x, (int) s.getPosition().y);
+							else
+								worldBatch.draw(ImagePool.enemyAnimationLeft.getKeyFrame(((Enemy) s).stateEnemyTime, true),
+										s.getPosition().x, (int) s.getPosition().y);
+							break;
+						default:
+							break;
+						}
+					} catch (IllegalAccessException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (IllegalArgumentException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (InvocationTargetException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (NoSuchMethodException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (SecurityException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
 					}
-				else
 					trov = true;
-			} else if (s instanceof ShotEnemy) {
-				if (((ShotEnemy) s).getTarget() >= 0)
-					if (((ShotEnemy) s).getDirection().x == 0){
-						if (worldGame.level == 3)
-
-							tmp = ImagePool.winterVerticalShot;
-						else
-							tmp = ImagePool.verticalShot;
-					}
-					else{
-						if (worldGame.level == 3)
-							tmp = ImagePool.winterShot;
-						else
-							tmp = ImagePool.shot;
-					}
-				else
+				} else if (s instanceof Hut)
+					tmp = ImagePool.hut;
+				else if (s instanceof Tree) {
+					tmp = ImagePool.tree;
+					worldBatch.draw(ImagePool.treeAnimation.getKeyFrame(((Tree) s).animationTime, true), s.getPosition().x,
+							(int) s.getPosition().y);
 					trov = true;
-			} else if (s instanceof Letter) {
-				tmp = getLetterImage((Letter) s);
-			} else if (s instanceof Enemy) {
-				try {
-					switch ((int) World.classe.getMethod("getMoveDirection", Vector2.class).invoke(s,
-							World.player.getPosition())) {// (((Enemy)
-															// s).getMoveDirection(worldGame.player.getPosition()))
-															// {
-					case 0:
-						if (((Enemy) s).shoting)
-							worldBatch.draw(
-									ImagePool.shotEnemyAnimationUp.getKeyFrame(((Enemy) s).shotAnimationTime, true),
-									s.getPosition().x, (int) s.getPosition().y);
-						else
-							worldBatch.draw(ImagePool.enemyAnimationUp.getKeyFrame(((Enemy) s).stateEnemyTime, true),
-									s.getPosition().x, (int) s.getPosition().y);
-						break;
-					case 1:
-						if (((Enemy) s).shoting)
-							worldBatch.draw(
-									ImagePool.shotEnemyAnimationRight.getKeyFrame(((Enemy) s).shotAnimationTime, true),
-									s.getPosition().x, (int) s.getPosition().y);
-						else
-							worldBatch.draw(ImagePool.enemyAnimationRight.getKeyFrame(((Enemy) s).stateEnemyTime, true),
-									s.getPosition().x, (int) s.getPosition().y);
-						break;
-					case 2:
-						if (((Enemy) s).shoting)
-							worldBatch.draw(
-									ImagePool.shotEnemyAnimationDown.getKeyFrame(((Enemy) s).shotAnimationTime, true),
-									s.getPosition().x, (int) s.getPosition().y);
-						else
-							worldBatch.draw(ImagePool.enemyAnimationDown.getKeyFrame(((Enemy) s).stateEnemyTime, true),
-									s.getPosition().x, (int) s.getPosition().y);
-						break;
-					case 3:
-						if (((Enemy) s).shoting)
-							worldBatch.draw(
-									ImagePool.shotEnemyAnimationLeft.getKeyFrame(((Enemy) s).shotAnimationTime, true),
-									s.getPosition().x, (int) s.getPosition().y);
-						else
-							worldBatch.draw(ImagePool.enemyAnimationLeft.getKeyFrame(((Enemy) s).stateEnemyTime, true),
-									s.getPosition().x, (int) s.getPosition().y);
-						break;
-					default:
-						break;
+				} else if (s instanceof Character) {
+					boolean shot = ((Character) s).shoting;
+					if (!((Character) s).died)
+						switch (((Character) s).getFrame()) {
+						case 0:
+							if (shot)
+								worldBatch.draw(ImagePool.shotPlayerAnimationUp.getKeyFrame(shotAnimationTime, true),
+										s.getPosition().x, (int) s.getPosition().y);
+							else
+								worldBatch.draw(ImagePool.playerAnimationUp.getKeyFrame(statePlayerTime, true),
+										s.getPosition().x, (int) s.getPosition().y);
+							break;
+						case 1:
+							if (shot)
+								worldBatch.draw(ImagePool.shotPlayerAnimationRight.getKeyFrame(shotAnimationTime, true),
+										s.getPosition().x, (int) s.getPosition().y);
+							else
+								worldBatch.draw(ImagePool.playerAnimationRight.getKeyFrame(statePlayerTime, true),
+										s.getPosition().x, (int) s.getPosition().y);
+							break;
+						case 2:
+							if (shot)
+								worldBatch.draw(ImagePool.shotPlayerAnimationDown.getKeyFrame(shotAnimationTime, true),
+										s.getPosition().x, (int) s.getPosition().y);
+							else
+								worldBatch.draw(ImagePool.playerAnimationDown.getKeyFrame(statePlayerTime, true),
+										s.getPosition().x, (int) s.getPosition().y);
+							break;
+						case 3:
+							if (shot)
+								worldBatch.draw(ImagePool.shotPlayerAnimationLeft.getKeyFrame(shotAnimationTime, true),
+										s.getPosition().x, (int) s.getPosition().y);
+							else
+								worldBatch.draw(ImagePool.playerAnimationLeft.getKeyFrame(statePlayerTime, true),
+										s.getPosition().x, (int) s.getPosition().y);
+							break;
+						default:
+							break;
+						}
+					else {
+						worldBatch.draw(ImagePool.playerAnimationDied.getKeyFrame(diedAnimationTime, true),
+								s.getPosition().x, s.getPosition().y);
+	
 					}
-				} catch (IllegalAccessException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (IllegalArgumentException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (InvocationTargetException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (NoSuchMethodException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (SecurityException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					trov = true;
 				}
-				trov = true;
-			} else if (s instanceof Hut)
-				tmp = ImagePool.hut;
-			else if (s instanceof Tree) {
-				tmp = ImagePool.tree;
-				worldBatch.draw(ImagePool.treeAnimation.getKeyFrame(((Tree) s).animationTime, true), s.getPosition().x,
-						(int) s.getPosition().y);
-				trov = true;
-			} else if (s instanceof Character) {
-				boolean shot = ((Character) s).shoting;
-				if (!((Character) s).died)
-					switch (((Character) s).getFrame()) {
-					case 0:
-						if (shot)
-							worldBatch.draw(ImagePool.shotPlayerAnimationUp.getKeyFrame(shotAnimationTime, true),
-									s.getPosition().x, (int) s.getPosition().y);
-						else
-							worldBatch.draw(ImagePool.playerAnimationUp.getKeyFrame(statePlayerTime, true),
-									s.getPosition().x, (int) s.getPosition().y);
-						break;
-					case 1:
-						if (shot)
-							worldBatch.draw(ImagePool.shotPlayerAnimationRight.getKeyFrame(shotAnimationTime, true),
-									s.getPosition().x, (int) s.getPosition().y);
-						else
-							worldBatch.draw(ImagePool.playerAnimationRight.getKeyFrame(statePlayerTime, true),
-									s.getPosition().x, (int) s.getPosition().y);
-						break;
-					case 2:
-						if (shot)
-							worldBatch.draw(ImagePool.shotPlayerAnimationDown.getKeyFrame(shotAnimationTime, true),
-									s.getPosition().x, (int) s.getPosition().y);
-						else
-							worldBatch.draw(ImagePool.playerAnimationDown.getKeyFrame(statePlayerTime, true),
-									s.getPosition().x, (int) s.getPosition().y);
-						break;
-					case 3:
-						if (shot)
-							worldBatch.draw(ImagePool.shotPlayerAnimationLeft.getKeyFrame(shotAnimationTime, true),
-									s.getPosition().x, (int) s.getPosition().y);
-						else
-							worldBatch.draw(ImagePool.playerAnimationLeft.getKeyFrame(statePlayerTime, true),
-									s.getPosition().x, (int) s.getPosition().y);
-						break;
-					default:
-						break;
-					}
-				else {
-					worldBatch.draw(ImagePool.playerAnimationDied.getKeyFrame(diedAnimationTime, true),
-							s.getPosition().x, s.getPosition().y);
-
+				if (!trov) {
+					if (tmp == ImagePool.mapOne)
+						cont++;
+					worldBatch.draw(tmp, (int) s.getPosition().x, (int) s.getPosition().y);
+	
 				}
-				trov = true;
-			}
-			if (!trov) {
-				if (tmp == ImagePool.mapOne)
-					cont++;
-				worldBatch.draw(tmp, (int) s.getPosition().x, (int) s.getPosition().y);
-
 			}
 		}
+		canRemove=true;
 	}
 
+	/**
+	 * find Texture that stand for parameter s
+	 * @param s 
+	 * @return Texture depending value of s
+	 */
 	private Texture getLetterImage(Letter s) {
 		switch (s.getValue()) {
 		case 'a':
@@ -513,6 +538,10 @@ public class GameManagerScreen implements Screen,ControllerListener {
 
 	}
 
+	
+	/**
+	 * Draws the information about player life, number of munitions and score 
+	 */
 	private void drawInfoBar() {
 		float x = gameCam.position.x;
 		float y = gameCam.position.y;
@@ -541,6 +570,9 @@ public class GameManagerScreen implements Screen,ControllerListener {
 
 	}
 
+	/**
+	 * Draw small map that represents all game map 
+	 */
 	private void drawNavigationMap(int level) {
 		float x = gameCam.position.x;
 		float y = gameCam.position.y;
@@ -586,6 +618,10 @@ public class GameManagerScreen implements Screen,ControllerListener {
 				ImagePool.flag.getHeight() * gameCam.viewportHeight / GameConfig.SCREEN_HEIGHT);
 	}
 
+	/**
+	 * 
+	 * @return Texture that stand for players's current weapon
+	 */
 	Texture getPlayerWeapon() {
 		if (World.player.weaponType.equals("ShotGun"))
 			return ImagePool.shotGun;
@@ -659,6 +695,7 @@ public class GameManagerScreen implements Screen,ControllerListener {
 		
 	}
 
+	
 	@Override
 	public boolean buttonDown(Controller controller, int buttonCode) {
 		if(buttonCode==2)

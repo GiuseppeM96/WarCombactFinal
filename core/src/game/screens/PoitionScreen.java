@@ -56,6 +56,7 @@ public class PoitionScreen implements Screen{
 	OrthographicCamera cam;
 	public PoitionScreen(GameMenu game) {
 		super();
+		gameMenu=game;
 		cam=new OrthographicCamera(640,480);
 		cam.position.x=GameConfig.MAP_SIZE.x/2;
 		cam.position.y=GameConfig.MAP_SIZE.y/2;
@@ -63,7 +64,6 @@ public class PoitionScreen implements Screen{
 		wakingUp=false;
 		end=false;
 		animation=0;
-		gameMenu=game;
 		people=new ArrayList<Character>();
 		huts=new ArrayList<Hut>();
 		bigHuts=new ArrayList<BigHut>();
@@ -82,6 +82,7 @@ public class PoitionScreen implements Screen{
 		player = new Character();
 		player.setPosition(new Vector2(0,30));
 		worldBatch=new SpriteBatch();
+		System.out.println(bigHuts.size()+" "+people.size());
 	}
 	private void initVillage() throws IOException {
 		FileReader reader = new FileReader("src/GameComplete.txt");

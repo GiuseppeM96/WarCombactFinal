@@ -40,6 +40,8 @@ import game.object.Well;
 import game.pools.ConstantField;
 import game.pools.GameConfig;
 import game.pools.ImagePool;
+import game.pools.MusicPool;
+import game.screens.SettingsMenu;
 
 public class NetGameScreen implements Screen,ActionListener{
 
@@ -67,9 +69,9 @@ public class NetGameScreen implements Screen,ActionListener{
 	 * @param gameMenu indicates the game application
 	 */
 	public NetGameScreen(String ip,GameMenu gameMenu) {
+		System.out.println(ip);
 		server_ip=ip;
 		port=12345;
-		PrintWriter out;
 		ClientReciverMessage listen;
 		wait=true;
 		canRemove=false;
@@ -194,7 +196,11 @@ public class NetGameScreen implements Screen,ActionListener{
 	 * Call the shot update function of NetWorld
 	 */
 	private void updateShots() {
+		while(!canRemove){}
+		canDraw=false;
 		worldGame.updateShots();
+		canDraw=true;
+		
 	}
 	
 	/**
@@ -248,6 +254,8 @@ public class NetGameScreen implements Screen,ActionListener{
 		if (currentPlayer.shoting && !currentPlayer.died) {
 			if (currentPlayer.shotAnimationTime > 0.3 && !currentPlayer.shoted) {
 				worldGame.playerHasShot(currentPlayer);
+				if (SettingsMenu.isAudioEnable)
+					MusicPool.shotGunSound.play();
 				currentPlayer.shoted= true;
 				currentPlayer.shotAnimationTime += dt;
 			}
@@ -546,7 +554,7 @@ public class NetGameScreen implements Screen,ActionListener{
 	}
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		out.println(5+";"+gameMenu.userInfo.getName()+";"+(((int)worldGame.score/worldGame.diedTimes)+1)+";"+0+";"+0+";");
+		out.println(5+";"+gameMenu.userInfo.getName()+";"+(((int)worldGame.score/(worldGame.diedTimes+1))+1)+";"+0+";"+0+";");
 		out.flush();
 		//gameMenu.swap(12);
 	}

@@ -176,6 +176,8 @@ public class GameMenu extends Game {
 			break;
 		case 10:
 			if(myServerLunched){
+				if(server == null)
+					System.out.println("server non creato");
 				connection=new ServerThread(server);
 				connection.start();
 			}

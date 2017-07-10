@@ -44,14 +44,14 @@ public class NetWorld {
 	 */
 	public NetWorld(int code) {
 		
-		currentPlayer.code=code;
 		
-		objects=new ArrayList<StaticObject>();
 		currentPlayer = new NetCharacter();
+		otherPlayers=new ArrayList<NetCharacter>();
+		objects=new ArrayList<StaticObject>();
 		spawnPoints=new ArrayList<Well>();
 		shots=new ArrayList<Shot>();
 		newShots= new ArrayList<Shot>();
-		otherPlayers=new ArrayList<NetCharacter>();
+		currentPlayer.code=code;
 		
 		score=0;
 		diedTimes=0;
@@ -298,8 +298,10 @@ public class NetWorld {
 								tmp.visible=false;
 							}
 						}
-						else if(tmp.codeOwner==currentPlayer.code)
+						else if(tmp.codeOwner==currentPlayer.code){
 							score+=10;
+							tmp.visible=false;
+						}
 					}
 					else if(collisionObject != null)
 						tmp.visible=false;
