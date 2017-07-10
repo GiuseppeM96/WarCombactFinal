@@ -46,16 +46,16 @@ public class NetGameScreen implements Screen,ActionListener{
 	SpriteBatch batch;
 	NetWorld worldGame;
 	Socket s;
-	String server_ip="127.0.0.1";
-	int port=12345;
+	String server_ip;
+	int port;
 	PrintWriter out;
 	ClientReciverMessage listen;
-	boolean wait=true;
-	public boolean canRemove=false;
-	public boolean canDraw=true;
+	boolean wait;
+	public boolean canRemove;
+	public boolean canDraw;
 	public OrthographicCamera gameCam;
 	Viewport viewport;
-	float shotAnimationTime=0.f;
+	float shotAnimationTime;
 	private BitmapFont score;
 	GameMenu gameMenu;
 	Timer matchTimer;
@@ -68,6 +68,13 @@ public class NetGameScreen implements Screen,ActionListener{
 	 */
 	public NetGameScreen(String ip,GameMenu gameMenu) {
 		server_ip=ip;
+		port=12345;
+		PrintWriter out;
+		ClientReciverMessage listen;
+		wait=true;
+		canRemove=false;
+		canDraw=true;
+		shotAnimationTime=0.f;
 		matchTimer=new Timer(120000, this);
 		this.gameMenu=gameMenu;
 		try {

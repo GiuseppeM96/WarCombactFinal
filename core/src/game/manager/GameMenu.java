@@ -42,7 +42,7 @@ public class GameMenu extends Game {
 	
 	static public String className;
 	public MyServer server;
-	public boolean startGameNet=false;
+	public boolean startGameNet;
 	public static User userInfo;
 	static HelpMenu helpMenu;
 	static SettingsMenu settingsMenu;
@@ -64,20 +64,27 @@ public class GameMenu extends Game {
 	static StartMultiplayerScreen multiplayerMenu;
 	static SettingMultiplayerScreen settingMultiplayerScreen;
 	static WaitScreen waitScreen;
-	public boolean myServerLunched=false;
 	public World world;
-	public static int currentLevel;
-	public boolean start = true;
-	public String serverAddress="127.0.0.1";
-	public static boolean loadGame;
-	public static boolean free = false;
 	public ArrayList<ScorePlayer> scorePlayers;
-	boolean multiplayer=false;
+	public static boolean loadGame;
+	public static int currentLevel;
+	public boolean myServerLunched;
+	
+	public boolean start;
+	public String serverAddress;
+	public static boolean free;
+	boolean multiplayer;
 	
 	@Override
 	public void create() {
 		currentLevel = 1;
 		loadGame=false;
+		myServerLunched=false;
+		startGameNet=false;
+		start = true;
+		serverAddress="127.0.0.1";
+		free = false;
+		multiplayer=false;
 		userInfo = new User("");
 		potionExplotion = new PoitionScreen(this);
 		chooseAIscreen = new ChooseAIscreen(this);
@@ -97,6 +104,10 @@ public class GameMenu extends Game {
 		setScreen(startMenuScreen);
 	}
 
+	/**
+	 * change screen depending on parameter state
+	 * @param state indicates application's state
+	 */
 	public void swap(int state) {
 		ImagePool.camera.zoom = 1.0f;
 		switch (state) {
@@ -185,6 +196,10 @@ public class GameMenu extends Game {
 		}
 	}
 
+	/**
+	 * set level screen
+	 * @param level indicates game level
+	 */
 	public void changeLevel(int level) {
 		switch (level) {
 		case 1:
@@ -238,6 +253,9 @@ public class GameMenu extends Game {
 
 	}
 
+	/**
+	 * configure new level
+	 */
 	public void levelUp() {
 		world.enemiesOne.stopThread = true;
 		loadGame=false;
@@ -256,6 +274,10 @@ public class GameMenu extends Game {
 			currentLevel++;
 		}
 	}
+	/**
+	 * save world's state in file 
+	 * @throws IOException
+	 */
 	public void save() throws IOException {
 		
 		String path;
@@ -286,6 +308,8 @@ public class GameMenu extends Game {
 			e1.printStackTrace();
 		}
 	}
+	
+	
 	private String codType(String type) {
 		switch(type){
 			
@@ -347,6 +371,10 @@ public class GameMenu extends Game {
 				return null;
 		}
 	}
+	
+	/**
+	 * configure a new match
+	 */
 	public void restartGame() {
 		clearWorld();
 		currentLevel=1;
@@ -357,11 +385,17 @@ public class GameMenu extends Game {
 		gameLevel=new GameManagerScreen(world, this, world.player.getPosition());
 	}
 
+	/**
+	 * set the least screen of history
+	 */
 	public void gameCompleted() {
 		//restartGame();
 		setScreen(potionExplotion);
 	}
 
+	/**
+	 * Load match
+	 */
 	public void loadGame() {
 		
 		clearWorld();
@@ -371,6 +405,11 @@ public class GameMenu extends Game {
 			gameLevel=new GameManagerScreen(world, this, new Vector2(world.player.getPosition()));
 		else freeModGame=new FreeGameScreen(this, world);
 	}
+	
+	/**
+	 * set appropriate intro screen depending on parameter level
+	 * @param level 
+	 */
 	public void intro(int level){
 		introScreen=new IntroScreen(level, this);
 		setScreen(introScreen);

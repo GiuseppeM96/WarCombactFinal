@@ -27,21 +27,39 @@ import game.pools.GameConfig;
 import game.pools.ImagePool;
 
 public class NetWorld {
-	public ArrayList<StaticObject> objects=new ArrayList<StaticObject>();
-	public NetCharacter currentPlayer = new NetCharacter();
-	public ArrayList<Well> spawnPoints=new ArrayList<Well>();
-	public ArrayList<Shot> shots=new ArrayList<Shot>();
-	ArrayList<Shot> newShots= new ArrayList<Shot>();
-	public ArrayList<NetCharacter> otherPlayers=new ArrayList<NetCharacter>();
+	public ArrayList<StaticObject> objects;
+	public NetCharacter currentPlayer;
+	public ArrayList<Well> spawnPoints;
+	public ArrayList<Shot> shots;
+	ArrayList<Shot> newShots;
+	public ArrayList<NetCharacter> otherPlayers;
 	Map gameMap;
-	public static int score=0;
-	public static int diedTimes=0;
-	public static boolean currentPlayerShot=false;
+	public static int score;
+	public static int diedTimes;
+	public static boolean currentPlayerShot;
 
+	/**
+	 * Constructor 
+	 * @param code indicates code of current player
+	 */
 	public NetWorld(int code) {
+		
 		currentPlayer.code=code;
+		
+		objects=new ArrayList<StaticObject>();
+		currentPlayer = new NetCharacter();
+		spawnPoints=new ArrayList<Well>();
+		shots=new ArrayList<Shot>();
+		newShots= new ArrayList<Shot>();
+		otherPlayers=new ArrayList<NetCharacter>();
+		
+		score=0;
+		diedTimes=0;
+		currentPlayerShot=false;
+		
 		initWorld();
 	}
+	
 	public Map getGameMap() {
 		return gameMap;
 	}
@@ -49,6 +67,8 @@ public class NetWorld {
 	public void setGameMap(Map gameMap) {
 		this.gameMap = gameMap;
 	}
+	
+	
 	public void movecurrentPlayerUp(float dt) {
 		currentPlayer.move(0,dt);
 	}
@@ -61,6 +81,10 @@ public class NetWorld {
 	public void movecurrentPlayerLeft(float dt) {
 		currentPlayer.move(3,dt);		
 	}
+	
+	/**
+	 * initialize world reading map from file
+	 */
 	public void initWorld(){
 		
 		currentPlayer.setPosition(new Vector2(currentPlayer.code*100,currentPlayer.code*100));
