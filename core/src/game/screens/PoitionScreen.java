@@ -119,7 +119,6 @@ public class PoitionScreen implements Screen{
 	}
 	private StaticObject createNewObject(String type, String codx, String cody) {
 		StaticObject tmp = getObject(type);
-		if(tmp instanceof Letter)
 		tmp.setPosition(new Vector2(convert(codx), convert(cody)));
 		return tmp;
 	}
