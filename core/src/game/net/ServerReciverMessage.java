@@ -8,12 +8,19 @@ import java.net.Socket;
 
 
 public class ServerReciverMessage extends Thread{
+	
 	Socket socket;
 	BufferedReader in;
 	PrintWriter out;
 	MyServer server;
 	int code;
 	
+	/**
+	 * Create a thread that listen a message from a single client
+	 * @param s indicates socket where message travel
+	 * @param serv server that will send received message to other client
+	 * @param i
+	 */
 	public ServerReciverMessage(Socket s,MyServer serv,int i) {
 		socket=s;
 		server=serv;

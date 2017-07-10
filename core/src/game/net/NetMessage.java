@@ -8,6 +8,10 @@ public class NetMessage {
 	public int action;
 	public String name;
 	
+	/**
+	 * decodes a net message and save its content 
+	 * @param mess Message that will be decoded
+	 */
 	public NetMessage(String mess) {
 		
 		String sAction="",sCode="",sX="",sY="",sDir="";
@@ -47,6 +51,12 @@ public class NetMessage {
 			else y=convert(sY);
 		}
 	}
+	
+	/**
+	 * Convert string to in
+	 * @param sCode
+	 * @return
+	 */
 	private int convert(String sCode) {
 		char[] tmp =sCode.toCharArray();
 		int result=0;
@@ -56,6 +66,11 @@ public class NetMessage {
 		}
 		return result;
 	}
+	/**
+	 * Convert string to float
+	 * @param sCode
+	 * @return
+	 */
 	private float convertToFloat(String sCode) {
 		char[] tmp =sCode.toCharArray();
 		float result=0;

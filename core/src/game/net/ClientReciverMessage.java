@@ -17,12 +17,21 @@ public class ClientReciverMessage extends Thread {
 	BufferedReader in;
 	NetGameScreen c;
 	int i=0;
-	boolean otherPlayerShot=false;
-	boolean stopThread=false;
-	boolean canClose=false;
+	boolean otherPlayerShot;
+	boolean stopThread;
+	boolean canClose;
 
+	/**
+	 * Create a Thread that listen message from server
+	 * @param s socket where server send message
+	 * @param cl Game Screen where we apply changing 
+	 */
 	public ClientReciverMessage(Socket s,NetGameScreen cl) {
 		socket=s;
+		otherPlayerShot=false;
+		stopThread=false;
+		canClose=false;
+
 		c=cl;
 		try {
 			in=new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -152,7 +161,11 @@ public class ClientReciverMessage extends Thread {
 		}
 		
 	}
-
+/**
+ * Convert a String to int
+ * @param rcv String that we want to convert
+ * @return string converted
+ */
 	private int convert(String rcv) {
 		char[] tmp =rcv.toCharArray();
 		int result=0;

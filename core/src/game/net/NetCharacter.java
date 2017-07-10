@@ -14,21 +14,36 @@ import game.pools.ImagePool;
 public class NetCharacter extends DynamicObject {
 	
 	public String weaponType;
-	Weapon currentWeapon=new Weapon();
-	public int lifePoints=1000;
-	public int machineGunShots=100;
-	public int shotGunShots=60;
-	public boolean shoting=false;
-	public boolean died=false;
-	public boolean shoted=false;
-	public int code=-1;
-	public float shotAnimationTime=0.f;
-	public float stateAnimationTime=0.f;
-	public float diedAnimationTime=0.f;
-	public boolean moving=false;
+	Weapon currentWeapon;
+	public int lifePoints;
+	public int machineGunShots;
+	public int shotGunShots;
+	public boolean shoting;
+	public boolean died;
+	public boolean shoted;
+	public int code;
+	public float shotAnimationTime;
+	public float stateAnimationTime;
+	public float diedAnimationTime;
+	public boolean moving;
 	
+	/**
+	 * Create a new net player
+	 */
 	public NetCharacter() {
 		super();
+		currentWeapon=new Weapon();
+		lifePoints=1000;
+		machineGunShots=100;
+		shotGunShots=60;
+		died=false;
+		shoted=false;
+		code=-1;
+		shotAnimationTime=0.f;
+		stateAnimationTime=0.f;
+		diedAnimationTime=0.f;
+		moving=false;
+		
 		shoting=false;
 		weaponType="ShotGun";
 		setVelocity(ConstantField.PLAYER_STD_VELOCITY);
@@ -61,6 +76,10 @@ public class NetCharacter extends DynamicObject {
 		lifePoints+=AddLifePoints.addPoints;
 	}
 
+	/**
+	 * increments number of shot depending on weapon type parameter
+	 * @param type indicates the type of weapon that would to increments shots
+	 */
 	public void addShots(String type) {
 		if(type.equals("MachineGun")){
 			if(ConstantField.MAX_NUM_SHOT_MACHINEGUN>=machineGunShots+AddMachineGunShots.shots)
@@ -74,6 +93,10 @@ public class NetCharacter extends DynamicObject {
 		
 	}
 
+	/**
+	 * set new speed at player
+	 * @param newSpeed indicate the new values of velocity that we want set at player
+	 */
 	public void changeSpeed(int newSpeed) {
 		float frameDuration;
 		if(getVelocity() > newSpeed)
@@ -95,7 +118,10 @@ public class NetCharacter extends DynamicObject {
 				break;
 		}
 	}
-
+	
+	/**
+	 * set other type of weapon
+	 */
 	public void changeWeapon() {
 		if(weaponType.equals("ShotGun")){
 			weaponType="MachineGun";
@@ -107,18 +133,26 @@ public class NetCharacter extends DynamicObject {
 		}
 		
 	}
+	
 	@Override
 	public String getType() {
 		return "Player";
 	}
 
+	/**
+	 * check if player has not shots in the current weapon
+	 * @return False if there are other shots True in the other case
+	 */
 	public boolean hasNotShots() {
 		if(weaponType.equals("ShotGun")){
 			return shotGunShots<=0;
 		}
 		return machineGunShots<=0;
 	}
-
+	
+	/**
+	 * decrement number of remaining shot when player shot
+	 */
 	public void updateNumShots() {
 		if(weaponType.equals("ShotGun")){
 			shotGunShots-=3;
@@ -126,12 +160,17 @@ public class NetCharacter extends DynamicObject {
 		else machineGunShots-=5;
 	}
 
+	
 	public int getNumTotShot() {
 		if(weaponType.equals("ShotGun"))
 			return ConstantField.MAX_NUM_SHOT_SHOTGUN;
 		return ConstantField.MAX_NUM_SHOT_MACHINEGUN;
 	}
 
+	/**
+	 * 
+	 * @return number of remaining shots 
+	 */
 	public int getNumShot() {
 		if(weaponType.equals("ShotGun"))
 			return shotGunShots;

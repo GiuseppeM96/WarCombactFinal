@@ -12,7 +12,7 @@ public class MyServer {
 	
 	ArrayList<ServerReciverMessage> connected;
 	ServerSocket ss;
-	int port=12345;
+	int port;
 	int numPlayer;
 	/**
 	 * Constructor with one parameter
@@ -20,7 +20,7 @@ public class MyServer {
 	 * 
 	 */
 	public MyServer(int numPlayer) {
-		
+		port=12345;
 		try {
 			this.numPlayer=numPlayer;
 			ss=new ServerSocket(port);
