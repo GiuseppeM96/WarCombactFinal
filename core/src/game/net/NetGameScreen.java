@@ -309,10 +309,8 @@ public class NetGameScreen implements Screen,ActionListener,ControllerListener{
 	 * Communicate to the server that we have shot 
 	 */
 	private void sendShots() {
-
 		out.println(2+";"+worldGame.currentPlayer.code+";"+worldGame.currentPlayer.getPosition().x+";"+worldGame.currentPlayer.getPosition().y+";"+0+";");
 		out.flush();
-		
 	}
 	
 	/**
@@ -336,20 +334,27 @@ public class NetGameScreen implements Screen,ActionListener,ControllerListener{
 			if(SettingsMenu.isAudioEnable)
 				MusicPool.addLifePoints.play();
 			out.println(1+";"+0+";"+(int)collidedObject.getPosition().x+";"+(int)collidedObject.getPosition().y+";"+0+";");
+			out.flush();
+			worldGame.objects.remove(collidedObject);
 		}
 		else if(collidedObject instanceof AddShotGunShots){
 			if(SettingsMenu.isAudioEnable)
 				MusicPool.addShotSound.play();
 			out.println(1+";"+1+";"+(int)collidedObject.getPosition().x+";"+(int)collidedObject.getPosition().y+";"+0+";");
+			out.flush();
+			worldGame.objects.remove(collidedObject);
 		}
 		else if(collidedObject instanceof AddMachineGunShots){
 			if(SettingsMenu.isAudioEnable)
 				MusicPool.addShotSound.play();
 			out.println(1+";"+2+";"+(int)collidedObject.getPosition().x+";"+(int)collidedObject.getPosition().y+";"+0+";");
+			out.flush();
+			worldGame.objects.remove(collidedObject);
 		}
 		else if(collidedObject instanceof Shot){
 			if(((Shot)collidedObject).codeOwner != worldGame.currentPlayer.code)
 				worldGame.currentPlayer.lifePoints-=10;
+			((Shot) collidedObject).visible=false;
 		}
 		else{
 			worldGame.currentPlayer.move((dir+2)%4, dt);
