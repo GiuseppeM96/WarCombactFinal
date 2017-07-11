@@ -54,6 +54,11 @@ public class PoitionScreen implements Screen{
 	boolean end;
 	int animation;
 	OrthographicCamera cam;
+	
+	/**
+	 * Create final screen of story game
+	 * @param game indicates game application
+	 */
 	public PoitionScreen(GameMenu game) {
 		super();
 		gameMenu=game;
@@ -84,6 +89,11 @@ public class PoitionScreen implements Screen{
 		worldBatch=new SpriteBatch();
 		System.out.println(bigHuts.size()+" "+people.size());
 	}
+	
+	/**
+	 * Initializes village from file
+	 * @throws IOException
+	 */
 	private void initVillage() throws IOException {
 		FileReader reader = new FileReader("src/GameComplete.txt");
 		BufferedReader buffer = new BufferedReader(reader);
@@ -117,11 +127,25 @@ public class PoitionScreen implements Screen{
 		}
 		buffer.close();
 	}
+	
+	/**
+	 * Create a new instance of class type located in position (codx,cody)
+	 * @param type indicates type of object that we want
+	 * @param codx indicates x position of the new object
+	 * @param cody indicates y position of the new object
+	 * @return StaticObject
+	 */
 	private StaticObject createNewObject(String type, String codx, String cody) {
 		StaticObject tmp = getObject(type);
 		tmp.setPosition(new Vector2(convert(codx), convert(cody)));
 		return tmp;
 	}
+	
+	/**
+	 * convert string to int
+	 * @param codx
+	 * @return
+	 */
 	private float convert(String codx) {
 		char[] tmp =codx.toCharArray();
 		int result=0;
@@ -131,6 +155,12 @@ public class PoitionScreen implements Screen{
 		}
 		return result;
 	}
+	
+	/**
+	 * decodes the code of object that we want
+	 * @param type code of object
+	 * @return StaticObject
+	 */
 	private StaticObject getObject(String type) {
 		switch(type){
 		case "1":
@@ -200,6 +230,10 @@ public class PoitionScreen implements Screen{
 		worldBatch.end();
 	}
 
+	/**
+	 * update all world in a single time interval
+	 * @param delta indicates time interval
+	 */
 	private void update(float delta) {
 		if(!collided){
 			if(potion.getPosition().y<GameConfig.MAP_SIZE.y/2){
@@ -212,6 +246,10 @@ public class PoitionScreen implements Screen{
 		else 
 			statePlayerTime+=delta;
 	}
+	
+	/**
+	 * draws the world
+	 */
 	private void drawWorld() {
 		drawVillage();
 		if (animation <= 1000) {
@@ -241,6 +279,10 @@ public class PoitionScreen implements Screen{
 			gameMenu.swap(4);
 	}
 	
+	
+	/**
+	 * draw all object in the world
+	 */
 	private void drawVillage() {
 		worldBatch.draw(ImagePool.mapTwo, 0, 0);
 		for(Character c:people){

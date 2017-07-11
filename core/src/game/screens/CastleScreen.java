@@ -34,6 +34,10 @@ public class CastleScreen implements Screen, ControllerListener {
 	int dialogue;
 	public int level;
 
+	/**
+	 * Create a screen where player go to the King depending on level 
+	 * @param game
+	 */
 	public CastleScreen(GameMenu game, int level) {
 		super();
 		hasPressedEnter = false;
@@ -69,6 +73,10 @@ public class CastleScreen implements Screen, ControllerListener {
 		worldBatch.end();
 	}
 
+	/**
+	 * Makes the scene evolve
+	 * @param delta time interval
+	 */
 	private void update(float delta) {
 		if (!collided) {
 			if (player.collide(king)) {
@@ -101,6 +109,9 @@ public class CastleScreen implements Screen, ControllerListener {
 
 	}
 
+	/**
+	 * Draw the scene
+	 */
 	private void drawWorld() {
 		if (!collided) {
 			worldBatch.draw(ImagePool.insideCastle, 0, 0);

@@ -218,8 +218,6 @@ public class GameManagerScreen implements Screen,ControllerListener {
 		}
 		else if (currentObject instanceof Letter) {
 			worldGame.found++;
-			if (worldGame.found >= 0)// worldGame.mission.length())
-				worldGame.levelCompleted = true;
 			worldGame.objects.remove(currentObject);
 		}
 
@@ -257,6 +255,8 @@ public class GameManagerScreen implements Screen,ControllerListener {
 			worldGame.movePlayerUp(dt);
 		else if (i == 3)
 			worldGame.movePlayerRight(dt);
+		if (worldGame.found >= 0)// worldGame.mission.length())
+			worldGame.levelCompleted = true;
 	}
 
 	/**

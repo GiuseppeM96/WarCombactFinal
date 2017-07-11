@@ -139,8 +139,10 @@ public class NetWorld {
 		}
 		buffer.close();
 	}
+	
+	
 	/**
-	 * Creates an objects that have this code type and set it position
+	 * Creates an objects that have this code type and set its position
 	 * @param codtype Object code type 
 	 * @param codx code of x position
 	 * @param cody code of y position
@@ -151,6 +153,8 @@ public class NetWorld {
 		tmp.setPosition(new Vector2(convert(codx), convert(cody)));
 		return tmp;
 	}
+	
+	
 	/**
 	 * Convert a string to int 
 	 * @param cod string who we wants convert
@@ -165,6 +169,8 @@ public class NetWorld {
 		}
 		return result;
 	}
+	
+	
 	/**
 	 * 
 	 * @param codType code of the object that we need 

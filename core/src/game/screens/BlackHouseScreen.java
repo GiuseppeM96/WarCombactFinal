@@ -29,6 +29,10 @@ public class BlackHouseScreen implements Screen, ControllerListener {
 	public int level;
 	boolean hasPressedEnter = false;
 
+	/**
+	 * Create a screen where player go to the magician to take wake-up position 
+	 * @param game
+	 */
 	public BlackHouseScreen(GameMenu game) {
 		super();
 		controller = new Controllers();
@@ -61,6 +65,10 @@ public class BlackHouseScreen implements Screen, ControllerListener {
 		worldBatch.end();
 	}
 
+	/**
+	 * Makes the scene evolve
+	 * @param delta time interval
+	 */
 	private void update(float delta) {
 		if (!collided) {
 			if (player.collide(magician)) {
@@ -88,6 +96,9 @@ public class BlackHouseScreen implements Screen, ControllerListener {
 
 	}
 
+	/**
+	 * Draw the scene
+	 */
 	private void drawWorld() {
 		worldBatch.draw(ImagePool.insideBlackHouse, 0, 0);
 		worldBatch.draw(ImagePool.magician, magician.getPosition().x, magician.getPosition().y);

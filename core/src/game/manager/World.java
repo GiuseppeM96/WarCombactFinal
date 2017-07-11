@@ -39,6 +39,7 @@ import game.threads.EnemyThread;
 import game.personalAI.*;
 
 public class World {
+	
 	static public Class<? extends Enemy> classe;
 	public String mission;
 	public int found;
@@ -59,6 +60,12 @@ public class World {
 	public static boolean playerShot = false;
 	public static boolean enemyAdded = false;
 
+	/**
+	 * Create a new world 
+	 * @param i indicates level world
+	 * @param playerPosition indicates where we want player located
+	 * @param className class that contain the AI that we want
+	 */
 	public World(int i, Vector2 playerPosition, String className) {
 
 		// consentire all'user di selezionare l'intelligenza, poi dopo fare il
@@ -112,6 +119,10 @@ public class World {
 		enemiesOne = new EnemyThread(player.getPosition());
 	}
 
+	/**
+	 * Check if the class loaded is a class that extends enemy
+	 * @return boolean
+	 */
 	private boolean checkThatObjectIsAnEnemy() {
 		if (classe.isInterface())
 			return false;
@@ -135,6 +146,7 @@ public class World {
 		this.gameMap = gameMap;
 	}
 
+	
 	public void movePlayerUp(float dt) {
 		player.move(0, dt);
 	}
@@ -151,10 +163,19 @@ public class World {
 		player.move(3, dt);
 	}
 
+	/**
+	 * initialize world reading map from file
+	 */
 	public void initWorld(Vector2 playerPosition) {
 
 		player.setPosition(playerPosition);
 		File worldFile = new File(getLevelFile(level));
+		if(!worldFile.exists()){
+			GameMenu.loadGame=false;
+			if(GameMenu.free)
+				worldFile= new File("src/FreeLevel.txt");
+			else worldFile= new File("src/LevelOne.txt");
+		}
 		try {
 			loadObjectFromFile(worldFile);
 		} catch (IOException e) {
@@ -162,7 +183,12 @@ public class World {
 			e.printStackTrace();
 		}
 	}
-
+	
+	/**
+	 * Read file and populate world
+	 * @param fileMap file that contains the information of world's object
+	 * @throws IOException
+	 */
 	private void loadObjectFromFile(File fileMap) throws IOException {
 		FileReader reader =new FileReader(fileMap);
 		BufferedReader buffer = new BufferedReader(reader);
@@ -222,13 +248,25 @@ public class World {
 		}
 		buffer.close();
 	}
-
+	
+	
+	/**
+	 * Creates an objects that have this code type and set its position
+	 * @param codtype Object code type 
+	 * @param codx code of x position
+	 * @param cody code of y position
+	 * @return A new instance of the class with that code located in position codx,cody 
+	 */
 	private StaticObject createNewObject(String codtype, String codx, String cody) {
 		StaticObject tmp = getObject(codtype);
 		tmp.setPosition(new Vector2(convert(codx), convert(cody)));
 		return tmp;
 	}
-
+	/**
+	 * convert string to int
+	 * @param cod string that will be converted
+	 * @return int 
+	 */
 	private int convert(String cod) {
 		char[] tmp = cod.toCharArray();
 		int result = 0;
@@ -239,6 +277,11 @@ public class World {
 		return result;
 	}
 
+	/**
+	 * 
+	 * @param codType code of the object that we need 
+	 * @return A new instance of the class that have that code
+	 */
 	private StaticObject getObject(String codType) {
 
 		switch (codType) {
@@ -307,6 +350,11 @@ public class World {
 		}
 	}
 
+	/**
+	 * 
+	 * @param level indicates level that we want load
+	 * @return Path of the file map depending on level
+	 */
 	public String getLevelFile(int level) {
 		if (!GameMenu.loadGame) {
 			switch (level) {
@@ -330,6 +378,10 @@ public class World {
 		}
 	}
 
+	/**
+	 * 
+	 * @return A list that contains all object in the world
+	 */
 	public ArrayList<StaticObject> getListObject() {
 		ArrayList<StaticObject> allObjects = new ArrayList<StaticObject>();
 		allObjects.add(gameMap);
@@ -343,6 +395,11 @@ public class World {
 		return allObjects;
 	}
 
+	/**
+	 * check if the parameter o collide with each other object in the world
+	 * @param o StaticObject who we wants know if it collides 
+	 * @return StaticObject that collied with o
+	 */
 	public static StaticObject checkCollisionObject(StaticObject o) {
 		ArrayList<StaticObject> tmpObjects = new ArrayList<StaticObject>(objects);
 		int i = 0;
@@ -383,6 +440,10 @@ public class World {
 		return null;
 	}
 
+	/**
+	 * Add new shot of parameter currentPlayer
+	 * @param currentPlayer NetCharacter that have shot
+	 */
 	public void playerHasShot() {
 		ArrayList<ShotPlayer> newShots = new ArrayList<ShotPlayer>();
 		if (!player.hasNotShots()) {
@@ -397,10 +458,18 @@ public class World {
 		}
 	}
 
+	/**
+	 * kills enemy
+	 * @param collisionObject
+	 * @param tmp
+	 */
 	public void damageEnemy(StaticObject collisionObject, ShotPlayer tmp) {
 		((Enemy) collisionObject).alive = false;
 	}
 
+	/**
+	 * evolves shots and check their collision
+	 */
 	public void updateShots() {
 		ArrayList<ShotPlayer> shotPlayerDied = new ArrayList<ShotPlayer>();
 		ArrayList<ShotEnemy> shotEnemyDied = new ArrayList<ShotEnemy>();
@@ -449,26 +518,32 @@ public class World {
 		shotsEnemy.removeAll(shotEnemyDied);
 	}
 
-	private void damageCharacter() {
-		// TODO Auto-generated method stub
-
-	}
-
+	
 	public void stopEnemy() {
 
 		enemiesOne.stop();
 	}
 
+	/**
+	 * Create new thread to restart enemy
+	 */
 	public void resumeEnemy() {
 		enemiesOne = new EnemyThread(player.getPosition());
 	}
 
+	/**
+	 * check if player is alive
+	 * @return
+	 */
 	public boolean playerIsAlive() {
 		if (player.lifePoints <= 0)
 			return false;
 		return true;
 	}
 
+	/**
+	 * empties all list of object in the world and stop thread 
+	 */
 	public synchronized void clear(){
 		score=0;
 		enemiesOne.stopThread = true;
@@ -479,6 +554,9 @@ public class World {
 		shotsPlayer.clear();
 	}
 
+	/**
+	 * function that create new enemy and add to the enemy list
+	 */
 	public void generateEnemy() {
 		Enemy e = new Enemy();
 		Vector2 position = new Vector2(well.getPosition());
