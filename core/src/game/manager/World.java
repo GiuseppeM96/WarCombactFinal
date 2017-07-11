@@ -172,12 +172,6 @@ public class World {
 
 		player.setPosition(playerPosition);
 		File worldFile = new File(getLevelFile(level));
-		if(!worldFile.exists()){
-			GameMenu.loadGame=false;
-			if(GameMenu.free)
-				worldFile= new File("src/FreeLevel.txt");
-			else worldFile= new File("src/LevelOne.txt");
-		}
 		try {
 			loadObjectFromFile(worldFile);
 		} catch (IOException e) {
@@ -560,6 +554,7 @@ public class World {
 		shotsPlayer.clear();
 	}
 
+	
 	/**
 	 * function that create new enemy and add to the enemy list
 	 */

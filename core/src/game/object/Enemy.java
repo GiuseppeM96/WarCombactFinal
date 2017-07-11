@@ -116,7 +116,9 @@ public class Enemy extends DynamicObject {
 						cont = 0;
 						addSteps(convertDir(returnVal),cont);
 					} else {
-						StepDirection c = lastSteps[cont];
+						StepDirection c=StepDirection.UP;
+						if(cont>=0 && cont<=numSteps)
+							c = lastSteps[cont];
 						if(c != StepDirection.ERR)
 							returnVal = (convertStepDirection(c) + 2) % 4;
 						cont--;
