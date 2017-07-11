@@ -1,5 +1,7 @@
 package game.screens;
 
+import java.io.File;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
@@ -41,6 +43,7 @@ public class GameModMenu implements Screen, ControllerListener {
 
 	int animation;
 	boolean gameIsStarting;
+	boolean wrongName;
 	private TextButton storyMode;
 	private TextButton freeMode;
 	private TextButton back; // back lo hanno tutti
@@ -53,6 +56,7 @@ public class GameModMenu implements Screen, ControllerListener {
 	private Vector2[][] matrixPosition;// static ?
 	private Vector2[][] matrixDimension;// static ?
 	private Vector2 itemSelected;
+	String lastNameInsert;
 
 	public Stage stage;
 	Viewport viewport = new ExtendViewport(500, 500, ImagePool.camera);
@@ -68,7 +72,9 @@ public class GameModMenu implements Screen, ControllerListener {
 		controller.addListener(this);
 		hasPressedEnter = false;
 		gameIsStarting = false;
+		wrongName=false;
 		animation = 0;
+		lastNameInsert="";
 		font = new BitmapFont();
 		macchinaSprite = new Sprite(ImagePool.macchina);
 		joystickSprite = new Sprite(ImagePool.joystick);
@@ -161,6 +167,8 @@ public class GameModMenu implements Screen, ControllerListener {
 		font.setColor(Color.WHITE);
 
 		font.draw(batch, "I N S E R T  N A M E :", 230, 341);
+		if(wrongName && name.getText().equals(lastNameInsert))
+			font.draw(batch, "I N V A L I D  N A M E", 230, 241);
 
 	}
 
@@ -194,11 +202,39 @@ public class GameModMenu implements Screen, ControllerListener {
 		}
 		if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER) || hasPressedEnter) {
 			hasPressedEnter = false;
-			Gdx.input.setInputProcessor(null);
 			switch ((int) itemSelected.x) {
 			case 0:
-				gameIsStarting = true;
-				gameMenu.userInfo.setName(name.getText());
+				if(GameMenu.loadGame)
+					if(itemSelected.y == 0){
+						File f=new File("src/Story/"+name.getText()+".txt");
+						if(f.exists()){
+							Gdx.input.setInputProcessor(null);
+							gameIsStarting = true;
+							wrongName=false;
+							gameMenu.userInfo.setName(name.getText());
+						}
+						else{
+							wrongName=true;
+							lastNameInsert=name.getText();
+						}
+						
+					}
+					else{
+						File f=new File("src/Free/"+name.getText()+".txt");
+						if(f.exists()){
+							Gdx.input.setInputProcessor(null);
+							gameIsStarting = true;
+							wrongName=false;
+							gameMenu.userInfo.setName(name.getText());
+						}
+						else wrongName=true;
+					
+					}
+				else{
+					Gdx.input.setInputProcessor(null);
+					gameIsStarting = true;
+					gameMenu.userInfo.setName(name.getText());
+				}
 				break;
 			case 1:
 				GameMenu.loadGame = false;

@@ -57,11 +57,14 @@ public class PauseMenu implements Screen,ControllerListener {
 	SpriteBatch batch;
 
 	private boolean hasPressedEnter;
+	boolean matchSaved;
 
 	private int controllerMoveDirection;
 
 	public PauseMenu(GameMenu gameMenu) {
 		this.gameMenu = gameMenu;
+		
+		matchSaved=false;
 		
 		controller = new Controllers();
 		controller.addListener(this);
@@ -168,10 +171,12 @@ public class PauseMenu implements Screen,ControllerListener {
 				case 1:
 					gameMenu.world.resumeEnemy();
 					gameMenu.swap(5);
+					matchSaved=false;
 					break;
 				case 2:
 					gameMenu.start = true;
 					gameMenu.loadGame=false;
+					matchSaved=false;
 					gameMenu.swap(0);
 				default:
 					break;
@@ -187,6 +192,7 @@ public class PauseMenu implements Screen,ControllerListener {
 					break;
 				case 0:
 					try {
+						matchSaved=true;
 						gameMenu.save();
 					} catch (IOException e) {
 						// TODO Auto-generated catch block
@@ -265,7 +271,8 @@ public class PauseMenu implements Screen,ControllerListener {
 		checkPause++;
 		if (checkPause == 100)
 			checkPause = 0;
-
+		if(matchSaved)
+			ImagePool.font.draw(batch, "M A T C H  S A V E D ! !", 270, 230);
 	}
 
 	@Override
