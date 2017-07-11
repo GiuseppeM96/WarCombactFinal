@@ -560,6 +560,7 @@ public class World {
 		shotsPlayer.clear();
 	}
 
+	
 	/**
 	 * function that create new enemy and add to the enemy list
 	 */

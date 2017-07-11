@@ -136,6 +136,7 @@ public class FreeGameScreen implements Screen, ActionListener,ControllerListener
 				gameMenu.start = false;
 				gameIsInPause=false;
 				timer.stop();
+				timerIncreaseDifficult.stop();
 				gameMenu.swap(0);
 			}
 			if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE) || worldGame.player.controllerHasShoted) {
