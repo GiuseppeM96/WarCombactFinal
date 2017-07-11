@@ -281,7 +281,6 @@ public class StartMultiplayerScreen implements Screen,ControllerListener{
 
 	@Override
 	public boolean buttonDown(Controller controller, int buttonCode) {
-		System.out.println(buttonCode);
 
 		if(buttonCode == 0 && gameMenu.getScreen().getClass().getName().contains("StartMultiplayerScreen"))
 		{

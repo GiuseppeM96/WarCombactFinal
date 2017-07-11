@@ -295,7 +295,7 @@ public class GameMenu extends Game {
 			tmp = new FileWriter(fileMap);
 			BufferedWriter buffer=new BufferedWriter(tmp);
 			PrintWriter printout=new PrintWriter(buffer);
-			printout.println(world.className);
+			printout.println(className);
 			int mapx=(int)world.gameMap.getPosition().x;
 			int mapy=(int)world.gameMap.getPosition().y;
 			ArrayList<StaticObject> objects=world.getListObject();
@@ -401,6 +401,7 @@ public class GameMenu extends Game {
 	public void loadGame() {
 		
 		clearWorld();
+		
 		world=new World(1,new Vector2(50, 50),className);
 		resetMatch();
 		if(!free)
