@@ -184,7 +184,7 @@ public class GameManagerScreen implements Screen,ControllerListener {
 		}
 	}
 	/**
-	 * Call the shot update function of NetWorld
+	 * Call the shot update function of World
 	 */
 	private void updateShots() {
 		while(!canRemove){}

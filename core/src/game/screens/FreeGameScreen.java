@@ -86,6 +86,11 @@ public class FreeGameScreen implements Screen, ActionListener,ControllerListener
 	private PovDirection povDirection;
 	static public boolean draw ;
 
+	/**
+	 * Create a screen for free mode game
+	 * @param game Game application
+	 * @param world Game Map
+	 */
 	public FreeGameScreen(GameMenu game, World world) {
 		super();
 		controller = new Controllers();
@@ -110,6 +115,10 @@ public class FreeGameScreen implements Screen, ActionListener,ControllerListener
 		updateCam();
 	}
 
+	/**
+	 * Handle input and update world  
+	 * @param dt time interval
+	 */
 	private void update(float dt) {
 		if (!worldGame.player.died) {
 			if (Gdx.input.isKeyPressed(Input.Keys.UP) || povDirection== PovDirection.north) {
@@ -180,10 +189,18 @@ public class FreeGameScreen implements Screen, ActionListener,ControllerListener
 		}
 	}
 
+	/**
+	 * Call the shot update function of World
+	 */
 	private void updateShots() {
 		worldGame.updateShots();
 	}
 
+	/**
+	 * Move currentPlayer and check if it collide with other objects
+	 * @param i indicates direction code
+	 * @param dt time interval
+	 */
 	private void moveAndCheckCollision(int i, float dt) {
 		StaticObject currentObject;
 		if (i == 0)
@@ -233,22 +250,9 @@ public class FreeGameScreen implements Screen, ActionListener,ControllerListener
 			worldGame.movePlayerRight(dt);
 	}
 
-	private boolean levelIsCompeted() {
-		return !worldGame.playerIsAlive();
-	}
-
-	private StaticObject getCheckCollisionObject() {
-		for (StaticObject s : worldGame.enemies) {
-			if (worldGame.player.collide(s))
-				return s;
-		}
-		for (StaticObject s : worldGame.objects) {
-			if (worldGame.player.collide(s))
-				return s;
-		}
-		return null;
-	}
-
+	/**
+	 * Set cam position at player position 
+	 */
 	public void updateCam() {
 		int xPlayer = (int) (worldGame.player.getPosition().x + 23);
 		int yPlayer = (int) (worldGame.player.getPosition().y + 25);
@@ -259,6 +263,9 @@ public class FreeGameScreen implements Screen, ActionListener,ControllerListener
 		gameCam.update();
 	}
 
+	/**
+	 * Draw all objects in the world 
+	 */
 	private void drawWorld() {
 		ArrayList<StaticObject> objects;
 		objects = worldGame.getListObject();
@@ -405,6 +412,11 @@ public class FreeGameScreen implements Screen, ActionListener,ControllerListener
 		}
 	}
 
+	/**
+	 * find Texture that stand for parameter s
+	 * @param s 
+	 * @return Texture depending value of s
+	 */
 	private Texture getLetterImage(Letter s) {
 		switch (s.getValue()) {
 		case 'a':
@@ -457,6 +469,9 @@ public class FreeGameScreen implements Screen, ActionListener,ControllerListener
 
 	}
 
+	/**
+	 * Draws the information about player life, number of munitions and score 
+	 */
 	private void drawInfoBar() {
 		float x = gameCam.position.x;
 		float y = gameCam.position.y;
@@ -474,6 +489,9 @@ public class FreeGameScreen implements Screen, ActionListener,ControllerListener
 
 	}
 
+	/**
+	 * Draw small map that represents all game map 
+	 */
 	private void drawNavigationMap(int level) {
 		float x = gameCam.position.x;
 		float y = gameCam.position.y;
@@ -493,7 +511,10 @@ public class FreeGameScreen implements Screen, ActionListener,ControllerListener
 		}
 
 	}
-
+	/**
+	 * 
+	 * @return Texture that stand for players's current weapon
+	 */
 	Texture getPlayerWeapon() {
 		if (World.player.weaponType == "ShotGun")
 			return ImagePool.shotGun;
@@ -553,6 +574,9 @@ public class FreeGameScreen implements Screen, ActionListener,ControllerListener
 
 	}
 
+	/**
+	 * Handles timers of free mode game 
+	 */
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
 		if(arg0.getActionCommand().equals("increase")){

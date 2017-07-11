@@ -26,6 +26,11 @@ public class IntroScreen implements Screen {
 	float screenWidth;
 	float screenHeight;
 	
+	/**
+	 * Create a introduction screen depending on parameter level
+	 * @param level indicates level that will be loaded
+	 * @param gameMenu indicates game application
+	 */
 	public IntroScreen(int level,GameMenu gameMenu) {
 		this.gameMenu=gameMenu;
 		write=0;	
@@ -69,6 +74,9 @@ public class IntroScreen implements Screen {
 			}
 	}
 
+	/**
+	 * draws scene
+	 */
 	private void drawDisplay() {
 		batch.begin();
 		Gdx.gl.glClearColor(0, 0, 0, 1);
@@ -82,6 +90,7 @@ public class IntroScreen implements Screen {
 			batch.draw(text, x, y);
 		batch.end();
 	}
+	
 	@Override
 	public void resize(int width, int height) {
 		screenWidth=width;
