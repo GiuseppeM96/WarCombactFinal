@@ -87,7 +87,6 @@ public class PoitionScreen implements Screen{
 		player = new Character();
 		player.setPosition(new Vector2(0,30));
 		worldBatch=new SpriteBatch();
-		System.out.println(bigHuts.size()+" "+people.size());
 	}
 	
 	/**

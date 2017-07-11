@@ -192,7 +192,6 @@ public class PauseMenu implements Screen,ControllerListener {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-					System.out.println("Match Saved");
 					break;
 				default:
 					break;
