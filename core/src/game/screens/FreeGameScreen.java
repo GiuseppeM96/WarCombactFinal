@@ -2,6 +2,7 @@ package game.screens;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -307,44 +308,63 @@ public class FreeGameScreen implements Screen, ActionListener,ControllerListener
 			} else if (s instanceof Letter) {
 				tmp = getLetterImage((Letter) s);
 			} else if (s instanceof Enemy) {
-				switch (((Enemy) s).getMoveDirection(worldGame.player.getPosition())) {
-				case 0:
-					if (((Enemy) s).shoting)
-						worldBatch.draw(ImagePool.shotEnemyAnimationUp.getKeyFrame(((Enemy) s).shotAnimationTime, true),
-								s.getPosition().x, (int) s.getPosition().y);
-					else
-						worldBatch.draw(ImagePool.enemyAnimationUp.getKeyFrame(((Enemy) s).stateEnemyTime, true),
-								s.getPosition().x, (int) s.getPosition().y);
-					break;
-				case 1:
-					if (((Enemy) s).shoting)
-						worldBatch.draw(
-								ImagePool.shotEnemyAnimationRight.getKeyFrame(((Enemy) s).shotAnimationTime, true),
-								s.getPosition().x, (int) s.getPosition().y);
-					else
-						worldBatch.draw(ImagePool.enemyAnimationRight.getKeyFrame(((Enemy) s).stateEnemyTime, true),
-								s.getPosition().x, (int) s.getPosition().y);
-					break;
-				case 2:
-					if (((Enemy) s).shoting)
-						worldBatch.draw(
-								ImagePool.shotEnemyAnimationDown.getKeyFrame(((Enemy) s).shotAnimationTime, true),
-								s.getPosition().x, (int) s.getPosition().y);
-					else
-						worldBatch.draw(ImagePool.enemyAnimationDown.getKeyFrame(((Enemy) s).stateEnemyTime, true),
-								s.getPosition().x, (int) s.getPosition().y);
-					break;
-				case 3:
-					if (((Enemy) s).shoting)
-						worldBatch.draw(
-								ImagePool.shotEnemyAnimationLeft.getKeyFrame(((Enemy) s).shotAnimationTime, true),
-								s.getPosition().x, (int) s.getPosition().y);
-					else
-						worldBatch.draw(ImagePool.enemyAnimationLeft.getKeyFrame(((Enemy) s).stateEnemyTime, true),
-								s.getPosition().x, (int) s.getPosition().y);
-					break;
-				default:
-					break;
+				try {
+					System.out.println(World.classe);
+					switch  ((int) World.classe.getMethod("getMoveDirection", Vector2.class).invoke(s,
+							World.player.getPosition())){
+					case 0:
+						if (((Enemy) s).shoting)
+							worldBatch.draw(ImagePool.shotEnemyAnimationUp.getKeyFrame(((Enemy) s).shotAnimationTime, true),
+									s.getPosition().x, (int) s.getPosition().y);
+						else
+							worldBatch.draw(ImagePool.enemyAnimationUp.getKeyFrame(((Enemy) s).stateEnemyTime, true),
+									s.getPosition().x, (int) s.getPosition().y);
+						break;
+					case 1:
+						if (((Enemy) s).shoting)
+							worldBatch.draw(
+									ImagePool.shotEnemyAnimationRight.getKeyFrame(((Enemy) s).shotAnimationTime, true),
+									s.getPosition().x, (int) s.getPosition().y);
+						else
+							worldBatch.draw(ImagePool.enemyAnimationRight.getKeyFrame(((Enemy) s).stateEnemyTime, true),
+									s.getPosition().x, (int) s.getPosition().y);
+						break;
+					case 2:
+						if (((Enemy) s).shoting)
+							worldBatch.draw(
+									ImagePool.shotEnemyAnimationDown.getKeyFrame(((Enemy) s).shotAnimationTime, true),
+									s.getPosition().x, (int) s.getPosition().y);
+						else
+							worldBatch.draw(ImagePool.enemyAnimationDown.getKeyFrame(((Enemy) s).stateEnemyTime, true),
+									s.getPosition().x, (int) s.getPosition().y);
+						break;
+					case 3:
+						if (((Enemy) s).shoting)
+							worldBatch.draw(
+									ImagePool.shotEnemyAnimationLeft.getKeyFrame(((Enemy) s).shotAnimationTime, true),
+									s.getPosition().x, (int) s.getPosition().y);
+						else
+							worldBatch.draw(ImagePool.enemyAnimationLeft.getKeyFrame(((Enemy) s).stateEnemyTime, true),
+									s.getPosition().x, (int) s.getPosition().y);
+						break;
+					default:
+						break;
+					}
+				} catch (IllegalAccessException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IllegalArgumentException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (InvocationTargetException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (NoSuchMethodException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (SecurityException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
 				trov = true;
 			} else if (s instanceof Hut)

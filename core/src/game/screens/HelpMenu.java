@@ -54,6 +54,7 @@ public class HelpMenu implements Screen,ControllerListener {
 		this.gameMenu = gameMenu;
 		controller = new Controllers();
 		controller.addListener(this);
+		hasPressedEnter = false;
 		controllerMoveDirection = -1;
 		batch = new SpriteBatch();
 		
@@ -104,8 +105,10 @@ public class HelpMenu implements Screen,ControllerListener {
 	}
 
 	private void update() {
-		if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER) || hasPressedEnter)
+		if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER) || hasPressedEnter){
 			gameMenu.swap(0);
+			hasPressedEnter = false;
+		}
 		if (Gdx.input.isKeyPressed(Input.Keys.LEFT) || controllerMoveDirection == 3){
 			if(currentPage==2)
 				currentPage--;
