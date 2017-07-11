@@ -30,6 +30,7 @@ import game.screens.IntroScreen;
 import game.screens.PauseMenu;
 import game.screens.PoitionScreen;
 import game.screens.ScoreMenu;
+import game.screens.ScoreNetScreen;
 import game.screens.SettingMultiplayerScreen;
 import game.screens.SettingsMenu;
 import game.screens.StartMenuScreen;
@@ -57,6 +58,7 @@ public class GameMenu extends Game {
 	static PoitionScreen potionExplotion;
 	static FreeGameScreen freeModGame;
 	static ScoreMenu scoreScreen;
+	static ScoreNetScreen scoreNetScreen;
 	static IntroScreen introScreen;
 	static ChooseAIscreen chooseAIscreen;
 	static NetGameScreen netGame;
@@ -191,7 +193,8 @@ public class GameMenu extends Game {
 			setScreen(netGame);
 			break;
 		case 12:
-			//carica Classifica multiplayer
+			scoreNetScreen = new ScoreNetScreen(this);
+			setScreen(scoreNetScreen);
 			break;
 		default:
 			break;
@@ -426,6 +429,10 @@ public class GameMenu extends Game {
 	public void loadMultiplayer() {
 		// TODO Auto-generated method stub
 		
+	}
+	
+	public ArrayList<ScorePlayer> getScoreList(){
+		return scorePlayers;
 	}
 
 }

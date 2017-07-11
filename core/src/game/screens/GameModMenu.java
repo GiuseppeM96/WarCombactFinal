@@ -222,6 +222,7 @@ public class GameModMenu implements Screen, ControllerListener {
 					else{
 						File f=new File("src/Free/"+name.getText()+".txt");
 						if(f.exists()){
+							System.out.println(f.getAbsolutePath());
 							Gdx.input.setInputProcessor(null);
 							gameIsStarting = true;
 							wrongName=false;

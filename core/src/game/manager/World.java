@@ -74,7 +74,6 @@ public class World {
 		// com'era altrimenti volendo basta mettere come package quello delle
 		// intelligenze e il nome della classe e funziona lo stesso
 		this.className = className;
-		System.out.println(className);
 		if (className == "Enemy" || className == null || className=="game.object.Enemy")
 			try {
 				classe = (Class<? extends Enemy>) Class.forName("game.object.Enemy");
@@ -186,7 +185,6 @@ public class World {
 	 * @throws IOException
 	 */
 	private void loadObjectFromFile(File fileMap) throws IOException {
-		System.out.println("carico");
 		FileReader reader =new FileReader(fileMap);
 		BufferedReader buffer = new BufferedReader(reader);
 		if(GameMenu.loadGame){
@@ -198,7 +196,6 @@ public class World {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			System.out.println(line);
 			GameMenu.className=line;
 			
 		}
