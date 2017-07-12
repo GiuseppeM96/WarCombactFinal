@@ -1,9 +1,13 @@
 package game.net;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.Timer;
+
 public class ServerThread extends Thread{
 	
 	MyServer server;
-	
 	/**
 	 * Create a thread that launch server
 	 * @param server
@@ -16,4 +20,6 @@ public class ServerThread extends Thread{
 	public void run() {
 		server.lauchServer();
 	}
+
+	
 }

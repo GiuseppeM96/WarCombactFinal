@@ -94,7 +94,7 @@ public class ScoreNetScreen implements Screen,ControllerListener {
 		scorePlayers = gameMenu.getScoreList();
 		while(change){
 			change = false;
-			for( int i = 0; i<scorePlayers.size(); i++){
+			for( int i = 0; i<scorePlayers.size()-1; i++){
 				if(scorePlayers.get(i).score > scorePlayers.get(i+1).score ){
 					ScorePlayer changement = scorePlayers.get(i);
 					scorePlayers.set(i, scorePlayers.get(i+1)) ;

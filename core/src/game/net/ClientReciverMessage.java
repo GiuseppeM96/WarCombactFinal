@@ -7,6 +7,7 @@ import java.net.Socket;
 
 import com.badlogic.gdx.math.Vector2;
 
+import game.manager.GameMenu;
 import game.object.AddLifePoints;
 import game.object.AddMachineGunShots;
 import game.object.AddShotGunShots;
@@ -56,7 +57,11 @@ public class ClientReciverMessage extends Thread {
 					c.worldGame.currentPlayer.setPosition(new Vector2(x,y));
 				}
 				else if(!rcv.contains(";")){
-					if(rcv.equals("go"))
+					
+					if(rcv.equals("finish")){
+						c.finish=true;
+					}
+					else if(rcv.equals("go"))
 						c.gameMenu.startGameNet=true;
 					else{
 						int newCode=convert(rcv);
@@ -133,7 +138,8 @@ public class ClientReciverMessage extends Thread {
 							}
 					}
 					else if(m.action==5){
-						c.gameMenu.scorePlayers.add(new ScorePlayer(m.name,m.x));
+						if(m.y != c.worldGame.currentPlayer.code)
+							c.gameMenu.scorePlayers.add(new ScorePlayer(m.name,m.x));
 					}
 					else if(m.action==6){
 						for(NetCharacter nc:c.worldGame.otherPlayers)
@@ -143,7 +149,6 @@ public class ClientReciverMessage extends Thread {
 							}		
 					}
 				}
-				
 			} catch (IOException e) {
 				
 				System.out.println("Server Disconnected");

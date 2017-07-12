@@ -14,6 +14,7 @@ public class MyServer {
 	ServerSocket ss;
 	int port;
 	int numPlayer;
+	
 	/**
 	 * Constructor with one parameter
 	 * @param numPlayer stand for the number of player that play this match
@@ -72,6 +73,16 @@ public class MyServer {
 		}
 		
 	}
+	
+	public boolean endMatch(){
+		boolean find=false;
+		for(ServerReciverMessage s:connected){
+			if(!s.scoreRecived)
+				find=true;
+		}
+		return !find;
+	}
+	
 	/**
 	 * interrupts all thread that listen message from client and close the server socket
 	 */

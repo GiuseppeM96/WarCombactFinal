@@ -41,6 +41,7 @@ public class NetMessage {
 		x=convert(sX);
 		if(action==5){
 			name=sCode;
+			y=convert(sY);
 		}
 		else{
 			dir=convert(sDir);

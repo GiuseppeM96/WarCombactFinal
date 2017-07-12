@@ -88,6 +88,7 @@ public class GameMenu extends Game {
 		free = false;
 		multiplayer=false;
 		userInfo = new User("");
+		scorePlayers=new ArrayList<ScorePlayer>();
 		potionExplotion = new PoitionScreen(this);
 		chooseAIscreen = new ChooseAIscreen(this);
 		helpMenu = new HelpMenu(this);
@@ -118,6 +119,7 @@ public class GameMenu extends Game {
 				if(!multiplayer)
 					restartGame();
 				multiplayer=false;
+				myServerLunched=false;
 				startGameNet=false;
 				setScreen(startMenuScreen);
 			} else {
@@ -190,6 +192,7 @@ public class GameMenu extends Game {
 		case 11:
 			System.out.println(serverAddress);
 			MusicPool.musicMenu.stop();
+			netGame.matchTimer.start();
 			setScreen(netGame);
 			break;
 		case 12:

@@ -67,9 +67,12 @@ public class NetGameScreen implements Screen,ActionListener,ControllerListener{
 	float shotAnimationTime;
 	private BitmapFont score;
 	GameMenu gameMenu;
-	Timer matchTimer;
+	public Timer matchTimer;
 	private PovDirection povDirection;
 	private boolean gameIsInPause;
+	public boolean finish;
+	boolean timeOut;
+	int matchTime;
 	
 	
 	/**
@@ -86,8 +89,11 @@ public class NetGameScreen implements Screen,ActionListener,ControllerListener{
 		wait=true;
 		canRemove=false;
 		canDraw=true;
+		finish=false;
+		timeOut=false;
 		shotAnimationTime=0.f;
-		matchTimer=new Timer(120000, this);
+		matchTimer=new Timer(5000, this);
+		matchTime=0;
 		this.gameMenu=gameMenu;
 		try {
 			s=new Socket(server_ip, port);
@@ -135,17 +141,22 @@ public class NetGameScreen implements Screen,ActionListener,ControllerListener{
 		
 		batch.begin();
 		batch.setProjectionMatrix(gameCam.combined);
-		update(delta);
-		if(wait){	
-			batch.draw(ImagePool.introLevelEven, 0, 0,GameConfig.SCREEN_WIDTH,GameConfig.SCREEN_WIDTH);
+		if(!timeOut){
+			update(delta);
+			if(wait){	
+				batch.draw(ImagePool.introLevelEven, 0, 0,GameConfig.SCREEN_WIDTH,GameConfig.SCREEN_WIDTH);
+			}
+			else{
+				batch.draw(ImagePool.mapTwo, 0, 0);
+				drawWorld();
+				drawInfoBar();
+				drawNavigationMap();
+				updateShots();
+				updateCam();
+			}
 		}
-		else{
-			batch.draw(ImagePool.mapTwo, 0, 0);
-			drawWorld();
-			drawInfoBar();
-			drawNavigationMap();
-			updateShots();
-			updateCam();
+		else if(finish){
+			gameMenu.swap(12);
 		}
 		batch.end();
 	}
@@ -576,9 +587,20 @@ public class NetGameScreen implements Screen,ActionListener,ControllerListener{
 	}
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		out.println(5+";"+gameMenu.userInfo.getName()+";"+(((int)worldGame.score/worldGame.diedTimes)+1)+";"+0+";"+0+";");
-		out.flush();
-		//gameMenu.swap(12);
+		
+		matchTime++;
+		if(matchTime>=5){
+			gameMenu.scorePlayers.add(new ScorePlayer(gameMenu.userInfo.getName(), ((int) worldGame.score/(worldGame.diedTimes+1))));
+			out.println(5+";"+gameMenu.userInfo.getName()+";"+((int) worldGame.score/(worldGame.diedTimes+1))+";"+worldGame.currentPlayer.code+";"+0+";");
+			out.flush();
+			if(gameMenu.server!=null){
+				ScoreThread close=new ScoreThread(gameMenu.server);
+				close.start();
+			}
+			System.out.println("Timer");
+			matchTimer.stop();
+			timeOut=true;
+		}
 	}
 
 	@Override
