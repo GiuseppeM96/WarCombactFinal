@@ -9,6 +9,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Collection;
+
+import javax.script.ScriptContext;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -38,9 +41,10 @@ public class ScoreNetScreen implements Screen,ControllerListener {
 	private Sprite macchinaSprite;
 	private Sprite joystickSprite;
 	private Sprite selectedSprite;
+	private Sprite scroll;
 	private Sprite backGround;
 	private TextButton back;
-
+	int selectedIndex;
 	Stage stage;
 	SpriteBatch batch;
 	Viewport viewport;
@@ -51,13 +55,17 @@ public class ScoreNetScreen implements Screen,ControllerListener {
 	int[] bestPlayerScore;
 	private boolean hasPressedEnter;
 	ArrayList<ScorePlayer> scorePlayers;
+	private int controllerMoveDirection;
 
 	public ScoreNetScreen(GameMenu gameMenu) {
 
+		
+		controllerMoveDirection = -1;
 		hasPressedEnter = false;
 		this.gameMenu = gameMenu;
 		this.playerName = "";
 		this.playerScore = gameMenu.world.score;
+		selectedIndex = 0;
 		bestPlayer = new String[5];
 		bestPlayerScore = new int[5];
 		batch = new SpriteBatch();
@@ -66,6 +74,7 @@ public class ScoreNetScreen implements Screen,ControllerListener {
 		macchinaSprite = new Sprite(ImagePool.macchina);
 		joystickSprite = new Sprite(ImagePool.joystick);
 		selectedSprite = new Sprite(ImagePool.selected);
+		scroll = new Sprite(ImagePool.scroll);
 		backGround = new Sprite(ImagePool.backGround);
 
 		Table mainTable = new Table();
@@ -92,10 +101,15 @@ public class ScoreNetScreen implements Screen,ControllerListener {
 		controller.addListener(this);
 		boolean change=true;
 		scorePlayers = gameMenu.getScoreList();
+		scroll.setPosition(450,190);
+		if(scorePlayers.size()>4){
+			scroll.setSize(33, 156-(scorePlayers.size()-4)*15);
+			System.out.println(scroll.getHeight());
+		}
 		while(change){
 			change = false;
 			for( int i = 0; i<scorePlayers.size()-1; i++){
-				if(scorePlayers.get(i).score > scorePlayers.get(i+1).score ){
+				if(scorePlayers.get(i).score < scorePlayers.get(i+1).score ){
 					ScorePlayer changement = scorePlayers.get(i);
 					scorePlayers.set(i, scorePlayers.get(i+1)) ;
 					scorePlayers.set(i+1, changement) ;
@@ -131,13 +145,35 @@ public class ScoreNetScreen implements Screen,ControllerListener {
 			gameMenu.start=true;
 			gameMenu.swap(0);
 		}
+		 else if (Gdx.input.isKeyPressed(Input.Keys.DOWN) || controllerMoveDirection == 2) {
+				joystickSprite.setTexture(ImagePool.joystickDown);
+				if (Gdx.input.isKeyJustPressed(Input.Keys.DOWN) || controllerMoveDirection == 2) {
+					if(selectedIndex < scorePlayers.size() - 4)
+						selectedIndex++;
+				}
+		 }
+		 else if (Gdx.input.isKeyPressed(Input.Keys.UP) || controllerMoveDirection == 0) {
+				joystickSprite.setTexture(ImagePool.joystickUp);
+				if (Gdx.input.isKeyJustPressed(Input.Keys.UP) || controllerMoveDirection == 0) {
+					if(selectedIndex > 0)
+						selectedIndex --;
+				}
+		}
+		 else if (Gdx.input.isKeyJustPressed(Input.Keys.LEFT) || controllerMoveDirection == 3) 
+				joystickSprite.setTexture(ImagePool.joystickLeft);
+		 else if (Gdx.input.isKeyJustPressed(Input.Keys.RIGHT) || controllerMoveDirection == 1) 
+				joystickSprite.setTexture(ImagePool.joystickRight);
+		 else joystickSprite.setTexture(ImagePool.joystick);
+		
+		controllerMoveDirection = -1;
 	}
-
 	private void draw() {
 		backGround.draw(batch);
 		macchinaSprite.draw(batch);
 		joystickSprite.draw(batch);
-
+		if(scorePlayers.size() > 4)
+			scroll.setPosition(scroll.getX(),190+(scorePlayers.size() - selectedIndex - 3)*10);
+		scroll.draw(batch);
 		if (selectedSprite.getX() != 0)
 			selectedSprite.draw(batch);
 		
@@ -146,13 +182,11 @@ public class ScoreNetScreen implements Screen,ControllerListener {
 		ImagePool.font.draw(batch, " S C O R E :  " + playerName.toUpperCase() + "    " + playerScore, 230, 341);
 		*/
 		ImagePool.font.setColor(Color.RED);
-		ImagePool.font.draw(batch, "T O P  P L A Y E R :", 230, 421);
+		ImagePool.font.draw(batch, "S C O R E S :", 230, 331);
 		ImagePool.font.setColor(Color.WHITE);
 		
-		
-		for (int i = 0; i < gameMenu.scorePlayers.size(); i++) {
-			gameMenu.scorePlayers.get(i);
-			ImagePool.font.draw(batch, " S C O R E :  " + scorePlayers.get(i).getName()+ "    " + scorePlayers.get(i).getScore(), 230, 241+(i*50));
+		for (int i = selectedIndex; i < selectedIndex+4 && i<scorePlayers.size(); i++) {
+			ImagePool.font.draw(batch,i+1+" )  "+ scorePlayers.get(i).getName()+ "    " + scorePlayers.get(i).getScore(), 240, 300-(i-selectedIndex)*20);
 		}
 	}
 
@@ -199,7 +233,7 @@ public class ScoreNetScreen implements Screen,ControllerListener {
 
 	@Override
 	public boolean buttonDown(Controller controller, int buttonCode) {
-		if(buttonCode == 0 && gameMenu.getScreen().getClass().getName().contains("ScoreMenu"))
+		if(buttonCode == 0 && gameMenu.getScreen().getClass().getName().contains("ScoreNetScreen"))
 				hasPressedEnter = true;
 		return false;
 	}
@@ -218,8 +252,21 @@ public class ScoreNetScreen implements Screen,ControllerListener {
 
 	@Override
 	public boolean povMoved(Controller controller, int povCode, PovDirection value) {
-		// TODO Auto-generated method stub
-		return false;
+		boolean inputIsValid = false;
+
+		if (gameMenu.getScreen().getClass().getName().contains("ScoreNetScreen"))
+			inputIsValid = true;
+
+		if (inputIsValid) {
+			if (value == PovDirection.north)
+				controllerMoveDirection = 0;
+			else if (value == PovDirection.east)
+				controllerMoveDirection = 1;
+			else if (value == PovDirection.south)
+				controllerMoveDirection = 2;
+			else if (value == PovDirection.west)
+				controllerMoveDirection = 3;
+		}		return false;
 	}
 
 	@Override

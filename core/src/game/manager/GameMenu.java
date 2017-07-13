@@ -201,6 +201,7 @@ public class GameMenu extends Game {
 			setScreen(netGame);
 			break;
 		case 12:
+			
 			scoreNetScreen = new ScoreNetScreen(this);
 			setScreen(scoreNetScreen);
 			break;
