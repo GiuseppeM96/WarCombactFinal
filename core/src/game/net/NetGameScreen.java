@@ -54,11 +54,11 @@ public class NetGameScreen implements Screen,ActionListener,ControllerListener{
 	Controllers controller;
 	SpriteBatch batch;
 	NetWorld worldGame;
-	Socket s;
+	public Socket s;
 	String server_ip;
 	int port;
 	PrintWriter out;
-	ClientReciverMessage listen;
+	public ClientReciverMessage listen;
 	boolean wait;
 	public boolean canRemove;
 	public boolean canDraw;
@@ -78,13 +78,14 @@ public class NetGameScreen implements Screen,ActionListener,ControllerListener{
 	/**
 	 * Constructor 
 	 * @param ip indicates the server ip where you try to connect
+	 * @param port 
 	 * @param gameMenu indicates the game application
 	 */
-	public NetGameScreen(String ip,GameMenu gameMenu) {
+	public NetGameScreen(String ip,int port, GameMenu gameMenu) {
 		controller = new Controllers();
 		controller.addListener(this);
 		server_ip=ip;
-		port=12345;
+		this.port=port;
 		ClientReciverMessage listen;
 		wait=true;
 		canRemove=false;
