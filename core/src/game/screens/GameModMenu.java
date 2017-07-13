@@ -1,6 +1,7 @@
 package game.screens;
 
 import java.io.File;
+import java.net.URISyntaxException;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -206,7 +207,7 @@ public class GameModMenu implements Screen, ControllerListener {
 			case 0:
 				if(GameMenu.loadGame)
 					if(itemSelected.y == 0){
-						File f=new File("src/Story/"+name.getText()+".txt");
+						File f = new File(getClass().getClassLoader().getResource("Story/"+name.getText()+".txt").getFile());
 						if(f.exists()){
 							Gdx.input.setInputProcessor(null);
 							gameIsStarting = true;
@@ -217,10 +218,9 @@ public class GameModMenu implements Screen, ControllerListener {
 							wrongName=true;
 							lastNameInsert=name.getText();
 						}
-						
 					}
 					else{
-						File f=new File("src/Free/"+name.getText()+".txt");
+						File f = new File(getClass().getClassLoader().getResource("Free/"+name.getText()+".txt").getFile());
 						if(f.exists()){
 							System.out.println(f.getAbsolutePath());
 							Gdx.input.setInputProcessor(null);
@@ -229,7 +229,6 @@ public class GameModMenu implements Screen, ControllerListener {
 							gameMenu.userInfo.setName(name.getText());
 						}
 						else wrongName=true;
-					
 					}
 				else{
 					Gdx.input.setInputProcessor(null);

@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 import com.badlogic.gdx.Gdx;
@@ -94,8 +95,8 @@ public class PoitionScreen implements Screen{
 	 * @throws IOException
 	 */
 	private void initVillage() throws IOException {
-		FileReader reader = new FileReader("src/GameComplete.txt");
-		BufferedReader buffer = new BufferedReader(reader);
+		//FileReader reader = new FileReader("GameComplete.txt");
+		BufferedReader buffer = new BufferedReader(new InputStreamReader(getClass().getClassLoader().getResourceAsStream("GameComplete.txt")));
 		String line=buffer.readLine();
 		while(line!= null){
 			String type = new String(),codx = new String(),cody = new String();

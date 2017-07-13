@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 import com.badlogic.gdx.Gdx;
@@ -90,7 +91,7 @@ public class NetWorld {
 		currentPlayer.setPosition(new Vector2(currentPlayer.code*100,currentPlayer.code*100));
 		otherPlayers=new ArrayList<NetCharacter>();
 		//File worldFile=new File("src/GameComplete.txt");
-		File worldFile=new File("src/NetMap.txt");
+		File worldFile=new File("NetMap.txt");
 		try {
 			loadObjectFromFile(worldFile);
 			
@@ -108,8 +109,8 @@ public class NetWorld {
 	 * @throws IOException
 	 */
 	private void loadObjectFromFile(File fileMap) throws IOException {
-		FileReader reader =new FileReader(fileMap);
-		BufferedReader buffer = new BufferedReader(reader);
+		//FileReader reader =new FileReader(fileMap);
+		BufferedReader buffer = new BufferedReader(new InputStreamReader(getClass().getClassLoader().getResourceAsStream(fileMap.getPath())));
 		String line=buffer.readLine();
 		while(line!= null){
 			String type = new String(),codx = new String(),cody = new String();

@@ -93,7 +93,7 @@ public class NetGameScreen implements Screen,ActionListener,ControllerListener{
 		finish=false;
 		timeOut=false;
 		shotAnimationTime=0.f;
-		matchTimer=new Timer(5000, this);
+		matchTimer=new Timer(120000, this);
 		matchTime=0;
 		this.gameMenu=gameMenu;
 		try {
@@ -590,7 +590,7 @@ public class NetGameScreen implements Screen,ActionListener,ControllerListener{
 	public void actionPerformed(ActionEvent e) {
 		
 		matchTime++;
-		if(matchTime>=5){
+		if(matchTime>=0){
 			gameMenu.scorePlayers.add(new ScorePlayer(gameMenu.userInfo.getName(), ((int) worldGame.score/(worldGame.diedTimes+1))));
 			out.println(5+";"+gameMenu.userInfo.getName()+";"+((int) worldGame.score/(worldGame.diedTimes+1))+";"+worldGame.currentPlayer.code+";"+0+";");
 			out.flush();

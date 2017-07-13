@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.ObjectInputStream.GetField;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -185,8 +186,8 @@ public class World {
 	 * @throws IOException
 	 */
 	private void loadObjectFromFile(File fileMap) throws IOException {
-		FileReader reader =new FileReader(fileMap);
-		BufferedReader buffer = new BufferedReader(reader);
+		//FileReader reader =new FileReader(fileMap);
+		BufferedReader buffer = new BufferedReader(new InputStreamReader(getClass().getClassLoader().getResourceAsStream(fileMap.getPath())));
 		if(GameMenu.loadGame){
 			String line=buffer.readLine();
 
@@ -356,21 +357,21 @@ public class World {
 		if (!GameMenu.loadGame) {
 			switch (level) {
 			case 1:
-				return "src/LevelOne.txt";
+				return "LevelOne.txt";
 			case 2:
-				return "src/LevelTwo.txt";
+				return "LevelTwo.txt";
 			case 3:
-				return "src/LevelThree.txt";
+				return "LevelThree.txt";
 			case 4:
-				return "src/FreeLevel.txt";
+				return "FreeLevel.txt";
 			default:
 				return null;
 			}
 		} else {
 			if (GameMenu.free) {
-				return "src/Free/" + GameMenu.userInfo.userName + ".txt";
+				return "Free/" + GameMenu.userInfo.userName + ".txt";
 			}
-			return "src/Story/" + GameMenu.userInfo.userName + ".txt";
+			return "Story/" + GameMenu.userInfo.userName + ".txt";
 
 		}
 	}

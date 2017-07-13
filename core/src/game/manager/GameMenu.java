@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 
 import com.badlogic.gdx.Game;
@@ -298,31 +299,32 @@ public class GameMenu extends Game {
 		
 		String path;
 		if(free)
-			path="src/Free/"+userInfo.userName+".txt";
-		else path="src/Story/"+userInfo.userName+".txt";
-		File fileMap=new File(path);
-		if(!fileMap.exists())
-			fileMap.createNewFile();
-		fileMap.setWritable(true);
-		FileWriter tmp;
-		try {
-			tmp = new FileWriter(fileMap);
-			BufferedWriter buffer=new BufferedWriter(tmp);
-			PrintWriter printout=new PrintWriter(buffer);
-			printout.println(className);
-			int mapx=(int)world.gameMap.getPosition().x;
-			int mapy=(int)world.gameMap.getPosition().y;
-			ArrayList<StaticObject> objects=world.getListObject();
-			for(StaticObject s : objects){
-				if(s.getType() != null)
-					printout.println(codType(s.getType())+";"+(int)s.getPosition().x+";"+(int)s.getPosition().y+";");
+			path="Free/"+userInfo.userName+".txt";
+		else path="Story/"+userInfo.userName+".txt";
+		File fileMap = new File(getClass().getClassLoader().getResource(path).getFile());
+			if(fileMap.exists())
+				fileMap.createNewFile();
+			fileMap.setWritable(true);
+			FileWriter tmp;
+			try {
+				tmp = new FileWriter(fileMap);
+				BufferedWriter buffer=new BufferedWriter(tmp);
+				PrintWriter printout=new PrintWriter(buffer);
+				printout.println(className);
+				int mapx=(int)world.gameMap.getPosition().x;
+				int mapy=(int)world.gameMap.getPosition().y;
+				ArrayList<StaticObject> objects=world.getListObject();
+				for(StaticObject s : objects){
+					if(s.getType() != null)
+						printout.println(codType(s.getType())+";"+(int)s.getPosition().x+";"+(int)s.getPosition().y+";");
+				}
+				printout.println("i;"+world.score+";"+world.player.lifePoints+";");
+				printout.println("l;"+currentLevel+";"+world.found+";");
+				printout.close();
+			} catch (IOException e1) {
+				e1.printStackTrace();
 			}
-			printout.println("i;"+world.score+";"+world.player.lifePoints+";");
-			printout.println("l;"+currentLevel+";"+world.found+";");
-			printout.close();
-		} catch (IOException e1) {
-			e1.printStackTrace();
-		}
+			 
 	}
 	
 	
