@@ -21,7 +21,7 @@ public class MyServer {
 	 * 
 	 */
 	public MyServer(int numPlayer) {
-		port=12345;
+		port=12346;
 		try {
 			this.numPlayer=numPlayer;
 			ss=new ServerSocket(port);
@@ -87,15 +87,25 @@ public class MyServer {
 	 * interrupts all thread that listen message from client and close the server socket
 	 */
 	public void shutdownServer(){
-		for(ServerReciverMessage srm:connected){
-			srm.interrupt();
+		
+		try {
+			ss.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			System.out.println("ServerSocket Not Close");
 		}
+		System.out.println(connected.size());
+		connected.clear();
+		/*	while(srm.isAlive()){}
+		}
+		System.out.println("Server receiver closed");
 		try {
 			ss.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		connected.clear();*/
 	}
 }
 

@@ -15,6 +15,7 @@ public class ServerReciverMessage extends Thread{
 	MyServer server;
 	int code;
 	public boolean scoreRecived;
+	public boolean stopTread;
 	
 	/**
 	 * Create a thread that listen a message from a single client
@@ -27,6 +28,7 @@ public class ServerReciverMessage extends Thread{
 		server=serv;
 		code=i;
 		scoreRecived=false;
+		stopTread=false;
 		try {
 			in=new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			out=new PrintWriter(socket.getOutputStream());
@@ -39,12 +41,15 @@ public class ServerReciverMessage extends Thread{
 	}
 	@Override
 	public void run() {
-		while(true){
+		while(!stopTread){
 			try {
 				String message=in.readLine();
-				if(message.substring(0, 2).equals("5;"))
-					scoreRecived=true;
-				server.sendNewMessage(message);
+				if(message!=null){
+					server.sendNewMessage(message);
+					if(message.substring(0, 2).equals("5;"))
+						scoreRecived=true;
+				}
+				else break;
 				
 			} catch (IOException e) {
 				System.out.println("Connesione out");

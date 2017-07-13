@@ -118,6 +118,11 @@ public class GameMenu extends Game {
 			if (start) {
 				if(!multiplayer)
 					restartGame();
+				else{
+					if(server!=null)
+						server.shutdownServer();
+					scorePlayers.clear();
+				}
 				multiplayer=false;
 				myServerLunched=false;
 				startGameNet=false;
