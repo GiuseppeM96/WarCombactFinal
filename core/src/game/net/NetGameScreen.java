@@ -78,13 +78,14 @@ public class NetGameScreen implements Screen,ActionListener,ControllerListener{
 	/**
 	 * Constructor 
 	 * @param ip indicates the server ip where you try to connect
+	 * @param port 
 	 * @param gameMenu indicates the game application
 	 */
-	public NetGameScreen(String ip,GameMenu gameMenu) {
+	public NetGameScreen(String ip,int port, GameMenu gameMenu) {
 		controller = new Controllers();
 		controller.addListener(this);
 		server_ip=ip;
-		port=12346;
+		this.port=port;
 		ClientReciverMessage listen;
 		wait=true;
 		canRemove=false;

@@ -44,6 +44,7 @@ public class SettingMultiplayerScreen implements Screen, ControllerListener {
 	private int itemSelected;
 
 	TextField input;
+	TextField port;
 
 	boolean creatingServer;
 
@@ -72,7 +73,12 @@ public class SettingMultiplayerScreen implements Screen, ControllerListener {
 		input = new TextField("", ImagePool.skin);
 		input.setMessageText("_____");
 		input.setFocusTraversal(true);
-		input.setPosition(280, 250);
+		input.setPosition(280, 280);
+		
+		port = new TextField("", ImagePool.skin);
+		port.setMessageText("_____");
+		port.setFocusTraversal(true);
+		port.setPosition(280, 210);
 
 		joystickSprite.setPosition(500, -30);
 		batch = new SpriteBatch();
@@ -94,6 +100,7 @@ public class SettingMultiplayerScreen implements Screen, ControllerListener {
 		mainTable.add(go);
 		mainTable.add(back);
 		mainTable.add(input);
+		mainTable.add(port);
 
 		stage.addActor(mainTable);
 		Gdx.input.setInputProcessor(stage);
@@ -145,9 +152,10 @@ public class SettingMultiplayerScreen implements Screen, ControllerListener {
 				gameMenu.swap(7);
 			else if (itemSelected == 0) {
 				if (creatingServer)
-					gameMenu.server = new MyServer(convert(input.getText()));
+					gameMenu.server = new MyServer(convert(input.getText()),convert(port.getText()));
 				else
 					gameMenu.serverAddress = input.getText();
+					gameMenu.port= convert(port.getText());
 				gameMenu.swap(10);
 			}
 		}
@@ -192,9 +200,10 @@ public class SettingMultiplayerScreen implements Screen, ControllerListener {
 
 		ImagePool.font.setColor(Color.WHITE);
 		if (creatingServer)
-			ImagePool.font.draw(batch, "S E T  N U M B E R  P L A Y E R S", 240, 320);
+			ImagePool.font.draw(batch, "S E T  N U M B E R  P L A Y E R S", 240, 330);
 		else
-			ImagePool.font.draw(batch, "I N S E R T  I P", 270, 310);
+			ImagePool.font.draw(batch, "I N S E R T  I P", 270, 330);
+		ImagePool.font.draw(batch, "I N S E R T  P O R T", 270, 260);
 	}
 
 	@Override

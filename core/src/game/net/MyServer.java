@@ -18,10 +18,11 @@ public class MyServer {
 	/**
 	 * Constructor with one parameter
 	 * @param numPlayer stand for the number of player that play this match
+	 * @param port 
 	 * 
 	 */
-	public MyServer(int numPlayer) {
-		port=12346;
+	public MyServer(int numPlayer, int port) {
+		this.port=port;
 		try {
 			this.numPlayer=numPlayer;
 			ss=new ServerSocket(port);

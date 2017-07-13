@@ -76,6 +76,7 @@ public class GameMenu extends Game {
 	public String serverAddress;
 	public static boolean free;
 	boolean multiplayer;
+	public int port;
 	
 	@Override
 	public void create() {
@@ -84,6 +85,7 @@ public class GameMenu extends Game {
 		myServerLunched=false;
 		startGameNet=false;
 		start = true;
+		port=12345;
 		serverAddress="127.0.0.1";
 		free = false;
 		multiplayer=false;
@@ -190,7 +192,7 @@ public class GameMenu extends Game {
 				connection=new ServerThread(server);
 				connection.start();
 			}
-			netGame=new NetGameScreen(serverAddress,this);
+			netGame=new NetGameScreen(serverAddress,port,this);
 			multiplayer=true;
 			setScreen(waitScreen);
 			break;
