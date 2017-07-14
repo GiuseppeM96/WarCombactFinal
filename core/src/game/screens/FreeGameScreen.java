@@ -67,8 +67,8 @@ import game.pools.ImagePool;
 import game.pools.MusicPool;
 import game.threads.EnemyThread;
 
-public class FreeGameScreen implements Screen, ActionListener,ControllerListener {
-	
+public class FreeGameScreen implements Screen, ActionListener, ControllerListener {
+
 	Controllers controller;
 	Music music;
 	public World worldGame;
@@ -78,26 +78,32 @@ public class FreeGameScreen implements Screen, ActionListener,ControllerListener
 	public OrthographicCamera gameCam;
 	Viewport viewport;
 	GameMenu gameMenu;
-	float statePlayerTime = 0.f;
+	float statePlayerTime;
 	BitmapFont score;
 	BitmapFont lifePerCent;
-	float shotAnimationTime = 0.f;
-	float diedAnimationTime = 0.f;
+	float shotAnimationTime;
+	float diedAnimationTime;
 	private boolean gameIsInPause;
 	private PovDirection povDirection;
-	static public boolean draw ;
+	static public boolean draw;
 
 	/**
 	 * Create a screen for free mode game
-	 * @param game Game application
-	 * @param world Game Map
+	 * 
+	 * @param game
+	 *            Game application
+	 * @param world
+	 *            Game Map
 	 */
 	public FreeGameScreen(GameMenu game, World world) {
 		super();
-		controller = new Controllers();
-		controller.addListener(this);
-		gameIsInPause=false;
-		draw=true;
+		diedAnimationTime = 0.f;
+		shotAnimationTime = 0.f;
+		statePlayerTime = 0.f;
+	//	controller = new Controllers();
+		GameConfig.controller.addListener(this);
+		gameIsInPause = false;
+		draw = true;
 		worldGame = world;
 		timer = new Timer(5000, this);
 		timerIncreaseDifficult = new Timer(60000, this);
@@ -117,25 +123,26 @@ public class FreeGameScreen implements Screen, ActionListener,ControllerListener
 	}
 
 	/**
-	 * Handle input and update world  
-	 * @param dt time interval
+	 * Handle input and update world
+	 * 
+	 * @param dt  time interval
 	 */
 	private void update(float dt) {
 		if (!worldGame.player.died) {
-			if (Gdx.input.isKeyPressed(Input.Keys.UP) || povDirection== PovDirection.north) {
+			if (Gdx.input.isKeyPressed(Input.Keys.UP) || povDirection == PovDirection.north) {
 				moveAndCheckCollision(0, dt);
-			} else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) || povDirection== PovDirection.east) {
+			} else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) || povDirection == PovDirection.east) {
 				moveAndCheckCollision(1, dt);
-			} else if (Gdx.input.isKeyPressed(Input.Keys.LEFT) || povDirection== PovDirection.west) {
+			} else if (Gdx.input.isKeyPressed(Input.Keys.LEFT) || povDirection == PovDirection.west) {
 				moveAndCheckCollision(3, dt);
-			} else if (Gdx.input.isKeyPressed(Input.Keys.DOWN) || povDirection== PovDirection.south) {
+			} else if (Gdx.input.isKeyPressed(Input.Keys.DOWN) || povDirection == PovDirection.south) {
 				moveAndCheckCollision(2, dt);
 			} else
 				statePlayerTime = 0;
-			if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE)  || gameIsInPause) {
+			if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE) || gameIsInPause) {
 				ImagePool.camera.zoom = 1.0f;
 				gameMenu.start = false;
-				gameIsInPause=false;
+				gameIsInPause = false;
 				timer.stop();
 				timerIncreaseDifficult.stop();
 				gameMenu.swap(0);
@@ -143,11 +150,11 @@ public class FreeGameScreen implements Screen, ActionListener,ControllerListener
 			if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE) || worldGame.player.controllerHasShoted) {
 				worldGame.player.shoting = true;
 			}
-			if (Gdx.input.isKeyJustPressed(Input.Keys.X) || worldGame.player.controllerHasChangedWeapon){
-				if(SettingsMenu.isAudioEnable)
+			if (Gdx.input.isKeyJustPressed(Input.Keys.X) || worldGame.player.controllerHasChangedWeapon) {
+				if (SettingsMenu.isAudioEnable)
 					MusicPool.reloadSound.play();
 				World.player.changeWeapon();
-				worldGame.player.controllerHasChangedWeapon=false;
+				worldGame.player.controllerHasChangedWeapon = false;
 
 			}
 			if (Gdx.input.isKeyPressed(Input.Keys.Z) || worldGame.player.controllerHasChangedVelocity) {
@@ -157,7 +164,7 @@ public class FreeGameScreen implements Screen, ActionListener,ControllerListener
 			if (World.player.shoting) {
 				if (shotAnimationTime > 0.3 && !World.playerShot) {
 					worldGame.playerHasShot();
-					if(SettingsMenu.isAudioEnable)
+					if (SettingsMenu.isAudioEnable)
 						MusicPool.shotGunSound.play();
 					World.playerShot = true;
 				}
@@ -185,7 +192,7 @@ public class FreeGameScreen implements Screen, ActionListener,ControllerListener
 
 				worldGame.player.died = false;
 				worldGame.player.lifePoints = 1000;
-				gameMenu.loadGame=false;
+				gameMenu.loadGame = false;
 				gameMenu.swap(4);
 			}
 		}
@@ -200,8 +207,11 @@ public class FreeGameScreen implements Screen, ActionListener,ControllerListener
 
 	/**
 	 * Move currentPlayer and check if it collide with other objects
-	 * @param i indicates direction code
-	 * @param dt time interval
+	 * 
+	 * @param i
+	 *            indicates direction code
+	 * @param dt
+	 *            time interval
 	 */
 	private void moveAndCheckCollision(int i, float dt) {
 		StaticObject currentObject;
@@ -214,14 +224,14 @@ public class FreeGameScreen implements Screen, ActionListener,ControllerListener
 		else if (i == 3)
 			worldGame.movePlayerLeft(dt);
 		currentObject = World.checkCollisionObject(worldGame.player);
-		if (currentObject == null && (worldGame.player.position.x>=10 && worldGame.player.position.x<=GameConfig.MAP_SIZE.x-70 && worldGame.player.position.y>=10 && worldGame.player.position.y<=GameConfig.MAP_SIZE.y-10))
-	{
-			if(SettingsMenu.isAudioEnable)
+		if (currentObject == null && (worldGame.player.position.x >= 10
+				&& worldGame.player.position.x <= GameConfig.MAP_SIZE.x - 70 && worldGame.player.position.y >= 10
+				&& worldGame.player.position.y <= GameConfig.MAP_SIZE.y - 10)) {
+			if (SettingsMenu.isAudioEnable)
 				MusicPool.walkingSound.play();
 			statePlayerTime += dt;
-		}
-		else if (currentObject instanceof AddLifePoints) {
-			if(SettingsMenu.isAudioEnable)
+		} else if (currentObject instanceof AddLifePoints) {
+			if (SettingsMenu.isAudioEnable)
 				MusicPool.addLifePoints.play();
 			worldGame.player.addLife();
 			if (worldGame.player.lifePoints > 1000)
@@ -229,13 +239,13 @@ public class FreeGameScreen implements Screen, ActionListener,ControllerListener
 			statePlayerTime += dt;
 			worldGame.objects.remove(currentObject);
 		} else if (currentObject instanceof AddMachineGunShots) {
-			if(SettingsMenu.isAudioEnable)
+			if (SettingsMenu.isAudioEnable)
 				MusicPool.addShotSound.play();
 			worldGame.player.addShots("MachineGun");
 			statePlayerTime += dt;
 			worldGame.objects.remove(currentObject);
 		} else if (currentObject instanceof AddShotGunShots) {
-			if(SettingsMenu.isAudioEnable)
+			if (SettingsMenu.isAudioEnable)
 				MusicPool.addShotSound.play();
 			worldGame.player.addShots("ShotGun");
 			statePlayerTime += dt;
@@ -253,7 +263,7 @@ public class FreeGameScreen implements Screen, ActionListener,ControllerListener
 	}
 
 	/**
-	 * Set cam position at player position 
+	 * Set camera position at player position
 	 */
 	public void updateCam() {
 		int xPlayer = (int) (worldGame.player.getPosition().x + 23);
@@ -266,7 +276,7 @@ public class FreeGameScreen implements Screen, ActionListener,ControllerListener
 	}
 
 	/**
-	 * Draw all objects in the world 
+	 * Draw all objects in the world
 	 */
 	private void drawWorld() {
 		ArrayList<StaticObject> objects;
@@ -318,11 +328,12 @@ public class FreeGameScreen implements Screen, ActionListener,ControllerListener
 			} else if (s instanceof Enemy) {
 				try {
 					System.out.println(World.classe);
-					switch  ((int) World.classe.getMethod("getMoveDirection", Vector2.class).invoke(s,
-							World.player.getPosition())){
+					switch ((int) World.classe.getMethod("getMoveDirection", Vector2.class).invoke(s,
+							World.player.getPosition())) {
 					case 0:
 						if (((Enemy) s).shoting)
-							worldBatch.draw(ImagePool.shotEnemyAnimationUp.getKeyFrame(((Enemy) s).shotAnimationTime, true),
+							worldBatch.draw(
+									ImagePool.shotEnemyAnimationUp.getKeyFrame(((Enemy) s).shotAnimationTime, true),
 									s.getPosition().x, (int) s.getPosition().y);
 						else
 							worldBatch.draw(ImagePool.enemyAnimationUp.getKeyFrame(((Enemy) s).stateEnemyTime, true),
@@ -435,7 +446,8 @@ public class FreeGameScreen implements Screen, ActionListener,ControllerListener
 
 	/**
 	 * find Texture that stand for parameter s
-	 * @param s 
+	 * 
+	 * @param s
 	 * @return Texture depending value of s
 	 */
 	private Texture getLetterImage(Letter s) {
@@ -491,47 +503,67 @@ public class FreeGameScreen implements Screen, ActionListener,ControllerListener
 	}
 
 	/**
-	 * Draws the information about player life, number of munitions and score 
+	 * Draws the information about player life, number of munitions and score
 	 */
 	private void drawInfoBar() {
 		float x = gameCam.position.x;
 		float y = gameCam.position.y;
 		Texture currentWeapon = getPlayerWeapon();
-		worldBatch.draw(ImagePool.bar,x-viewport.getWorldWidth()/2,y+200*viewport.getWorldHeight()/GameConfig.SCREEN_HEIGHT,ImagePool.bar.getWidth()*gameCam.viewportWidth/GameConfig.MAP_SIZE.x,ImagePool.bar.getHeight());
-		worldBatch.draw(currentWeapon, x - 50*viewport.getWorldWidth()/GameConfig.SCREEN_WIDTH, y + 200*viewport.getWorldHeight()/GameConfig.SCREEN_HEIGHT);
-		worldBatch.draw(ImagePool.navigationMap,x- viewport.getWorldWidth()/2, y-viewport.getWorldHeight() / 2,ImagePool.navigationMap.getWidth()*gameCam.viewportWidth/GameConfig.SCREEN_WIDTH,ImagePool.navigationMap.getHeight()*gameCam.viewportHeight/GameConfig.SCREEN_HEIGHT);
-		int numShots=World.player.getNumTotShot();
-		int numShotsAvailable=World.player.getNumShot();
-		score.draw(worldBatch, "PUNTEGGIO   " + worldGame.score, x+ 150*viewport.getWorldWidth()/GameConfig.SCREEN_WIDTH, y + 220*viewport.getWorldHeight()/GameConfig.SCREEN_HEIGHT);
-		score.draw(worldBatch, "       "+numShotsAvailable+"  /  "+numShots, x - 50*viewport.getWorldWidth()/GameConfig.SCREEN_WIDTH+currentWeapon.getWidth(), y + 220*viewport.getWorldHeight()/GameConfig.SCREEN_HEIGHT);
+		worldBatch.draw(ImagePool.bar, x - viewport.getWorldWidth() / 2,
+				y + 200 * viewport.getWorldHeight() / GameConfig.SCREEN_HEIGHT,
+				ImagePool.bar.getWidth() * gameCam.viewportWidth / GameConfig.MAP_SIZE.x, ImagePool.bar.getHeight());
+		worldBatch.draw(currentWeapon, x - 50 * viewport.getWorldWidth() / GameConfig.SCREEN_WIDTH,
+				y + 200 * viewport.getWorldHeight() / GameConfig.SCREEN_HEIGHT);
+		worldBatch.draw(ImagePool.navigationMap, x - viewport.getWorldWidth() / 2, y - viewport.getWorldHeight() / 2,
+				ImagePool.navigationMap.getWidth() * gameCam.viewportWidth / GameConfig.SCREEN_WIDTH,
+				ImagePool.navigationMap.getHeight() * gameCam.viewportHeight / GameConfig.SCREEN_HEIGHT);
+		int numShots = World.player.getNumTotShot();
+		int numShotsAvailable = World.player.getNumShot();
+		score.draw(worldBatch, "PUNTEGGIO   " + worldGame.score,
+				x + 150 * viewport.getWorldWidth() / GameConfig.SCREEN_WIDTH,
+				y + 220 * viewport.getWorldHeight() / GameConfig.SCREEN_HEIGHT);
+		score.draw(worldBatch, "       " + numShotsAvailable + "  /  " + numShots,
+				x - 50 * viewport.getWorldWidth() / GameConfig.SCREEN_WIDTH + currentWeapon.getWidth(),
+				y + 220 * viewport.getWorldHeight() / GameConfig.SCREEN_HEIGHT);
 		if (World.player.lifePoints > 0) {
-			worldBatch.draw(ImagePool.life100, x - 245*viewport.getWorldWidth()/GameConfig.SCREEN_WIDTH, y + 200*viewport.getWorldHeight()/GameConfig.SCREEN_HEIGHT, (190 * World.player.lifePoints) / 1000, 33);
+			worldBatch.draw(ImagePool.life100, x - 245 * viewport.getWorldWidth() / GameConfig.SCREEN_WIDTH,
+					y + 200 * viewport.getWorldHeight() / GameConfig.SCREEN_HEIGHT,
+					(190 * World.player.lifePoints) / 1000, 33);
 		}
 
 	}
 
 	/**
-	 * Draw small map that represents all game map 
+	 * Draw small map that represents all game map
 	 */
 	private void drawNavigationMap(int level) {
 		float x = gameCam.position.x;
 		float y = gameCam.position.y;
 		float reduceXPlayer = worldGame.player.getPosition().x;
 		float reduceYPlayer = worldGame.player.getPosition().y;
-		reduceXPlayer = ((reduceXPlayer * ImagePool.navigationMap.getWidth()*gameCam.viewportWidth/GameConfig.SCREEN_WIDTH) / GameConfig.MAP_SIZE.x) + x - viewport.getWorldWidth()/ 2;
-		reduceYPlayer = ((reduceYPlayer * ImagePool.navigationMap.getHeight()*gameCam.viewportHeight/GameConfig.SCREEN_HEIGHT) / GameConfig.MAP_SIZE.y) + y - viewport.getWorldHeight()/ 2;
+		reduceXPlayer = ((reduceXPlayer * ImagePool.navigationMap.getWidth() * gameCam.viewportWidth
+				/ GameConfig.SCREEN_WIDTH) / GameConfig.MAP_SIZE.x) + x - viewport.getWorldWidth() / 2;
+		reduceYPlayer = ((reduceYPlayer * ImagePool.navigationMap.getHeight() * gameCam.viewportHeight
+				/ GameConfig.SCREEN_HEIGHT) / GameConfig.MAP_SIZE.y) + y - viewport.getWorldHeight() / 2;
 		worldBatch.draw(ImagePool.navigationPlayer, reduceXPlayer - ImagePool.navigationPlayer.getWidth() / 2,
-				reduceYPlayer - ImagePool.navigationPlayer.getHeight() / 2,ImagePool.navigationPlayer.getWidth()*gameCam.viewportWidth/GameConfig.SCREEN_WIDTH,ImagePool.navigationPlayer.getHeight()*gameCam.viewportHeight/GameConfig.SCREEN_HEIGHT);
+				reduceYPlayer - ImagePool.navigationPlayer.getHeight() / 2,
+				ImagePool.navigationPlayer.getWidth() * gameCam.viewportWidth / GameConfig.SCREEN_WIDTH,
+				ImagePool.navigationPlayer.getHeight() * gameCam.viewportHeight / GameConfig.SCREEN_HEIGHT);
 		for (Enemy e : worldGame.enemies) {
 			float reduceXEnemy = e.getPosition().x;
 			float reduceYEnemy = e.getPosition().y;
-			reduceXEnemy = ((reduceXEnemy * ImagePool.navigationMap.getWidth()*gameCam.viewportWidth/GameConfig.SCREEN_WIDTH) / GameConfig.MAP_SIZE.x) + x - viewport.getWorldWidth()/ 2;
-			reduceYEnemy = ((reduceYEnemy * ImagePool.navigationMap.getHeight()*gameCam.viewportHeight/GameConfig.SCREEN_HEIGHT) / GameConfig.MAP_SIZE.y) + y - viewport.getWorldHeight()/ 2;
+			reduceXEnemy = ((reduceXEnemy * ImagePool.navigationMap.getWidth() * gameCam.viewportWidth
+					/ GameConfig.SCREEN_WIDTH) / GameConfig.MAP_SIZE.x) + x - viewport.getWorldWidth() / 2;
+			reduceYEnemy = ((reduceYEnemy * ImagePool.navigationMap.getHeight() * gameCam.viewportHeight
+					/ GameConfig.SCREEN_HEIGHT) / GameConfig.MAP_SIZE.y) + y - viewport.getWorldHeight() / 2;
 			worldBatch.draw(ImagePool.navigationEnemy, reduceXEnemy - ImagePool.navigationEnemy.getWidth() / 2,
-					reduceYEnemy - ImagePool.navigationEnemy.getHeight() / 2,ImagePool.navigationEnemy.getWidth()*gameCam.viewportWidth/GameConfig.SCREEN_WIDTH,ImagePool.navigationEnemy.getHeight()*gameCam.viewportHeight/GameConfig.SCREEN_HEIGHT);
+					reduceYEnemy - ImagePool.navigationEnemy.getHeight() / 2,
+					ImagePool.navigationEnemy.getWidth() * gameCam.viewportWidth / GameConfig.SCREEN_WIDTH,
+					ImagePool.navigationEnemy.getHeight() * gameCam.viewportHeight / GameConfig.SCREEN_HEIGHT);
 		}
 
 	}
+
 	/**
 	 * 
 	 * @return Texture that stand for players's current weapon
@@ -543,6 +575,9 @@ public class FreeGameScreen implements Screen, ActionListener,ControllerListener
 			return ImagePool.machineGun;
 	}
 
+	/**
+	 * update cam position when user change display's dimension
+	 */
 	@Override
 	public void resize(int width, int height) {
 		if (width > gameCam.viewportWidth) {
@@ -596,63 +631,71 @@ public class FreeGameScreen implements Screen, ActionListener,ControllerListener
 	}
 
 	/**
-	 * Handles timers of free mode game 
+	 * Handles timers of free mode game
 	 */
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
-		if(arg0.getActionCommand().equals("increase")){
+		if (arg0.getActionCommand().equals("increase")) {
 			timer.stop();
-			timer.setDelay(((int)(timer.getDelay()/1.5)));
+			timer.setDelay(((int) (timer.getDelay() / 1.5)));
 			timer.start();
-		}
-		else worldGame.generateEnemy();
+		} else
+			worldGame.generateEnemy();
 
 	}
 
 	@Override
 	public void connected(Controller controller) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void disconnected(Controller controller) {
 		// TODO Auto-generated method stub
-		
-	}
 
+	}
+	/**
+	 * handle the input that user generates with the controller
+	 * @param buttonCode is the code of the button pressed
+	 * @param controller is the controller that generates the input
+	 */
 	@Override
 	public boolean buttonDown(Controller controller, int buttonCode) {
-		boolean inputIsValid=false;
-		
-		if(gameMenu.getScreen().getClass().getName().contains("FreeGameScreen"))
-			inputIsValid=true;
-		
-		if(inputIsValid){
-			if(buttonCode==2)
-				worldGame.player.controllerHasChangedWeapon=true;
-			else if(buttonCode==3)
-				worldGame.player.controllerHasShoted=true;
-			else if(buttonCode == 6)
-				worldGame.player.controllerHasChangedVelocity=true;
-			else if(buttonCode == 9)
-				gameIsInPause=true;
-		}	
+		boolean inputIsValid = false;
+
+		if (gameMenu.getScreen().getClass().getName().contains("FreeGameScreen"))
+			inputIsValid = true;
+
+		if (inputIsValid) {
+			if (buttonCode == 2)
+				worldGame.player.controllerHasChangedWeapon = true;
+			else if (buttonCode == 3)
+				worldGame.player.controllerHasShoted = true;
+			else if (buttonCode == 6)
+				worldGame.player.controllerHasChangedVelocity = true;
+			else if (buttonCode == 9)
+				gameIsInPause = true;
+		}
 		return false;
 	}
-
+	/**
+	 * handle the input that user generates with the controller
+	 * @param buttonCode is the code of the button released
+	 * @param controller is the controller that generates the input
+	 */
 	@Override
 	public boolean buttonUp(Controller controller, int buttonCode) {
-		boolean inputIsValid=false;
-		
-		if(gameMenu.getScreen().getClass().getName().contains("FreeGameScreen"))
-			inputIsValid=true;
-		
-		if(inputIsValid){
-			if(buttonCode==3)
-				worldGame.player.controllerHasShoted=false;
-			else if(buttonCode == 6)
-				worldGame.player.controllerHasChangedVelocity=false;
+		boolean inputIsValid = false;
+
+		if (gameMenu.getScreen().getClass().getName().contains("FreeGameScreen"))
+			inputIsValid = true;
+
+		if (inputIsValid) {
+			if (buttonCode == 3)
+				worldGame.player.controllerHasShoted = false;
+			else if (buttonCode == 6)
+				worldGame.player.controllerHasChangedVelocity = false;
 		}
 		return false;
 
@@ -664,10 +707,18 @@ public class FreeGameScreen implements Screen, ActionListener,ControllerListener
 		return false;
 	}
 
+	/**
+	 * update the direction selected with the controller
+	 * 
+	 * @param controller
+	 *            is the controller that generates the event
+	 * @param value
+	 *            is the direction selected
+	 */
 	@Override
 	public boolean povMoved(Controller controller, int povCode, PovDirection value) {
-		if(gameMenu.getScreen().getClass().getName().contains("FreeGameScreen"))
-				povDirection=value;
+		if (gameMenu.getScreen().getClass().getName().contains("FreeGameScreen"))
+			povDirection = value;
 		return false;
 	}
 

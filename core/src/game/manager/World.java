@@ -40,45 +40,53 @@ import game.threads.EnemyThread;
 import game.personalAI.*;
 
 public class World {
-	
+
 	static public Class<? extends Enemy> classe;
 	public String mission;
 	public int found;
-	static public ArrayList<StaticObject> objects = new ArrayList<StaticObject>();
-	static public ArrayList<Enemy> enemies = new ArrayList<Enemy>();
-	static public ArrayList<Enemy> newEnemies = new ArrayList<Enemy>();
-	static public Character player = new Character();
-	static public ArrayList<ShotPlayer> shotsPlayer = new ArrayList<ShotPlayer>();
-	static public ArrayList<ShotEnemy> shotsEnemy = new ArrayList<ShotEnemy>();
+	static public ArrayList<StaticObject> objects;
+	static public ArrayList<Enemy> enemies;
+	static public Character player;
+	static public ArrayList<ShotPlayer> shotsPlayer;
+	static public ArrayList<ShotEnemy> shotsEnemy;
 	static public int level;
-	public boolean levelCompleted = false;
+	public boolean levelCompleted;
 	static Well well;
-	Map gameMap = new Map(level);
+	Map gameMap;
 	public EnemyThread enemiesOne;
 	public String className;
-	public static int score = 0;
+	public static int score;
 
-	public static boolean playerShot = false;
-	public static boolean enemyAdded = false;
+	public static boolean playerShot;
+	public static boolean enemyAdded;
 
 	/**
-	 * Create a new world 
-	 * @param i indicates level world
-	 * @param playerPosition indicates where we want player located
-	 * @param className class that contain the AI that we want
+	 * Create a new world
+	 * 
+	 * @param i
+	 *            indicates level world
+	 * @param playerPosition
+	 *            indicates where we want player located
+	 * @param className
+	 *            class that contain the AI that we want
 	 */
 	public World(int i, Vector2 playerPosition, String className) {
 
-		// consentire all'user di selezionare l'intelligenza, poi dopo fare il
-		// seguito in base a cosa selezionato
-		// per beppe, sotto carico la classe nemico giusto per lasciare tutto
-		// com'era altrimenti volendo basta mettere come package quello delle
-		// intelligenze e il nome della classe e funziona lo stesso
+		objects = new ArrayList<StaticObject>();
+		shotsPlayer = new ArrayList<ShotPlayer>();
+		enemies = new ArrayList<Enemy>();
+		player = new Character();
+		shotsEnemy = new ArrayList<ShotEnemy>();
+		levelCompleted = false;
+		gameMap = new Map(level);
+		score = 0;
+		playerShot = false;
+		enemyAdded = false;
 		this.className = className;
-		if (className == "Enemy" || className == null || className=="game.object.Enemy")
+		if (className == "Enemy" || className == null || className == "game.object.Enemy")
 			try {
 				classe = (Class<? extends Enemy>) Class.forName("game.object.Enemy");
-				className="game.object.Enemy";
+				className = "game.object.Enemy";
 			} catch (ClassNotFoundException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -123,13 +131,15 @@ public class World {
 
 	/**
 	 * Check if the class loaded is a class that extends enemy
+	 * 
 	 * @return boolean
 	 */
 	private boolean checkThatObjectIsAnEnemy() {
 		if (classe.isInterface())
 			return false;
 		try {
-			if (classe.getMethod("getMoveDirection", Vector2.class) != null && classe.getMethod("shotAI") != null && classe.getMethod("getType")!=null )
+			if (classe.getMethod("getMoveDirection", Vector2.class) != null && classe.getMethod("shotAI") != null
+					&& classe.getMethod("getType") != null)
 				return true;
 		} catch (NoSuchMethodException e) {
 			e.printStackTrace();
@@ -148,7 +158,6 @@ public class World {
 		this.gameMap = gameMap;
 	}
 
-	
 	public void movePlayerUp(float dt) {
 		player.move(0, dt);
 	}
@@ -179,91 +188,97 @@ public class World {
 			e.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * Read file and populate world
-	 * @param fileMap file that contains the information of world's object
+	 * 
+	 * @param fileMap
+	 *            file that contains the information of world's object
 	 * @throws IOException
 	 */
 	private void loadObjectFromFile(File fileMap) throws IOException {
-		//FileReader reader =new FileReader(fileMap);
-		BufferedReader buffer = new BufferedReader(new InputStreamReader(getClass().getClassLoader().getResourceAsStream(fileMap.getPath())));
-		if(GameMenu.loadGame){
-			String line=buffer.readLine();
+		// FileReader reader =new FileReader(fileMap);
+		BufferedReader buffer = new BufferedReader(
+				new InputStreamReader(getClass().getClassLoader().getResourceAsStream(fileMap.getPath())));
+		if (GameMenu.loadGame) {
+			String line = buffer.readLine();
 
 			try {
-				classe=(Class<? extends Enemy>) Class.forName(line);
+				classe = (Class<? extends Enemy>) Class.forName(line);
 			} catch (ClassNotFoundException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			GameMenu.className=line;
-			
+			GameMenu.className = line;
+
 		}
-		String line=buffer.readLine();
-		while(line!= null){
-			String type = new String(),codx = new String(),cody = new String();
-			char [] arrayLine = new char[line.length()];
+		String line = buffer.readLine();
+		while (line != null) {
+			String type = new String(), codx = new String(), cody = new String();
+			char[] arrayLine = new char[line.length()];
 			line.getChars(0, line.length(), arrayLine, 0);
 			int i = 0;
-			for (; arrayLine[i]!=';';i++) {
-				type+=arrayLine[i];
+			for (; arrayLine[i] != ';'; i++) {
+				type += arrayLine[i];
 			}
 			i++;
-			for (; arrayLine[i]!=';';i++) {
-				codx+=arrayLine[i];
+			for (; arrayLine[i] != ';'; i++) {
+				codx += arrayLine[i];
 			}
 			i++;
-			for (; arrayLine[i]!=';';i++) {
-				cody+=arrayLine[i];
+			for (; arrayLine[i] != ';'; i++) {
+				cody += arrayLine[i];
 			}
-			if(type.equals("i")){
-				score=convert(codx);
-				player.lifePoints=convert(cody);
-			}
-			else if(type.equals("l")){
-				level=convert(codx);
-				found=convert(cody);
-			}
-			else{
-				StaticObject tmp=createNewObject(type,codx,cody);
-				if(tmp instanceof Map)
-					gameMap=(Map) tmp;
-				else if(tmp instanceof Enemy){
-				//	((Enemy)tmp).setAI(50);
-					enemies.add((Enemy)tmp);
-				}
-				else if(tmp instanceof Well)
-					well=(Well)tmp;
-				else if(tmp instanceof Character){
-					player=(Character)tmp;
-				}
-				else
+			if (type.equals("i")) {
+				score = convert(codx);
+				player.lifePoints = convert(cody);
+			} else if (type.equals("l")) {
+				level = convert(codx);
+				found = convert(cody);
+			} else {
+				StaticObject tmp = createNewObject(type, codx, cody);
+				if (tmp instanceof Map)
+					gameMap = (Map) tmp;
+				else if (tmp instanceof Enemy) {
+					// ((Enemy)tmp).setAI(50);
+					enemies.add((Enemy) tmp);
+				} else if (tmp instanceof Well)
+					well = (Well) tmp;
+				else if (tmp instanceof Character) {
+					player = (Character) tmp;
+				} else
 					objects.add(tmp);
-			
+
 			}
-			line=buffer.readLine();
+			line = buffer.readLine();
 		}
 		buffer.close();
 	}
-	
-	
+
 	/**
 	 * Creates an objects that have this code type and set its position
-	 * @param codtype Object code type 
-	 * @param codx code of x position
-	 * @param cody code of y position
-	 * @return A new instance of the class with that code located in position codx,cody 
+	 * 
+	 * @param codtype
+	 *            Object code type
+	 * @param codx
+	 *            code of x position
+	 * @param cody
+	 *            code of y position
+	 * @return A new instance of the class with that code located in position
+	 *         codx,cody
 	 */
 	private StaticObject createNewObject(String codtype, String codx, String cody) {
 		StaticObject tmp = getObject(codtype);
 		tmp.setPosition(new Vector2(convert(codx), convert(cody)));
 		return tmp;
 	}
+
 	/**
 	 * convert string to int
-	 * @param cod string that will be converted
-	 * @return int 
+	 * 
+	 * @param cod
+	 *            string that will be converted
+	 * @return int
 	 */
 	private int convert(String cod) {
 		char[] tmp = cod.toCharArray();
@@ -277,7 +292,8 @@ public class World {
 
 	/**
 	 * 
-	 * @param codType code of the object that we need 
+	 * @param codType
+	 *            code of the object that we need
 	 * @return A new instance of the class that have that code
 	 */
 	private StaticObject getObject(String codType) {
@@ -350,7 +366,8 @@ public class World {
 
 	/**
 	 * 
-	 * @param level indicates level that we want load
+	 * @param level
+	 *            indicates level that we want load
 	 * @return Path of the file map depending on level
 	 */
 	public String getLevelFile(int level) {
@@ -395,7 +412,9 @@ public class World {
 
 	/**
 	 * check if the parameter o collide with each other object in the world
-	 * @param o StaticObject who we wants know if it collides 
+	 * 
+	 * @param o
+	 *            StaticObject who we wants know if it collides
 	 * @return StaticObject that collied with o
 	 */
 	public static StaticObject checkCollisionObject(StaticObject o) {
@@ -440,7 +459,9 @@ public class World {
 
 	/**
 	 * Add new shot of parameter currentPlayer
-	 * @param currentPlayer NetCharacter that have shot
+	 * 
+	 * @param currentPlayer
+	 *            NetCharacter that have shot
 	 */
 	public void playerHasShot() {
 		ArrayList<ShotPlayer> newShots = new ArrayList<ShotPlayer>();
@@ -458,6 +479,7 @@ public class World {
 
 	/**
 	 * kills enemy
+	 * 
 	 * @param collisionObject
 	 * @param tmp
 	 */
@@ -516,7 +538,6 @@ public class World {
 		shotsEnemy.removeAll(shotEnemyDied);
 	}
 
-	
 	public void stopEnemy() {
 
 		enemiesOne.stop();
@@ -531,6 +552,7 @@ public class World {
 
 	/**
 	 * check if player is alive
+	 * 
 	 * @return
 	 */
 	public boolean playerIsAlive() {
@@ -540,10 +562,10 @@ public class World {
 	}
 
 	/**
-	 * empties all list of object in the world and stop thread 
+	 * empties all list of object in the world and stop thread
 	 */
-	public synchronized void clear(){
-		score=0;
+	public synchronized void clear() {
+		score = 0;
 		enemiesOne.stopThread = true;
 		objects.clear();
 		well = null;
@@ -552,7 +574,6 @@ public class World {
 		shotsPlayer.clear();
 	}
 
-	
 	/**
 	 * function that create new enemy and add to the enemy list
 	 */

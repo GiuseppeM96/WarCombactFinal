@@ -12,20 +12,20 @@ import game.utility.StepDirection;
 
 public class Enemy extends DynamicObject {
 
-	//public int AI;
+	// public int AI;
 	public int researchDirection;
 	public int actionDistance;
 	public boolean collided = false;
 	public boolean alive = true;
-	public boolean shoting=false;
-	public float shotAnimationTime=0.f;
-	public float stateEnemyTime=0.f;
+	public boolean shoting = false;
+	public float shotAnimationTime = 0.f;
+	public float stateEnemyTime = 0.f;
 	protected StepDirection[] lastSteps;
 	protected final int numSteps = 20000;
 	int contDis = 0;
 	public int cont = 0;
-	public boolean standing=false;
-	public boolean shoted=false;
+	public boolean standing = false;
+	public boolean shoted = false;
 	protected ArrayList<ShotEnemy> newShots = new ArrayList<ShotEnemy>();
 
 	public Enemy() {
@@ -38,88 +38,86 @@ public class Enemy extends DynamicObject {
 		actionDistance = 200;
 		researchDirection = (int) (Math.random() % 2);
 	}
-	/*public void setAI(int AI){
-		this.AI=AI;
-	}*/
+
 	public int getMoveDirection(Vector2 playerPosition) {
 		int returnVal = getCodDirection();
-		standing=false;
+		standing = false;
 		if (Math.sqrt(Math.pow((position.x - playerPosition.x), 2)
 				+ Math.pow((position.y - playerPosition.y), 2)) < actionDistance) {
 			if (Math.sqrt(Math.pow((position.x - playerPosition.x), 2)
-					+ Math.pow((position.y - playerPosition.y), 2)) < actionDistance/2){
-				if((position.x>playerPosition.x-5 && position.x<playerPosition.x+5)){
+					+ Math.pow((position.y - playerPosition.y), 2)) < actionDistance / 2) {
+				if ((position.x > playerPosition.x - 5 && position.x < playerPosition.x + 5)) {
 					int dir;
-					if(position.y>=playerPosition.y)
-						dir=2;
-					else dir=0;
+					if (position.y >= playerPosition.y)
+						dir = 2;
+					else
+						dir = 0;
 					setDirection(dir);
-					if(!shoting){
-						shoting=true;
+					if (!shoting) {
+						shoting = true;
 						shotAI();
 					}
-					standing=true;
-					stateEnemyTime=0.f;
-				}
-				else if(position.y>playerPosition.y-5 && position.y<playerPosition.y+5){
-					
+					standing = true;
+					stateEnemyTime = 0.f;
+				} else if (position.y > playerPosition.y - 5 && position.y < playerPosition.y + 5) {
+
 					int dir;
-					if(position.x>=playerPosition.x)
-						dir=3;
-					else dir=1;
+					if (position.x >= playerPosition.x)
+						dir = 3;
+					else
+						dir = 1;
 					setDirection(dir);
-					if(!shoting){
-						shoting=true;
+					if (!shoting) {
+						shoting = true;
 						shotAI();
 					}
-					standing=true;
-					stateEnemyTime=0.f;
+					standing = true;
+					stateEnemyTime = 0.f;
 				}
-			}
-			else if (!collided) {
+			} else if (!collided) {
 				setVelocity(ConstantField.ENEMY_SUPER_VELOCITY);
 				if (researchDirection == 0) {
 					if (playerPosition.x < position.x - 5) {
-						addSteps(StepDirection.SX,cont);
-						if(cont<numSteps)
+						addSteps(StepDirection.SX, cont);
+						if (cont < numSteps)
 							cont++;
-							return 3;
+						return 3;
 					}
 					if (playerPosition.x > position.x + 5) {
-						addSteps(StepDirection.DX,cont);
-						if(cont<numSteps)
+						addSteps(StepDirection.DX, cont);
+						if (cont < numSteps)
 							cont++;
-							return 1;
+						return 1;
 					}
 					researchDirection = 1;
 				}
 				if (researchDirection == 1) {
 					if (playerPosition.y > position.y + 5) {
-						addSteps(StepDirection.UP,cont);
-						if(cont<numSteps)
+						addSteps(StepDirection.UP, cont);
+						if (cont < numSteps)
 							cont++;
-							return 0;
+						return 0;
 					}
 					if (playerPosition.y < position.y - 5) {
-						addSteps(StepDirection.DOWN,cont);
-						if(cont<numSteps)
+						addSteps(StepDirection.DOWN, cont);
+						if (cont < numSteps)
 							cont++;
-							return 2;
+						return 2;
 					}
 					researchDirection = 0;
 				}
 			} else {
 
-				if(!shoting){
+				if (!shoting) {
 					if (cont < 0) {
 						collided = false;
 						cont = 0;
-						addSteps(convertDir(returnVal),cont);
+						addSteps(convertDir(returnVal), cont);
 					} else {
-						StepDirection c=StepDirection.UP;
-						if(cont>=0 && cont<=numSteps)
+						StepDirection c = StepDirection.UP;
+						if (cont >= 0 && cont <= numSteps)
 							c = lastSteps[cont];
-						if(c != StepDirection.ERR)
+						if (c != StepDirection.ERR)
 							returnVal = (convertStepDirection(c) + 2) % 4;
 						cont--;
 					}
@@ -128,33 +126,34 @@ public class Enemy extends DynamicObject {
 			}
 		}
 		setVelocity(ConstantField.ENEMY_STD_VELOCITY);
-		if (!collided){
-			addSteps(convertDir(returnVal),cont);
-			if(cont<numSteps)
+		if (!collided) {
+			addSteps(convertDir(returnVal), cont);
+			if (cont < numSteps)
 				cont++;
-		}
-		else{
+		} else {
 			if (cont < 0) {
 				collided = false;
 				cont = 0;
-				addSteps(convertDir(returnVal),cont);
+				addSteps(convertDir(returnVal), cont);
 				cont++;
 			} else {
-				if(cont<numSteps){
+				if (cont < numSteps) {
 					StepDirection c = lastSteps[cont];
 					returnVal = (convertStepDirection(c) + 2) % 4;
 					cont--;
 				}
 			}
 		}
-		if(shoting)
+		if (shoting)
 			return getCodDirection();
 		return returnVal;
 	}
+
 	@Override
-	public String getType(){
+	public String getType() {
 		return "Nemico";
 	}
+
 	protected int convertStepDirection(StepDirection d) {
 		switch (d) {
 		case DOWN:
@@ -185,36 +184,37 @@ public class Enemy extends DynamicObject {
 		}
 	}
 
-	protected void addSteps(StepDirection dir,int cont) {
-		if(cont>=numSteps){
+	protected void addSteps(StepDirection dir, int cont) {
+		if (cont >= numSteps) {
 			cont--;
 			shiftArray(lastSteps);
 		}
-		if(cont>=0)
+		if (cont >= 0)
 			lastSteps[cont] = dir;
 	}
 
 	private void shiftArray(StepDirection[] last20Steps2) {
-		for (int i = 0; i < numSteps-1; i++)
+		for (int i = 0; i < numSteps - 1; i++)
 			last20Steps2[i] = last20Steps2[i + 1];
 	}
 
 	public void shotAI() {
-		Vector2 directionShot=new Vector2();
-		switch(getCodDirection()){
-			case 0:
-				directionShot.set(0, 1);
-				break;
-			case 1:
-				directionShot.set(1, 0);
-				break;
-			case 2:
-				directionShot.set(0, -1);
-				break;
-			case 3:
-				directionShot.set(-1, 0);
-				break;
-			default : break;
+		Vector2 directionShot = new Vector2();
+		switch (getCodDirection()) {
+		case 0:
+			directionShot.set(0, 1);
+			break;
+		case 1:
+			directionShot.set(1, 0);
+			break;
+		case 2:
+			directionShot.set(0, -1);
+			break;
+		case 3:
+			directionShot.set(-1, 0);
+			break;
+		default:
+			break;
 		}
 		newShots.add(new ShotEnemy(0, new Vector2(position), directionShot));
 		newShots.add(new ShotEnemy(-1, new Vector2(position), directionShot));
@@ -225,5 +225,5 @@ public class Enemy extends DynamicObject {
 		World.shotsEnemy.addAll(newShots);
 		newShots.clear();
 	}
-	
+
 }

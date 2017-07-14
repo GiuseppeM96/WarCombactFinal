@@ -30,6 +30,7 @@ import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 import game.manager.GameMenu;
+import game.pools.GameConfig;
 import game.pools.ImagePool;
 
 public class GameModMenu implements Screen, ControllerListener {
@@ -69,13 +70,13 @@ public class GameModMenu implements Screen, ControllerListener {
 
 		this.gameMenu = gameMenu;
 		controllerMoveDirection = -1;
-		controller = new Controllers();
-		controller.addListener(this);
+		// controller = new Controllers();
+		GameConfig.controller.addListener(this);
 		hasPressedEnter = false;
 		gameIsStarting = false;
-		wrongName=false;
+		wrongName = false;
 		animation = 0;
-		lastNameInsert="";
+		lastNameInsert = "";
 		font = new BitmapFont();
 		macchinaSprite = new Sprite(ImagePool.macchina);
 		joystickSprite = new Sprite(ImagePool.joystick);
@@ -123,6 +124,11 @@ public class GameModMenu implements Screen, ControllerListener {
 
 	}
 
+	/**
+	 * init the matrix that contains the position where the itemSelected image
+	 * could stay and the size of the itemSelected that depends by the key
+	 * selected
+	 */
 	private void initMatrix() {
 		matrixDimension[0][0] = new Vector2(storyMode.getWidth() + storyMode.getWidth() / 2,
 				storyMode.getHeight() + storyMode.getHeight() / 2);
@@ -157,6 +163,9 @@ public class GameModMenu implements Screen, ControllerListener {
 
 	}
 
+	/**
+	 * draw the scene
+	 */
 	private void draw() {
 		backGround.draw(batch);
 		macchinaSprite.draw(batch);
@@ -168,11 +177,14 @@ public class GameModMenu implements Screen, ControllerListener {
 		font.setColor(Color.WHITE);
 
 		font.draw(batch, "I N S E R T  N A M E :", 230, 341);
-		if(wrongName && name.getText().equals(lastNameInsert))
+		if (wrongName && name.getText().equals(lastNameInsert))
 			font.draw(batch, "I N V A L I D  N A M E", 230, 241);
 
 	}
 
+	/**
+	 * handle the input and evolve the scene
+	 */
 	private void update() {
 		if (gameIsStarting) {
 
@@ -205,32 +217,32 @@ public class GameModMenu implements Screen, ControllerListener {
 			hasPressedEnter = false;
 			switch ((int) itemSelected.x) {
 			case 0:
-				if(GameMenu.loadGame)
-					if(itemSelected.y == 0){
-						File f = new File(getClass().getClassLoader().getResource("Story/"+name.getText()+".txt").getFile());
-						if(f.exists()){
+				if (GameMenu.loadGame)
+					if (itemSelected.y == 0) {
+						File f = new File(
+								getClass().getClassLoader().getResource("Story/" + name.getText() + ".txt").getFile());
+						if (f.exists()) {
 							Gdx.input.setInputProcessor(null);
 							gameIsStarting = true;
-							wrongName=false;
+							wrongName = false;
 							gameMenu.userInfo.setName(name.getText());
+						} else {
+							wrongName = true;
+							lastNameInsert = name.getText();
 						}
-						else{
-							wrongName=true;
-							lastNameInsert=name.getText();
-						}
-					}
-					else{
-						File f = new File(getClass().getClassLoader().getResource("Free/"+name.getText()+".txt").getFile());
-						if(f.exists()){
+					} else {
+						File f = new File(
+								getClass().getClassLoader().getResource("Free/" + name.getText() + ".txt").getFile());
+						if (f.exists()) {
 							System.out.println(f.getAbsolutePath());
 							Gdx.input.setInputProcessor(null);
 							gameIsStarting = true;
-							wrongName=false;
+							wrongName = false;
 							gameMenu.userInfo.setName(name.getText());
-						}
-						else wrongName=true;
+						} else
+							wrongName = true;
 					}
-				else{
+				else {
 					Gdx.input.setInputProcessor(null);
 					gameIsStarting = true;
 					gameMenu.userInfo.setName(name.getText());
@@ -336,9 +348,17 @@ public class GameModMenu implements Screen, ControllerListener {
 
 	}
 
+	/**
+	 * handle the input that user generates with the controller
+	 * 
+	 * @param buttonCode
+	 *            is the code of the button pressed
+	 * @param controller
+	 *            is the controller that generates the input
+	 */
 	@Override
 	public boolean buttonDown(Controller controller, int buttonCode) {
-	
+
 		if (buttonCode == 0 && gameMenu.getScreen().getClass().getName().contains("GameModMenu"))
 			hasPressedEnter = true;
 		return false;
@@ -356,13 +376,21 @@ public class GameModMenu implements Screen, ControllerListener {
 		return false;
 	}
 
+	/**
+	 * update the direction selected with the controller
+	 * 
+	 * @param controller
+	 *            is the controller that generates the event
+	 * @param value
+	 *            is the direction selected
+	 */
 	@Override
 	public boolean povMoved(Controller controller, int povCode, PovDirection value) {
-		boolean inputIsValid=false;
-		if(gameMenu.getScreen().getClass().getName().contains("GameModMenu"))
-			inputIsValid=true;
-		if(inputIsValid){
-			if (value == PovDirection.north )
+		boolean inputIsValid = false;
+		if (gameMenu.getScreen().getClass().getName().contains("GameModMenu"))
+			inputIsValid = true;
+		if (inputIsValid) {
+			if (value == PovDirection.north)
 				controllerMoveDirection = 0;
 			else if (value == PovDirection.east)
 				controllerMoveDirection = 1;

@@ -6,9 +6,8 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
+public class ServerReciverMessage extends Thread {
 
-public class ServerReciverMessage extends Thread{
-	
 	Socket socket;
 	BufferedReader in;
 	PrintWriter out;
@@ -16,48 +15,52 @@ public class ServerReciverMessage extends Thread{
 	int code;
 	public boolean scoreRecived;
 	public boolean stopTread;
-	
+
 	/**
 	 * Create a thread that listen a message from a single client
-	 * @param s indicates socket where message travel
-	 * @param serv server that will send received message to other client
+	 * 
+	 * @param s
+	 *            indicates socket where message travel
+	 * @param serv
+	 *            server that will send received message to other client
 	 * @param i
 	 */
-	public ServerReciverMessage(Socket s,MyServer serv,int i) {
-		socket=s;
-		server=serv;
-		code=i;
-		scoreRecived=false;
-		stopTread=false;
+	public ServerReciverMessage(Socket s, MyServer server, int i) {
+		socket = s;
+		this.server = server;
+		code = i;
+		scoreRecived = false;
+		stopTread = false;
 		try {
-			in=new BufferedReader(new InputStreamReader(socket.getInputStream()));
-			out=new PrintWriter(socket.getOutputStream());
-			//out.println(i);
-			//out.flush();
+			in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+			out = new PrintWriter(socket.getOutputStream());
+			// out.println(i);
+			// out.flush();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
+
 	@Override
 	public void run() {
-		while(!stopTread){
+		while (!stopTread) {
 			try {
-				String message=in.readLine();
-				if(message!=null){
+				String message = in.readLine();
+				if (message != null) {
 					server.sendNewMessage(message);
-					if(message.substring(0, 2).equals("5;"))
-						scoreRecived=true;
-				}
-				else break;
-				
+					if (message.substring(0, 2).equals("5;"))
+						scoreRecived = true;
+				} else
+					break;
+
 			} catch (IOException e) {
 				System.out.println("Connesione out");
 				server.connected.remove(this);
-				server.sendNewMessage(6+";"+code+";"+0+";"+0+";"+0+";");
+				server.sendNewMessage(6 + ";" + code + ";" + 0 + ";" + 0 + ";" + 0 + ";");
 				break;
 			}
-			
+
 		}
 		try {
 			socket.close();

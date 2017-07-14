@@ -33,9 +33,10 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 
 import game.manager.GameMenu;
 import game.net.ScorePlayer;
+import game.pools.GameConfig;
 import game.pools.ImagePool;
 
-public class ScoreNetScreen implements Screen,ControllerListener {
+public class ScoreNetScreen implements Screen, ControllerListener {
 	GameMenu gameMenu;
 	Controllers controller;
 	private Sprite macchinaSprite;
@@ -59,7 +60,6 @@ public class ScoreNetScreen implements Screen,ControllerListener {
 
 	public ScoreNetScreen(GameMenu gameMenu) {
 
-		
 		controllerMoveDirection = -1;
 		hasPressedEnter = false;
 		this.gameMenu = gameMenu;
@@ -97,29 +97,29 @@ public class ScoreNetScreen implements Screen,ControllerListener {
 		selectedSprite.setPosition(285, 27);
 		selectedSprite.setSize(back.getWidth() + back.getWidth() / 2, back.getHeight() + back.getHeight() / 2);
 
-		controller = new Controllers();
-		controller.addListener(this);
-		boolean change=true;
+		// controller = new Controllers();
+		GameConfig.controller.addListener(this);
+		boolean change = true;
 		scorePlayers = gameMenu.getScoreList();
-		scroll.setPosition(450,190);
-		if(scorePlayers.size()>4){
-			scroll.setSize(33, 156-(scorePlayers.size()-4)*15);
+		scroll.setPosition(450, 190);
+		if (scorePlayers.size() > 4) {
+			scroll.setSize(33, 156 - (scorePlayers.size() - 4) * 15);
 			System.out.println(scroll.getHeight());
 		}
-		while(change){
+		while (change) {
 			change = false;
-			for( int i = 0; i<scorePlayers.size()-1; i++){
-				if(scorePlayers.get(i).score < scorePlayers.get(i+1).score ){
+			for (int i = 0; i < scorePlayers.size() - 1; i++) {
+				if (scorePlayers.get(i).score < scorePlayers.get(i + 1).score) {
 					ScorePlayer changement = scorePlayers.get(i);
-					scorePlayers.set(i, scorePlayers.get(i+1)) ;
-					scorePlayers.set(i+1, changement) ;
+					scorePlayers.set(i, scorePlayers.get(i + 1));
+					scorePlayers.set(i + 1, changement);
 					change = true;
 				}
-				
+
 			}
 		}
 	}
-					
+
 	@Override
 	public void show() {
 		// TODO Auto-generated method stub
@@ -138,55 +138,63 @@ public class ScoreNetScreen implements Screen,ControllerListener {
 		stage.draw();
 	}
 
+	/**
+	 * handle the input and evolve the scene
+	 */
 	private void update() {
 		if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER) || hasPressedEnter) {
 			hasPressedEnter = false;
 			Gdx.input.setInputProcessor(null);
-			gameMenu.start=true;
+			gameMenu.start = true;
 			gameMenu.swap(0);
-		}
-		 else if (Gdx.input.isKeyPressed(Input.Keys.DOWN) || controllerMoveDirection == 2) {
-				joystickSprite.setTexture(ImagePool.joystickDown);
-				if (Gdx.input.isKeyJustPressed(Input.Keys.DOWN) || controllerMoveDirection == 2) {
-					if(selectedIndex < scorePlayers.size() - 4)
-						selectedIndex++;
-				}
-		 }
-		 else if (Gdx.input.isKeyPressed(Input.Keys.UP) || controllerMoveDirection == 0) {
-				joystickSprite.setTexture(ImagePool.joystickUp);
-				if (Gdx.input.isKeyJustPressed(Input.Keys.UP) || controllerMoveDirection == 0) {
-					if(selectedIndex > 0)
-						selectedIndex --;
-				}
-		}
-		 else if (Gdx.input.isKeyJustPressed(Input.Keys.LEFT) || controllerMoveDirection == 3) 
-				joystickSprite.setTexture(ImagePool.joystickLeft);
-		 else if (Gdx.input.isKeyJustPressed(Input.Keys.RIGHT) || controllerMoveDirection == 1) 
-				joystickSprite.setTexture(ImagePool.joystickRight);
-		 else joystickSprite.setTexture(ImagePool.joystick);
-		
+		} else if (Gdx.input.isKeyPressed(Input.Keys.DOWN) || controllerMoveDirection == 2) {
+			joystickSprite.setTexture(ImagePool.joystickDown);
+			if (Gdx.input.isKeyJustPressed(Input.Keys.DOWN) || controllerMoveDirection == 2) {
+				if (selectedIndex < scorePlayers.size() - 4)
+					selectedIndex++;
+			}
+		} else if (Gdx.input.isKeyPressed(Input.Keys.UP) || controllerMoveDirection == 0) {
+			joystickSprite.setTexture(ImagePool.joystickUp);
+			if (Gdx.input.isKeyJustPressed(Input.Keys.UP) || controllerMoveDirection == 0) {
+				if (selectedIndex > 0)
+					selectedIndex--;
+			}
+		} else if (Gdx.input.isKeyJustPressed(Input.Keys.LEFT) || controllerMoveDirection == 3)
+			joystickSprite.setTexture(ImagePool.joystickLeft);
+		else if (Gdx.input.isKeyJustPressed(Input.Keys.RIGHT) || controllerMoveDirection == 1)
+			joystickSprite.setTexture(ImagePool.joystickRight);
+		else
+			joystickSprite.setTexture(ImagePool.joystick);
+
 		controllerMoveDirection = -1;
 	}
+
+	/**
+	 * draw the scene
+	 */
 	private void draw() {
 		backGround.draw(batch);
 		macchinaSprite.draw(batch);
 		joystickSprite.draw(batch);
-		if(scorePlayers.size() > 4)
-			scroll.setPosition(scroll.getX(),190+(scorePlayers.size() - selectedIndex - 3)*10);
+		if (scorePlayers.size() > 4)
+			scroll.setPosition(scroll.getX(), 190 + (scorePlayers.size() - selectedIndex - 3) * 10);
 		scroll.draw(batch);
 		if (selectedSprite.getX() != 0)
 			selectedSprite.draw(batch);
-		
+
 		/*
-		ImagePool.font.setColor(Color.GREEN);
-		ImagePool.font.draw(batch, " S C O R E :  " + playerName.toUpperCase() + "    " + playerScore, 230, 341);
-		*/
+		 * ImagePool.font.setColor(Color.GREEN); ImagePool.font.draw(batch,
+		 * " S C O R E :  " + playerName.toUpperCase() + "    " + playerScore,
+		 * 230, 341);
+		 */
 		ImagePool.font.setColor(Color.RED);
 		ImagePool.font.draw(batch, "S C O R E S :", 230, 331);
 		ImagePool.font.setColor(Color.WHITE);
-		
-		for (int i = selectedIndex; i < selectedIndex+4 && i<scorePlayers.size(); i++) {
-			ImagePool.font.draw(batch,i+1+" )  "+ scorePlayers.get(i).getName()+ "    " + scorePlayers.get(i).getScore(), 240, 300-(i-selectedIndex)*20);
+
+		for (int i = selectedIndex; i < selectedIndex + 4 && i < scorePlayers.size(); i++) {
+			ImagePool.font.draw(batch,
+					i + 1 + " )  " + scorePlayers.get(i).getName() + "    " + scorePlayers.get(i).getScore(), 240,
+					300 - (i - selectedIndex) * 20);
 		}
 	}
 
@@ -222,19 +230,27 @@ public class ScoreNetScreen implements Screen,ControllerListener {
 	@Override
 	public void connected(Controller controller) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void disconnected(Controller controller) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
+	/**
+	 * handle the input that user generates with the controller
+	 * 
+	 * @param buttonCode
+	 *            is the code of the button pressed
+	 * @param controller
+	 *            is the controller that generates the input
+	 */
 	@Override
 	public boolean buttonDown(Controller controller, int buttonCode) {
-		if(buttonCode == 0 && gameMenu.getScreen().getClass().getName().contains("ScoreNetScreen"))
-				hasPressedEnter = true;
+		if (buttonCode == 0 && gameMenu.getScreen().getClass().getName().contains("ScoreNetScreen"))
+			hasPressedEnter = true;
 		return false;
 	}
 
@@ -250,6 +266,14 @@ public class ScoreNetScreen implements Screen,ControllerListener {
 		return false;
 	}
 
+	/**
+	 * update the direction selected with the controller
+	 * 
+	 * @param controller
+	 *            is the controller that generates the event
+	 * @param value
+	 *            is the direction selected
+	 */
 	@Override
 	public boolean povMoved(Controller controller, int povCode, PovDirection value) {
 		boolean inputIsValid = false;
@@ -266,7 +290,8 @@ public class ScoreNetScreen implements Screen,ControllerListener {
 				controllerMoveDirection = 2;
 			else if (value == PovDirection.west)
 				controllerMoveDirection = 3;
-		}		return false;
+		}
+		return false;
 	}
 
 	@Override

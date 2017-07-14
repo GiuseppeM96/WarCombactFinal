@@ -15,6 +15,7 @@ import game.manager.GameMenu;
 import game.object.Character;
 import game.object.Map;
 import game.object.StaticObject;
+import game.pools.GameConfig;
 import game.pools.ImagePool;
 
 public class BlackHouseScreen implements Screen, ControllerListener {
@@ -30,13 +31,14 @@ public class BlackHouseScreen implements Screen, ControllerListener {
 	boolean hasPressedEnter = false;
 
 	/**
-	 * Create a screen where player go to the magician to take wake-up position 
+	 * Create a screen where player go to the magician to take wake-up position
+	 * 
 	 * @param game
 	 */
 	public BlackHouseScreen(GameMenu game) {
 		super();
-		controller = new Controllers();
-		controller.addListener(this);
+		// controller = new Controllers();
+		GameConfig.controller.addListener(this);
 		gameMenu = game;
 		this.level = level;
 		dialogue = 0;
@@ -67,7 +69,9 @@ public class BlackHouseScreen implements Screen, ControllerListener {
 
 	/**
 	 * Makes the scene evolve
-	 * @param delta time interval
+	 * 
+	 * @param delta
+	 *            time interval
 	 */
 	private void update(float delta) {
 		if (!collided) {
@@ -159,9 +163,17 @@ public class BlackHouseScreen implements Screen, ControllerListener {
 
 	}
 
+	/**
+	 * handle the input that user generates with the controller
+	 * 
+	 * @param buttonCode
+	 *            is the code of the button pressed
+	 * @param controller
+	 *            is the controller that generates the input
+	 */
 	@Override
 	public boolean buttonDown(Controller controller, int buttonCode) {
-	
+
 		if (buttonCode == 0 && gameMenu.getScreen().getClass().getName().contains("BlackHouseScreen"))
 			hasPressedEnter = true;
 		return false;
