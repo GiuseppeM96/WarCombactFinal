@@ -41,22 +41,22 @@ import game.personalAI.*;
 
 public class World {
 	
-	static public Class<? extends Enemy> classe;
 	public String mission;
 	public int found;
+	static public int level;
+	public boolean levelCompleted = false;
+	public EnemyThread enemiesOne;
+	public String className;
+	public static int score = 0;
+	static public Class<? extends Enemy> classe;
 	static public ArrayList<StaticObject> objects = new ArrayList<StaticObject>();
 	static public ArrayList<Enemy> enemies = new ArrayList<Enemy>();
 	static public ArrayList<Enemy> newEnemies = new ArrayList<Enemy>();
 	static public Character player = new Character();
 	static public ArrayList<ShotPlayer> shotsPlayer = new ArrayList<ShotPlayer>();
 	static public ArrayList<ShotEnemy> shotsEnemy = new ArrayList<ShotEnemy>();
-	static public int level;
-	public boolean levelCompleted = false;
 	static Well well;
 	Map gameMap = new Map(level);
-	public EnemyThread enemiesOne;
-	public String className;
-	public static int score = 0;
 
 	public static boolean playerShot = false;
 	public static boolean enemyAdded = false;

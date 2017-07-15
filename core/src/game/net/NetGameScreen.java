@@ -72,7 +72,6 @@ public class NetGameScreen implements Screen,ActionListener,ControllerListener{
 	private boolean gameIsInPause;
 	public boolean finish;
 	boolean timeOut;
-	int matchTime;
 	
 	
 	/**
@@ -94,7 +93,6 @@ public class NetGameScreen implements Screen,ActionListener,ControllerListener{
 		timeOut=false;
 		shotAnimationTime=0.f;
 		matchTimer=new Timer(120000, this);
-		matchTime=0;
 		this.gameMenu=gameMenu;
 		try {
 			s=new Socket(server_ip, port);
@@ -345,6 +343,7 @@ public class NetGameScreen implements Screen,ActionListener,ControllerListener{
 		else if(collidedObject instanceof AddLifePoints){
 			if(SettingsMenu.isAudioEnable)
 				MusicPool.addLifePoints.play();
+			worldGame.currentPlayer.addLife();
 			out.println(1+";"+0+";"+(int)collidedObject.getPosition().x+";"+(int)collidedObject.getPosition().y+";"+0+";");
 			out.flush();
 			worldGame.objects.remove(collidedObject);
@@ -352,6 +351,7 @@ public class NetGameScreen implements Screen,ActionListener,ControllerListener{
 		else if(collidedObject instanceof AddShotGunShots){
 			if(SettingsMenu.isAudioEnable)
 				MusicPool.addShotSound.play();
+			worldGame.currentPlayer.addShots("ShotGun");
 			out.println(1+";"+1+";"+(int)collidedObject.getPosition().x+";"+(int)collidedObject.getPosition().y+";"+0+";");
 			out.flush();
 			worldGame.objects.remove(collidedObject);
@@ -359,6 +359,7 @@ public class NetGameScreen implements Screen,ActionListener,ControllerListener{
 		else if(collidedObject instanceof AddMachineGunShots){
 			if(SettingsMenu.isAudioEnable)
 				MusicPool.addShotSound.play();
+			worldGame.currentPlayer.addShots("MachineGun");
 			out.println(1+";"+2+";"+(int)collidedObject.getPosition().x+";"+(int)collidedObject.getPosition().y+";"+0+";");
 			out.flush();
 			worldGame.objects.remove(collidedObject);
@@ -589,8 +590,7 @@ public class NetGameScreen implements Screen,ActionListener,ControllerListener{
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		
-		matchTime++;
-		if(matchTime>=0){
+		
 			gameMenu.scorePlayers.add(new ScorePlayer(gameMenu.userInfo.getName(), ((int) worldGame.score/(worldGame.diedTimes+1))));
 			out.println(5+";"+gameMenu.userInfo.getName()+";"+((int) worldGame.score/(worldGame.diedTimes+1))+";"+worldGame.currentPlayer.code+";"+0+";");
 			out.flush();
@@ -601,7 +601,7 @@ public class NetGameScreen implements Screen,ActionListener,ControllerListener{
 			System.out.println("Timer");
 			matchTimer.stop();
 			timeOut=true;
-		}
+		
 	}
 
 	@Override

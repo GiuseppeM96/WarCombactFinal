@@ -67,9 +67,9 @@ import game.pools.MusicPool;
 public class GameManagerScreen implements Screen,ControllerListener {
 	Music music;
 	public World worldGame;
-	SpriteBatch worldBatch;
 	public OrthographicCamera gameCam;
 	Viewport viewport;
+	SpriteBatch worldBatch;
 	GameMenu gameMenu;
 	float statePlayerTime = 0.f;
 	BitmapFont score;
@@ -80,8 +80,6 @@ public class GameManagerScreen implements Screen,ControllerListener {
 	int introDuration = 200;
 	Controllers controller= new Controllers();
 	static boolean  gameIsInPause=false;
-	int currentAxis=0;
-	float valueMov=0;
 	PovDirection povDirection; 
 	boolean canDraw;
 	boolean canRemove;
