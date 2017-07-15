@@ -72,13 +72,8 @@ public class NetGameScreen implements Screen, ActionListener, ControllerListener
 	private boolean gameIsInPause;
 	public boolean finish;
 	boolean timeOut;
-<<<<<<< HEAD
-	
-	
-=======
 	int matchTime;
 
->>>>>>> 7b7e9129b58c7896f941408456f3dca70027de41
 	/**
 	 * Constructor
 	 * 
@@ -94,7 +89,6 @@ public class NetGameScreen implements Screen, ActionListener, ControllerListener
 		server_ip = ip;
 		this.port = port;
 		ClientReciverMessage listen;
-<<<<<<< HEAD
 		wait=true;
 		canRemove=false;
 		canDraw=true;
@@ -103,7 +97,6 @@ public class NetGameScreen implements Screen, ActionListener, ControllerListener
 		shotAnimationTime=0.f;
 		matchTimer=new Timer(120000, this);
 		this.gameMenu=gameMenu;
-=======
 		wait = true;
 		canRemove = false;
 		canDraw = true;
@@ -113,7 +106,6 @@ public class NetGameScreen implements Screen, ActionListener, ControllerListener
 		matchTimer = new Timer(120000, this);
 		matchTime = 0;
 		this.gameMenu = gameMenu;
->>>>>>> 7b7e9129b58c7896f941408456f3dca70027de41
 		try {
 			s = new Socket(server_ip, port);
 			out = new PrintWriter(s.getOutputStream());
@@ -393,37 +385,28 @@ public class NetGameScreen implements Screen, ActionListener, ControllerListener
 		} else if (collidedObject instanceof AddLifePoints) {
 			if (SettingsMenu.isAudioEnable)
 				MusicPool.addLifePoints.play();
-<<<<<<< HEAD
 			worldGame.currentPlayer.addLife();
 			out.println(1+";"+0+";"+(int)collidedObject.getPosition().x+";"+(int)collidedObject.getPosition().y+";"+0+";");
-=======
 			out.println(1 + ";" + 0 + ";" + (int) collidedObject.getPosition().x + ";"
 					+ (int) collidedObject.getPosition().y + ";" + 0 + ";");
->>>>>>> 7b7e9129b58c7896f941408456f3dca70027de41
 			out.flush();
 			worldGame.objects.remove(collidedObject);
 		} else if (collidedObject instanceof AddShotGunShots) {
 			if (SettingsMenu.isAudioEnable)
 				MusicPool.addShotSound.play();
-<<<<<<< HEAD
 			worldGame.currentPlayer.addShots("ShotGun");
 			out.println(1+";"+1+";"+(int)collidedObject.getPosition().x+";"+(int)collidedObject.getPosition().y+";"+0+";");
-=======
 			out.println(1 + ";" + 1 + ";" + (int) collidedObject.getPosition().x + ";"
 					+ (int) collidedObject.getPosition().y + ";" + 0 + ";");
->>>>>>> 7b7e9129b58c7896f941408456f3dca70027de41
 			out.flush();
 			worldGame.objects.remove(collidedObject);
 		} else if (collidedObject instanceof AddMachineGunShots) {
 			if (SettingsMenu.isAudioEnable)
 				MusicPool.addShotSound.play();
-<<<<<<< HEAD
 			worldGame.currentPlayer.addShots("MachineGun");
 			out.println(1+";"+2+";"+(int)collidedObject.getPosition().x+";"+(int)collidedObject.getPosition().y+";"+0+";");
-=======
 			out.println(1 + ";" + 2 + ";" + (int) collidedObject.getPosition().x + ";"
 					+ (int) collidedObject.getPosition().y + ";" + 0 + ";");
->>>>>>> 7b7e9129b58c7896f941408456f3dca70027de41
 			out.flush();
 			worldGame.objects.remove(collidedObject);
 		} else if (collidedObject instanceof Shot) {
@@ -657,13 +640,9 @@ public class NetGameScreen implements Screen, ActionListener, ControllerListener
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-<<<<<<< HEAD
-		
 		
 			gameMenu.scorePlayers.add(new ScorePlayer(gameMenu.userInfo.getName(), ((int) worldGame.score/(worldGame.diedTimes+1))));
 			out.println(5+";"+gameMenu.userInfo.getName()+";"+((int) worldGame.score/(worldGame.diedTimes+1))+";"+worldGame.currentPlayer.code+";"+0+";");
-=======
-
 		matchTime++;
 		if (matchTime >= 0) {
 			gameMenu.scorePlayers.add(
@@ -671,7 +650,6 @@ public class NetGameScreen implements Screen, ActionListener, ControllerListener
 			out.println(
 					5 + ";" + gameMenu.userInfo.getName() + ";" + ((int) worldGame.score / (worldGame.diedTimes + 1))
 							+ ";" + worldGame.currentPlayer.code + ";" + 0 + ";");
->>>>>>> 7b7e9129b58c7896f941408456f3dca70027de41
 			out.flush();
 			if (gameMenu.server != null) {
 				ScoreThread close = new ScoreThread(gameMenu.server);
@@ -679,13 +657,10 @@ public class NetGameScreen implements Screen, ActionListener, ControllerListener
 			}
 			System.out.println("Timer");
 			matchTimer.stop();
-<<<<<<< HEAD
 			timeOut=true;
 		
-=======
 			timeOut = true;
 		}
->>>>>>> 7b7e9129b58c7896f941408456f3dca70027de41
 	}
 
 	@Override
