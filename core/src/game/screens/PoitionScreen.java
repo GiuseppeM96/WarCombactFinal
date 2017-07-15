@@ -38,7 +38,7 @@ import game.object.Tree;
 import game.pools.GameConfig;
 import game.pools.ImagePool;
 
-public class PoitionScreen implements Screen{
+public class PoitionScreen implements Screen {
 
 	DynamicObject potion;
 	boolean collided;
@@ -55,84 +55,92 @@ public class PoitionScreen implements Screen{
 	boolean end;
 	int animation;
 	OrthographicCamera cam;
-	
+
 	/**
 	 * Create final screen of story game
-	 * @param game indicates game application
+	 * 
+	 * @param game
+	 *            indicates game application
 	 */
 	public PoitionScreen(GameMenu game) {
 		super();
-		gameMenu=game;
-		cam=new OrthographicCamera(640,480);
-		cam.position.x=GameConfig.MAP_SIZE.x/2;
-		cam.position.y=GameConfig.MAP_SIZE.y/2;
-		esplotion=false;
-		wakingUp=false;
-		end=false;
-		animation=0;
-		people=new ArrayList<Character>();
-		huts=new ArrayList<Hut>();
-		bigHuts=new ArrayList<BigHut>();
+		gameMenu = game;
+		cam = new OrthographicCamera(640, 480);
+		cam.position.x = GameConfig.MAP_SIZE.x / 2;
+		cam.position.y = GameConfig.MAP_SIZE.y / 2;
+		esplotion = false;
+		wakingUp = false;
+		end = false;
+		animation = 0;
+		people = new ArrayList<Character>();
+		huts = new ArrayList<Hut>();
+		bigHuts = new ArrayList<BigHut>();
 		try {
 			initVillage();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		statePlayerTime=0.f;
+		statePlayerTime = 0.f;
 		potion = new DynamicObject();
 		potion.setVelocity(300);
 		potion.setDirection(2);
-		potion.setPosition(new Vector2(GameConfig.MAP_SIZE.x/2, GameConfig.MAP_SIZE.y/2+240));
-		collided=false;
+		potion.setPosition(new Vector2(GameConfig.MAP_SIZE.x / 2, GameConfig.MAP_SIZE.y / 2 + 240));
+		collided = false;
 		player = new Character();
-		player.setPosition(new Vector2(0,30));
-		worldBatch=new SpriteBatch();
+		player.setPosition(new Vector2(0, 30));
+		worldBatch = new SpriteBatch();
 	}
-	
+
 	/**
 	 * Initializes village from file
+	 * 
 	 * @throws IOException
 	 */
 	private void initVillage() throws IOException {
-		//FileReader reader = new FileReader("GameComplete.txt");
-		BufferedReader buffer = new BufferedReader(new InputStreamReader(getClass().getClassLoader().getResourceAsStream("GameComplete.txt")));
-		String line=buffer.readLine();
-		while(line!= null){
-			String type = new String(),codx = new String(),cody = new String();
-			char [] arrayLine = new char[line.length()];
+		// FileReader reader = new FileReader("GameComplete.txt");
+		BufferedReader buffer = new BufferedReader(
+				new InputStreamReader(getClass().getClassLoader().getResourceAsStream("GameComplete.txt")));
+		String line = buffer.readLine();
+		while (line != null) {
+			String type = new String(), codx = new String(), cody = new String();
+			char[] arrayLine = new char[line.length()];
 			line.getChars(0, line.length(), arrayLine, 0);
 			int i = 0;
-			for (; arrayLine[i]!=';';i++) {
-				type+=arrayLine[i];
+			for (; arrayLine[i] != ';'; i++) {
+				type += arrayLine[i];
 			}
 			i++;
-			for (; arrayLine[i]!=';';i++) {
-				codx+=arrayLine[i];
+			for (; arrayLine[i] != ';'; i++) {
+				codx += arrayLine[i];
 			}
 			i++;
-			for (; arrayLine[i]!=';';i++) {
-				cody+=arrayLine[i];
+			for (; arrayLine[i] != ';'; i++) {
+				cody += arrayLine[i];
 			}
-			StaticObject tmp=createNewObject(type,codx,cody);
-			if(tmp instanceof Map)
-				screenMap=(Map) tmp;
-			else if(tmp instanceof Character)
-				people.add((Character)tmp);
-			else if(tmp instanceof Hut)
-				huts.add((Hut)tmp);
-			else if(tmp instanceof BigHut)
+			StaticObject tmp = createNewObject(type, codx, cody);
+			if (tmp instanceof Map)
+				screenMap = (Map) tmp;
+			else if (tmp instanceof Character)
+				people.add((Character) tmp);
+			else if (tmp instanceof Hut)
+				huts.add((Hut) tmp);
+			else if (tmp instanceof BigHut)
 				bigHuts.add((BigHut) tmp);
-			line=buffer.readLine();
+			line = buffer.readLine();
 		}
 		buffer.close();
 	}
-	
+
 	/**
 	 * Create a new instance of class type located in position (codx,cody)
-	 * @param type indicates type of object that we want
-	 * @param codx indicates x position of the new object
-	 * @param cody indicates y position of the new object
+	 * 
+	 * @param type
+	 *            indicates type of object that we want
+	 * @param codx
+	 *            indicates x position of the new object
+	 * @param cody
+	 *            indicates y position of the new object
 	 * @return StaticObject
 	 */
 	private StaticObject createNewObject(String type, String codx, String cody) {
@@ -140,35 +148,38 @@ public class PoitionScreen implements Screen{
 		tmp.setPosition(new Vector2(convert(codx), convert(cody)));
 		return tmp;
 	}
-	
+
 	/**
 	 * convert string to int
+	 * 
 	 * @param codx
 	 * @return
 	 */
 	private float convert(String codx) {
-		char[] tmp =codx.toCharArray();
-		int result=0;
+		char[] tmp = codx.toCharArray();
+		int result = 0;
 		for (int i = 0; i < tmp.length; i++) {
-			result*=10;
-			result+=tmp[i]-'0';
+			result *= 10;
+			result += tmp[i] - '0';
 		}
 		return result;
 	}
-	
+
 	/**
 	 * decodes the code of object that we want
-	 * @param type code of object
+	 * 
+	 * @param type
+	 *            code of object
 	 * @return StaticObject
 	 */
 	private StaticObject getObject(String type) {
-		switch(type){
+		switch (type) {
 		case "1":
 			return new Map(1);
 		case "2":
 			return new Map(2);
 		case "3":
-		return new Hut();
+			return new Hut();
 		case "4":
 			return new Castle();
 		case "5":
@@ -213,17 +224,18 @@ public class PoitionScreen implements Screen{
 			return null;
 		}
 	}
+
 	@Override
 	public void show() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void render(float delta) {
 		worldBatch.setProjectionMatrix(cam.combined);
 		worldBatch.begin();
-		
+
 		drawWorld();
 		update(delta);
 		cam.update();
@@ -232,104 +244,105 @@ public class PoitionScreen implements Screen{
 
 	/**
 	 * update all world in a single time interval
-	 * @param delta indicates time interval
+	 * 
+	 * @param delta
+	 *            indicates time interval
 	 */
 	private void update(float delta) {
-		if(!collided){
-			if(potion.getPosition().y<GameConfig.MAP_SIZE.y/2){
-				collided=true;
-			}
-			else{
+		if (!collided) {
+			if (potion.getPosition().y < GameConfig.MAP_SIZE.y / 2) {
+				collided = true;
+			} else {
 				potion.move(2, delta);
 			}
-		}
-		else 
-			statePlayerTime+=delta;
+		} else
+			statePlayerTime += delta;
 	}
-	
+
 	/**
 	 * draws the world
 	 */
 	private void drawWorld() {
 		drawVillage();
 		if (animation <= 1000) {
-			cam.zoom+=0.006f;
+			cam.zoom += 0.006f;
 			animation++;
-		}
-		else end=true;
-		if(!collided){
-			worldBatch.draw(ImagePool.potion, potion.getPosition().x, potion.getPosition().y);			
-		}
-		else{
-			if(!wakingUp)
-			worldBatch.draw(ImagePool.potionAnimation.getKeyFrame(statePlayerTime ,true),potion.getPosition().x-GameConfig.SCREEN_WIDTH/2,potion.getPosition().y-GameConfig.SCREEN_HEIGHT/2);
-			if(statePlayerTime>0.9 && !wakingUp){
-				esplotion=true;
-				wakingUp=true;
-				statePlayerTime=0.f;
-			}
-			else if(wakingUp){
-				if(statePlayerTime>1.8){
-					end=true;
-					
+		} else
+			end = true;
+		if (!collided) {
+			worldBatch.draw(ImagePool.potion, potion.getPosition().x, potion.getPosition().y);
+		} else {
+			if (!wakingUp)
+				worldBatch.draw(ImagePool.potionAnimation.getKeyFrame(statePlayerTime, true),
+						potion.getPosition().x - GameConfig.SCREEN_WIDTH / 2,
+						potion.getPosition().y - GameConfig.SCREEN_HEIGHT / 2);
+			if (statePlayerTime > 0.9 && !wakingUp) {
+				esplotion = true;
+				wakingUp = true;
+				statePlayerTime = 0.f;
+			} else if (wakingUp) {
+				if (statePlayerTime > 1.8) {
+					end = true;
+
 				}
 			}
 		}
-		if(end)
+		if (end)
 			gameMenu.swap(4);
 	}
-	
-	
+
 	/**
 	 * draw all object in the world
 	 */
 	private void drawVillage() {
 		worldBatch.draw(ImagePool.mapTwo, 0, 0);
-		for(Character c:people){
-			if(!esplotion){
+		for (Character c : people) {
+			if (!esplotion) {
 				worldBatch.draw(ImagePool.boyDied, c.getPosition().x, c.getPosition().y);
-			}
-			else{
-				if(statePlayerTime<1.8)
-					worldBatch.draw(ImagePool.wakeUpAnimation.getKeyFrame(statePlayerTime ,true),c.getPosition().x,c.getPosition().y);
-				else worldBatch.draw(ImagePool.people, c.getPosition().x, c.getPosition().y);
+			} else {
+				if (statePlayerTime < 1.8)
+					worldBatch.draw(ImagePool.wakeUpAnimation.getKeyFrame(statePlayerTime, true), c.getPosition().x,
+							c.getPosition().y);
+				else
+					worldBatch.draw(ImagePool.people, c.getPosition().x, c.getPosition().y);
 			}
 		}
-		for(Hut h:huts){
+		for (Hut h : huts) {
 			worldBatch.draw(ImagePool.hut, h.getPosition().x, h.getPosition().y);
 		}
-		for(BigHut b:bigHuts){
+		for (BigHut b : bigHuts) {
 			worldBatch.draw(ImagePool.bigHut, b.getPosition().x, b.getPosition().y);
 		}
 	}
+
 	@Override
 	public void resize(int width, int height) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void pause() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void resume() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void hide() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void dispose() {
 		// TODO Auto-generated method stub
-		
+
 	}
-	
+
 }

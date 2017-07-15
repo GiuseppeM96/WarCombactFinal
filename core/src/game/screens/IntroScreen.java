@@ -25,52 +25,56 @@ public class IntroScreen implements Screen {
 	GameMenu gameMenu;
 	float screenWidth;
 	float screenHeight;
-	
+
 	/**
 	 * Create a introduction screen depending on parameter level
-	 * @param level indicates level that will be loaded
-	 * @param gameMenu indicates game application
+	 * 
+	 * @param level
+	 *            indicates level that will be loaded
+	 * @param gameMenu
+	 *            indicates game application
 	 */
-	public IntroScreen(int level,GameMenu gameMenu) {
-		this.gameMenu=gameMenu;
-		write=0;	
-		this.level=level;
-		switch(level){
-			case 1:
-				text=ImagePool.help;
-				backGround=ImagePool.introLevelOne;
-				break;
-			case 2:
-				text=ImagePool.poison;
-				backGround=ImagePool.introLevelEven;
-				break;
-			case 3:
-				text=ImagePool.saveVillage;
-				backGround=ImagePool.introLevelOdd;
-				break;
-			case 4:
-				text=ImagePool.killEnemies;
-				backGround=ImagePool.introLevelEven;
-				break;
+	public IntroScreen(int level, GameMenu gameMenu) {
+		this.gameMenu = gameMenu;
+		write = 0;
+		this.level = level;
+		switch (level) {
+		case 1:
+			text = ImagePool.help;
+			backGround = ImagePool.introLevelOne;
+			break;
+		case 2:
+			text = ImagePool.poison;
+			backGround = ImagePool.introLevelEven;
+			break;
+		case 3:
+			text = ImagePool.saveVillage;
+			backGround = ImagePool.introLevelOdd;
+			break;
+		case 4:
+			text = ImagePool.killEnemies;
+			backGround = ImagePool.introLevelEven;
+			break;
 		}
-		batch=new SpriteBatch();
+		batch = new SpriteBatch();
 	}
+
 	@Override
 	public void show() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void render(float delta) {
 		drawDisplay();
 		write++;
-		if(write > 300)
-			if(level==1)
+		if (write > 300)
+			if (level == 1)
 				gameMenu.swap(5);
 			else {
 				gameMenu.changeLevel(level);
-			
+
 			}
 	}
 
@@ -81,44 +85,48 @@ public class IntroScreen implements Screen {
 		batch.begin();
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		batch.draw(backGround, 0, 0,screenWidth,screenHeight);
-		int x=(int) (ImagePool.camera.viewportWidth/2) - text.getWidth()/2;//(int) (100*GameConfig.SCREEN_WIDTH/screenWidth);
-		int y=(int) (ImagePool.camera.viewportHeight/2) - text.getHeight()/2;// (int) ((int) ((screenHeight/2)-50)*GameConfig.SCREEN_HEIGHT/screenHeight);
-		/*if(level==4)
-			x=(int) (250*GameConfig.SCREEN_WIDTH/screenWidth);*/
-		if(write%50 >= 0 && write%50 <= 40)
+		batch.draw(backGround, 0, 0, screenWidth, screenHeight);
+		int x = (int) (ImagePool.camera.viewportWidth / 2) - text.getWidth() / 2;// (int)
+																					// (100*GameConfig.SCREEN_WIDTH/screenWidth);
+		int y = (int) (ImagePool.camera.viewportHeight / 2) - text.getHeight() / 2;// (int)
+																					// ((int)
+																					// ((screenHeight/2)-50)*GameConfig.SCREEN_HEIGHT/screenHeight);
+		/*
+		 * if(level==4) x=(int) (250*GameConfig.SCREEN_WIDTH/screenWidth);
+		 */
+		if (write % 50 >= 0 && write % 50 <= 40)
 			batch.draw(text, x, y);
 		batch.end();
 	}
-	
+
 	@Override
 	public void resize(int width, int height) {
-		screenWidth=width;
-		screenHeight=height;
+		screenWidth = width;
+		screenHeight = height;
 	}
 
 	@Override
 	public void pause() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void resume() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void hide() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void dispose() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }

@@ -64,7 +64,7 @@ import game.pools.GameConfig;
 import game.pools.ImagePool;
 import game.pools.MusicPool;
 
-public class GameManagerScreen implements Screen,ControllerListener {
+public class GameManagerScreen implements Screen, ControllerListener {
 	Music music;
 	public World worldGame;
 	public OrthographicCamera gameCam;
@@ -78,21 +78,34 @@ public class GameManagerScreen implements Screen,ControllerListener {
 	float shotAnimationTime = 0.f;
 	float diedAnimationTime = 0.f;
 	int introDuration = 200;
+<<<<<<< HEAD
 	Controllers controller= new Controllers();
 	static boolean  gameIsInPause=false;
 	PovDirection povDirection; 
+=======
+	Controllers controller;// = new Controllers();
+	static boolean gameIsInPause = false;
+	int currentAxis = 0;
+	float valueMov = 0;
+	PovDirection povDirection;
+>>>>>>> 7b7e9129b58c7896f941408456f3dca70027de41
 	boolean canDraw;
 	boolean canRemove;
+
 	/**
-	 * create a screen game 
-	 * @param world indicates the world of this game screen 
-	 * @param game indicates game application
-	 * @param camPosition indicates where camera will be located
+	 * create a screen game
+	 * 
+	 * @param world
+	 *            indicates the world of this game screen
+	 * @param game
+	 *            indicates game application
+	 * @param camPosition
+	 *            indicates where camera will be located
 	 */
 	public GameManagerScreen(World world, GameMenu game, Vector2 camPosition) {
 		super();
-		canDraw=true;
-		canRemove=false;
+		canDraw = true;
+		canRemove = false;
 		intro = true;
 		worldGame = world;
 		gameMenu = game;
@@ -103,47 +116,50 @@ public class GameManagerScreen implements Screen,ControllerListener {
 		gameCam.position.x = camPosition.x;
 		gameCam.position.y = camPosition.y;
 		viewport = new ScreenViewport(gameCam);
-		controller.addListener(this);
+		GameConfig.controller.addListener(this);
 		updateCam();
 	}
+
 	/**
-	 * Handle input and update world  
-	 * @param dt time interval
+	 * Handle input and update world
+	 * 
+	 * @param dt
+	 *            time interval
 	 */
 	private void update(float dt) {
 		if (!worldGame.player.died) {
-			if (Gdx.input.isKeyPressed(Input.Keys.UP) || povDirection== PovDirection.north) {
+			if (Gdx.input.isKeyPressed(Input.Keys.UP) || povDirection == PovDirection.north) {
 				moveAndCheckCollision(0, dt);
-			} else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) || povDirection== PovDirection.east) {
+			} else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) || povDirection == PovDirection.east) {
 				moveAndCheckCollision(1, dt);
-			} else if (Gdx.input.isKeyPressed(Input.Keys.LEFT) || povDirection== PovDirection.west) {
+			} else if (Gdx.input.isKeyPressed(Input.Keys.LEFT) || povDirection == PovDirection.west) {
 				moveAndCheckCollision(3, dt);
-			} else if (Gdx.input.isKeyPressed(Input.Keys.DOWN) || povDirection== PovDirection.south) {
+			} else if (Gdx.input.isKeyPressed(Input.Keys.DOWN) || povDirection == PovDirection.south) {
 				moveAndCheckCollision(2, dt);
-			} else{
+			} else {
 				statePlayerTime = 0;
 			}
 			if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE) || gameIsInPause) {
 				ImagePool.camera.zoom = 1.0f;
-				gameIsInPause=false;
+				gameIsInPause = false;
 				gameMenu.start = false;
 				gameMenu.swap(0);
 			}
 			if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE) || worldGame.player.controllerHasShoted) {
 				worldGame.player.shoting = true;
-			//	worldGame.player.ControllerHasShoted=false;
+				// worldGame.player.ControllerHasShoted=false;
 			}
 			if (Gdx.input.isKeyJustPressed(Input.Keys.X) || worldGame.player.controllerHasChangedWeapon) {
 				if (SettingsMenu.isAudioEnable)
 					MusicPool.reloadSound.play();
 				World.player.changeWeapon();
-				worldGame.player.controllerHasChangedWeapon=false;
+				worldGame.player.controllerHasChangedWeapon = false;
 			}
 			if (Gdx.input.isKeyPressed(Input.Keys.Z) || worldGame.player.controllerHasChangedVelocity) {
 				World.player.changeSpeed(ConstantField.PLAYER_SUPER_VELOCITY);
-			} else{
+			} else {
 				World.player.changeSpeed(ConstantField.PLAYER_STD_VELOCITY);
-			}	
+			}
 			if (World.player.shoting) {
 				if (shotAnimationTime > 0.3 && !World.playerShot) {
 					worldGame.playerHasShot();
@@ -181,20 +197,26 @@ public class GameManagerScreen implements Screen,ControllerListener {
 			}
 		}
 	}
+
 	/**
 	 * Call the shot update function of World
 	 */
 	private void updateShots() {
-		while(!canRemove){}
-		canDraw=false;
+		while (!canRemove) {
+		}
+		canDraw = false;
 		worldGame.updateShots();
-		canDraw=true;
-		
+		canDraw = true;
+
 	}
+
 	/**
 	 * Move currentPlayer and check if it collide with other objects
-	 * @param i indicates direction code
-	 * @param dt time interval
+	 * 
+	 * @param i
+	 *            indicates direction code
+	 * @param dt
+	 *            time interval
 	 */
 	private void moveAndCheckCollision(int i, float dt) {
 		StaticObject currentObject;
@@ -209,18 +231,19 @@ public class GameManagerScreen implements Screen,ControllerListener {
 		currentObject = World.checkCollisionObject(worldGame.player);
 		if (currentObject == null && (worldGame.player.position.x >= 10
 				&& worldGame.player.position.x <= GameConfig.MAP_SIZE.x - 70 && worldGame.player.position.y >= 10
-				&& worldGame.player.position.y <= GameConfig.MAP_SIZE.y - 10)){
+				&& worldGame.player.position.y <= GameConfig.MAP_SIZE.y - 10)) {
 			statePlayerTime += dt;
-			if(SettingsMenu.isAudioEnable)
+			if (SettingsMenu.isAudioEnable)
 				MusicPool.walkingSound.play();
-		}
-		else if (currentObject instanceof Letter) {
+		} else if (currentObject instanceof Letter) {
+			if (SettingsMenu.isMusicEnable)
+				MusicPool.pickLetter.play();
 			worldGame.found++;
 			worldGame.objects.remove(currentObject);
 		}
 
 		else if (currentObject instanceof AddLifePoints) {
-			if(SettingsMenu.isAudioEnable)
+			if (SettingsMenu.isAudioEnable)
 				MusicPool.addLifePoints.play();
 			worldGame.player.addLife();
 			if (worldGame.player.lifePoints > 1000)
@@ -228,24 +251,23 @@ public class GameManagerScreen implements Screen,ControllerListener {
 			statePlayerTime += dt;
 			worldGame.objects.remove(currentObject);
 		} else if (currentObject instanceof AddMachineGunShots) {
-			if(SettingsMenu.isAudioEnable)
+			if (SettingsMenu.isAudioEnable)
 				MusicPool.addShotSound.play();
 			worldGame.player.addShots("MachineGun");
 			statePlayerTime += dt;
 			worldGame.objects.remove(currentObject);
 		} else if (currentObject instanceof AddShotGunShots) {
-			if(SettingsMenu.isAudioEnable)
+			if (SettingsMenu.isAudioEnable)
 				MusicPool.addShotSound.play();
 			worldGame.player.addShots("ShotGun");
 			statePlayerTime += dt;
 			worldGame.objects.remove(currentObject);
 		} else if (currentObject instanceof Enemy) {
 			World.player.lifePoints -= 1;
-		} else if (levelIsCompeted(currentObject)){
+		} else if (levelIsCompeted(currentObject)) {
 			Gdx.input.setInputProcessor(null);
 			gameMenu.levelUp();
-		}
-		else if (i == 0)
+		} else if (i == 0)
 			worldGame.movePlayerDown(dt);
 		else if (i == 1)
 			worldGame.movePlayerLeft(dt);
@@ -259,7 +281,9 @@ public class GameManagerScreen implements Screen,ControllerListener {
 
 	/**
 	 * check if game level is completed
-	 * @param currentObject object that collide with palyer
+	 * 
+	 * @param currentObject
+	 *            object that collide with palyer
 	 * @return
 	 */
 	private boolean levelIsCompeted(StaticObject currentObject) {
@@ -270,9 +294,9 @@ public class GameManagerScreen implements Screen,ControllerListener {
 			return true;
 		return false;
 	}
-	
+
 	/**
-	 * Set cam position at player position 
+	 * Set cam position at player position
 	 */
 	public void updateCam() {
 		int xPlayer = (int) (worldGame.player.getPosition().x + 23);
@@ -283,13 +307,13 @@ public class GameManagerScreen implements Screen,ControllerListener {
 			gameCam.position.y = yPlayer;
 		gameCam.update();
 	}
-	
+
 	/**
-	 * Draw all objects in the world 
+	 * Draw all objects in the world
 	 */
 	private void drawWorld() {
-		if(canDraw){
-			canRemove=false;
+		if (canDraw) {
+			canRemove = false;
 			ArrayList<StaticObject> objects;
 			objects = worldGame.getListObject();
 			Texture tmp = null;
@@ -321,7 +345,7 @@ public class GameManagerScreen implements Screen,ControllerListener {
 					if (((ShotPlayer) s).getTarget() >= 0)
 						if (((ShotPlayer) s).getDirection().x == 0) {
 							if (worldGame.level == 3)
-	
+
 								tmp = ImagePool.winterVerticalShot;
 							else
 								tmp = ImagePool.verticalShot;
@@ -335,14 +359,13 @@ public class GameManagerScreen implements Screen,ControllerListener {
 						trov = true;
 				} else if (s instanceof ShotEnemy) {
 					if (((ShotEnemy) s).getTarget() >= 0)
-						if (((ShotEnemy) s).getDirection().x == 0){
+						if (((ShotEnemy) s).getDirection().x == 0) {
 							if (worldGame.level == 3)
-	
+
 								tmp = ImagePool.winterVerticalShot;
 							else
 								tmp = ImagePool.verticalShot;
-						}
-						else{
+						} else {
 							if (worldGame.level == 3)
 								tmp = ImagePool.winterShot;
 							else
@@ -364,34 +387,38 @@ public class GameManagerScreen implements Screen,ControllerListener {
 										ImagePool.shotEnemyAnimationUp.getKeyFrame(((Enemy) s).shotAnimationTime, true),
 										s.getPosition().x, (int) s.getPosition().y);
 							else
-								worldBatch.draw(ImagePool.enemyAnimationUp.getKeyFrame(((Enemy) s).stateEnemyTime, true),
+								worldBatch.draw(
+										ImagePool.enemyAnimationUp.getKeyFrame(((Enemy) s).stateEnemyTime, true),
 										s.getPosition().x, (int) s.getPosition().y);
 							break;
 						case 1:
 							if (((Enemy) s).shoting)
-								worldBatch.draw(
-										ImagePool.shotEnemyAnimationRight.getKeyFrame(((Enemy) s).shotAnimationTime, true),
-										s.getPosition().x, (int) s.getPosition().y);
+								worldBatch.draw(ImagePool.shotEnemyAnimationRight
+										.getKeyFrame(((Enemy) s).shotAnimationTime, true), s.getPosition().x,
+										(int) s.getPosition().y);
 							else
-								worldBatch.draw(ImagePool.enemyAnimationRight.getKeyFrame(((Enemy) s).stateEnemyTime, true),
+								worldBatch.draw(
+										ImagePool.enemyAnimationRight.getKeyFrame(((Enemy) s).stateEnemyTime, true),
 										s.getPosition().x, (int) s.getPosition().y);
 							break;
 						case 2:
 							if (((Enemy) s).shoting)
-								worldBatch.draw(
-										ImagePool.shotEnemyAnimationDown.getKeyFrame(((Enemy) s).shotAnimationTime, true),
-										s.getPosition().x, (int) s.getPosition().y);
+								worldBatch.draw(ImagePool.shotEnemyAnimationDown
+										.getKeyFrame(((Enemy) s).shotAnimationTime, true), s.getPosition().x,
+										(int) s.getPosition().y);
 							else
-								worldBatch.draw(ImagePool.enemyAnimationDown.getKeyFrame(((Enemy) s).stateEnemyTime, true),
+								worldBatch.draw(
+										ImagePool.enemyAnimationDown.getKeyFrame(((Enemy) s).stateEnemyTime, true),
 										s.getPosition().x, (int) s.getPosition().y);
 							break;
 						case 3:
 							if (((Enemy) s).shoting)
-								worldBatch.draw(
-										ImagePool.shotEnemyAnimationLeft.getKeyFrame(((Enemy) s).shotAnimationTime, true),
-										s.getPosition().x, (int) s.getPosition().y);
+								worldBatch.draw(ImagePool.shotEnemyAnimationLeft
+										.getKeyFrame(((Enemy) s).shotAnimationTime, true), s.getPosition().x,
+										(int) s.getPosition().y);
 							else
-								worldBatch.draw(ImagePool.enemyAnimationLeft.getKeyFrame(((Enemy) s).stateEnemyTime, true),
+								worldBatch.draw(
+										ImagePool.enemyAnimationLeft.getKeyFrame(((Enemy) s).stateEnemyTime, true),
 										s.getPosition().x, (int) s.getPosition().y);
 							break;
 						default:
@@ -418,8 +445,8 @@ public class GameManagerScreen implements Screen,ControllerListener {
 					tmp = ImagePool.hut;
 				else if (s instanceof Tree) {
 					tmp = ImagePool.tree;
-					worldBatch.draw(ImagePool.treeAnimation.getKeyFrame(((Tree) s).animationTime, true), s.getPosition().x,
-							(int) s.getPosition().y);
+					worldBatch.draw(ImagePool.treeAnimation.getKeyFrame(((Tree) s).animationTime, true),
+							s.getPosition().x, (int) s.getPosition().y);
 					trov = true;
 				} else if (s instanceof Character) {
 					boolean shot = ((Character) s).shoting;
@@ -463,7 +490,7 @@ public class GameManagerScreen implements Screen,ControllerListener {
 					else {
 						worldBatch.draw(ImagePool.playerAnimationDied.getKeyFrame(diedAnimationTime, true),
 								s.getPosition().x, s.getPosition().y);
-	
+
 					}
 					trov = true;
 				}
@@ -471,16 +498,17 @@ public class GameManagerScreen implements Screen,ControllerListener {
 					if (tmp == ImagePool.mapOne)
 						cont++;
 					worldBatch.draw(tmp, (int) s.getPosition().x, (int) s.getPosition().y);
-	
+
 				}
 			}
 		}
-		canRemove=true;
+		canRemove = true;
 	}
 
 	/**
 	 * find Texture that stand for parameter s
-	 * @param s 
+	 * 
+	 * @param s
 	 * @return Texture depending value of s
 	 */
 	private Texture getLetterImage(Letter s) {
@@ -536,9 +564,8 @@ public class GameManagerScreen implements Screen,ControllerListener {
 
 	}
 
-	
 	/**
-	 * Draws the information about player life, number of munitions and score 
+	 * Draws the information about player life, number of munitions and score
 	 */
 	private void drawInfoBar() {
 		float x = gameCam.position.x;
@@ -569,7 +596,7 @@ public class GameManagerScreen implements Screen,ControllerListener {
 	}
 
 	/**
-	 * Draw small map that represents all game map 
+	 * Draw small map that represents all game map
 	 */
 	private void drawNavigationMap(int level) {
 		float x = gameCam.position.x;
@@ -684,36 +711,54 @@ public class GameManagerScreen implements Screen,ControllerListener {
 
 	@Override
 	public void connected(Controller controller) {
-	
+
 	}
 
 	@Override
 	public void disconnected(Controller controller) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
-	
+	/**
+	 * handle the input that user generates with the controller
+	 * 
+	 * @param buttonCode
+	 *            is the code of the button pressed
+	 * @param controller
+	 *            is the controller that generates the input
+	 */
 	@Override
 	public boolean buttonDown(Controller controller, int buttonCode) {
-		if(buttonCode==2)
-			worldGame.player.controllerHasChangedWeapon=true;
-		else if(buttonCode==3)
-			worldGame.player.controllerHasShoted=true;
-		else if(buttonCode == 6)
-			worldGame.player.controllerHasChangedVelocity=true;
-		else if(buttonCode == 9)
-			gameIsInPause=true;
-		
+		if (gameMenu.getScreen().getClass().getName().contains("GameManagerScreen")) {
+			if (buttonCode == 2)
+				worldGame.player.controllerHasChangedWeapon = true;
+			else if (buttonCode == 3)
+				worldGame.player.controllerHasShoted = true;
+			else if (buttonCode == 6)
+				worldGame.player.controllerHasChangedVelocity = true;
+			else if (buttonCode == 9)
+				gameIsInPause = true;
+		}
 		return false;
 	}
 
+	/**
+	 * handle the input that user generates with the controller
+	 * 
+	 * @param buttonCode
+	 *            is the code of the button released
+	 * @param controller
+	 *            is the controller that generates the input
+	 */
 	@Override
 	public boolean buttonUp(Controller controller, int buttonCode) {
-		if(buttonCode==3)
-			worldGame.player.controllerHasShoted=false;
-		else if(buttonCode == 6)
-			worldGame.player.controllerHasChangedVelocity=false;
+		if (gameMenu.getScreen().getClass().getName().contains("GameManagerScreen")) {
+			if (buttonCode == 3)
+				worldGame.player.controllerHasShoted = false;
+			else if (buttonCode == 6)
+				worldGame.player.controllerHasChangedVelocity = false;
+		}
 		return false;
 
 	}
@@ -723,9 +768,18 @@ public class GameManagerScreen implements Screen,ControllerListener {
 		return false;
 	}
 
+	/**
+	 * update the direction selected with the controller
+	 * 
+	 * @param controller
+	 *            is the controller that generates the event
+	 * @param value
+	 *            is the direction selected
+	 */
 	@Override
 	public boolean povMoved(Controller controller, int povCode, PovDirection value) {
-		povDirection=value;
+		if(gameMenu.getScreen().getClass().getName().contains("GameManagerScreen"))
+			povDirection = value;
 		return false;
 	}
 

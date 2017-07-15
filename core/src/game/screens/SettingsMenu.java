@@ -26,6 +26,7 @@ import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 import game.manager.GameMenu;
+import game.pools.GameConfig;
 import game.pools.ImagePool;
 import game.pools.MusicPool;
 
@@ -60,8 +61,8 @@ public class SettingsMenu implements Screen,ControllerListener {
 
 	public SettingsMenu(GameMenu gameMenu) {
 		this.gameMenu = gameMenu;
-		controller = new Controllers();
-		controller.addListener(this);
+		//controller = new Controllers();
+		GameConfig.controller.addListener(this);
 		controllerMoveDirection = -1;
 		hasPressedEnter = false;
 		itemSelected = 2;
@@ -109,7 +110,9 @@ public class SettingsMenu implements Screen,ControllerListener {
 		initMatrix();
 
 	}
-
+	/**
+	 * init the matrix that contains the position where the itemSelected image could stay and the size of the itemSelected that depends by the key selected
+	 */
 	private void initMatrix() {
 		matrixDimension[1] = new Vector2(music.getWidth() + music.getWidth() / 2,
 				music.getHeight() + music.getHeight() / 2);
@@ -140,7 +143,10 @@ public class SettingsMenu implements Screen,ControllerListener {
 		stage.act();
 		stage.draw();
 	}
-
+	
+	/** handle the input and evolve the scene
+	 * 
+	 */
 	private void update() {
 		if (Gdx.input.isKeyPressed(Input.Keys.LEFT) || controllerMoveDirection == 3) {
 			joystickSprite.setTexture(ImagePool.joystickLeft);
@@ -192,6 +198,9 @@ public class SettingsMenu implements Screen,ControllerListener {
 
 	}
 
+	/**
+	 * draw the scene
+	 */
 	private void draw() {
 		backGround.draw(batch);
 		macchinaSprite.draw(batch);
@@ -256,14 +265,22 @@ public class SettingsMenu implements Screen,ControllerListener {
 		// TODO Auto-generated method stub
 		
 	}
-
+	/**
+	 * handle the input that user generates with the controller
+	 * @param buttonCode is the code of the button pressed
+	 * @param controller is the controller that generates the input
+	 */
 	@Override
 	public boolean buttonDown(Controller controller, int buttonCode) {
 		if(buttonCode == 0 && gameMenu.getScreen().getClass().getName().contains("SettingsMenu"))
 			hasPressedEnter = true;
 		return false;
 	}
-
+	/**
+	 * handle the input that user generates with the controller
+	 * @param buttonCode is the code of the button released
+	 * @param controller is the controller that generates the input
+	 */
 	@Override
 	public boolean buttonUp(Controller controller, int buttonCode) {
 		// TODO Auto-generated method stub
@@ -276,6 +293,14 @@ public class SettingsMenu implements Screen,ControllerListener {
 		return false;
 	}
 
+	/**
+	 * update the direction selected with the controller
+	 * 
+	 * @param controller
+	 *            is the controller that generates the event
+	 * @param value
+	 *            is the direction selected
+	 */
 	@Override
 	public boolean povMoved(Controller controller, int povCode, PovDirection value) {
 		boolean inputIsValid = false;

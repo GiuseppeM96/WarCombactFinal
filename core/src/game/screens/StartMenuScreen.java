@@ -35,13 +35,14 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 import game.manager.GameMenu;
+import game.pools.GameConfig;
 import game.pools.ImagePool;
 
-public class StartMenuScreen implements Screen,ControllerListener {
+public class StartMenuScreen implements Screen, ControllerListener {
 	private GameMenu gameMenu;
-	
+
 	Controllers controller;
-	
+
 	private Vector2[][] matrixPosition;
 	private Vector2[][] matrixDimension;
 	private Vector2 itemSelected;
@@ -58,7 +59,7 @@ public class StartMenuScreen implements Screen,ControllerListener {
 	private TextButton help;
 	private TextButton settings;
 	private TextButton exit;
-	
+
 	public Stage stage;
 	String name;
 	Viewport viewport = new ExtendViewport(500, 500, ImagePool.camera);
@@ -70,8 +71,8 @@ public class StartMenuScreen implements Screen,ControllerListener {
 
 	public StartMenuScreen(GameMenu gameMenu) {
 		this.gameMenu = gameMenu;
-		controller = new Controllers();
-		controller.addListener(this);
+		// controller = new Controllers();
+		GameConfig.controller.addListener(this);
 		controllerMoveDirection = -1;
 		hasPressedEnter = false;
 		macchinaSprite = new Sprite(ImagePool.macchina);
@@ -106,8 +107,8 @@ public class StartMenuScreen implements Screen,ControllerListener {
 		settings = new TextButton("Settings", ImagePool.skin);
 		settings.setColor(Color.BLUE);
 		settings.setPosition(320, 5);
-		
-		exit= new TextButton("Exit",ImagePool.skin);
+
+		exit = new TextButton("Exit", ImagePool.skin);
 		exit.setColor(Color.DARK_GRAY);
 		exit.setPosition(70, 5);
 
@@ -129,14 +130,19 @@ public class StartMenuScreen implements Screen,ControllerListener {
 
 	}
 
+	/**
+	 * init the matrix that contains the position where the itemSelected image
+	 * could stay and the size of the itemSelected that depends by the key
+	 * selected
+	 */
 	private void initMatrix() {
 		matrixPosition[0][0] = new Vector2(114, 80);
 		matrixPosition[0][1] = new Vector2(249, 80);
 		matrixPosition[0][2] = new Vector2(353, 78);
 		matrixPosition[1][1] = new Vector2(179, -5);
 		matrixPosition[1][2] = new Vector2(293, -7);
-		matrixPosition[1][0] = new Vector2( 55,-5);
-		
+		matrixPosition[1][0] = new Vector2(55, -5);
+
 		matrixDimension[0][0] = new Vector2(newGame.getWidth() + newGame.getWidth() / 2,
 				newGame.getHeight() + newGame.getHeight() / 2);
 		matrixDimension[0][1] = new Vector2(loadGame.getWidth() + loadGame.getWidth() / 2,
@@ -180,6 +186,9 @@ public class StartMenuScreen implements Screen,ControllerListener {
 		ImagePool.font.draw(batch, "PRESS TO START", 290, 250);
 	}
 
+	/**
+	 * handle the input and evolve the scene
+	 */
 	private void update() {
 		if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER) || hasPressedEnter) {
 			Gdx.input.setInputProcessor(null);
@@ -191,7 +200,7 @@ public class StartMenuScreen implements Screen,ControllerListener {
 					gameMenu.swap(6);
 					break;
 				case 1:
-					gameMenu.loadGame=true;
+					gameMenu.loadGame = true;
 					gameMenu.swap(3);
 					break;
 				case 2:
@@ -231,7 +240,7 @@ public class StartMenuScreen implements Screen,ControllerListener {
 		} else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) || controllerMoveDirection == 1) {
 			joystickSprite.setTexture(ImagePool.joystickRight);
 			if (Gdx.input.isKeyJustPressed(Input.Keys.RIGHT) || controllerMoveDirection == 1)
-				if (itemSelected.y < 2 ) {
+				if (itemSelected.y < 2) {
 					itemSelected.y++;
 					selectedSprite.setPosition(matrixPosition[(int) itemSelected.x][(int) itemSelected.y].x,
 							matrixPosition[(int) itemSelected.x][(int) itemSelected.y].y);
@@ -240,7 +249,7 @@ public class StartMenuScreen implements Screen,ControllerListener {
 				}
 		} else if (Gdx.input.isKeyPressed(Input.Keys.UP) || controllerMoveDirection == 0) {
 			joystickSprite.setTexture(ImagePool.joystickUp);
-			if (Gdx.input.isKeyPressed(Input.Keys.UP) || controllerMoveDirection == 0){
+			if (Gdx.input.isKeyPressed(Input.Keys.UP) || controllerMoveDirection == 0) {
 				if (itemSelected.x > 0) {
 					itemSelected.x--;
 					selectedSprite.setPosition(matrixPosition[(int) itemSelected.x][(int) itemSelected.y].x,
@@ -298,18 +307,26 @@ public class StartMenuScreen implements Screen,ControllerListener {
 	@Override
 	public void connected(Controller controller) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void disconnected(Controller controller) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
+	/**
+	 * handle the input that user generates with the controller
+	 * 
+	 * @param buttonCode
+	 *            is the code of the button pressed
+	 * @param controller
+	 *            is the controller that generates the input
+	 */
 	@Override
 	public boolean buttonDown(Controller controller, int buttonCode) {
-		if(buttonCode == 0 && gameMenu.getScreen().getClass().getName().contains("StartMenuScreen"))
+		if (buttonCode == 0 && gameMenu.getScreen().getClass().getName().contains("StartMenuScreen"))
 			hasPressedEnter = true;
 		return false;
 	}
@@ -326,6 +343,14 @@ public class StartMenuScreen implements Screen,ControllerListener {
 		return false;
 	}
 
+	/**
+	 * update the direction selected with the controller
+	 * 
+	 * @param controller
+	 *            is the controller that generates the event
+	 * @param value
+	 *            is the direction selected
+	 */
 	@Override
 	public boolean povMoved(Controller controller, int povCode, PovDirection value) {
 		boolean inputIsValid = false;
@@ -342,7 +367,8 @@ public class StartMenuScreen implements Screen,ControllerListener {
 				controllerMoveDirection = 2;
 			else if (value == PovDirection.west)
 				controllerMoveDirection = 3;
-		}		return false;
+		}
+		return false;
 	}
 
 	@Override

@@ -4,20 +4,24 @@ import game.pools.GameConfig;
 
 public class Letter extends StaticObject {
 	char value;
+
 	public Letter(char value) {
 		super();
 		setSize(GameConfig.LETTER_SIZE);
-		this.value=value;
+		this.value = value;
 	}
+
 	public char getValue() {
 		return value;
 	}
+
 	public void setValue(char value) {
 		this.value = value;
 	}
+
 	@Override
 	public String getType() {
-		switch(value){
+		switch (value) {
 		case 'a':
 			return "A";
 		case 'e':

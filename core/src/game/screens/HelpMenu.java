@@ -25,9 +25,10 @@ import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 import game.manager.GameMenu;
+import game.pools.GameConfig;
 import game.pools.ImagePool;
 
-public class HelpMenu implements Screen,ControllerListener {
+public class HelpMenu implements Screen, ControllerListener {
 
 	Controllers controller;
 	int currentPage;
@@ -50,19 +51,19 @@ public class HelpMenu implements Screen,ControllerListener {
 	private boolean hasPressedEnter;
 
 	public HelpMenu(GameMenu gameMenu) {
-		
+
 		this.gameMenu = gameMenu;
-		controller = new Controllers();
-		controller.addListener(this);
+		// controller = new Controllers();
+		GameConfig.controller.addListener(this);
 		hasPressedEnter = false;
 		controllerMoveDirection = -1;
 		batch = new SpriteBatch();
-		
+
 		macchinaSprite = new Sprite(ImagePool.macchina);
 		joystickSprite = new Sprite(ImagePool.joystick);
 		selectedSprite = new Sprite(ImagePool.selected);
 		backGround = new Sprite(ImagePool.backGround);
-		
+
 		viewport = new ExtendViewport(500, 500, ImagePool.camera);
 
 		Table mainTable = new Table();
@@ -82,7 +83,7 @@ public class HelpMenu implements Screen,ControllerListener {
 		joystickSprite.setPosition(500, -30);
 		selectedSprite.setPosition(253, 27);
 		selectedSprite.setSize(back.getWidth() + back.getWidth() / 2, back.getHeight() + back.getHeight() / 2);
-		currentPage=1;
+		currentPage = 1;
 	}
 
 	@Override
@@ -104,22 +105,23 @@ public class HelpMenu implements Screen,ControllerListener {
 
 	}
 
+	/**
+	 * handle the input and evolve the scene
+	 */
 	private void update() {
-		if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER) || hasPressedEnter){
+		if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER) || hasPressedEnter) {
 			gameMenu.swap(0);
 			hasPressedEnter = false;
 		}
-		if (Gdx.input.isKeyPressed(Input.Keys.LEFT) || controllerMoveDirection == 3){
-			if(currentPage==2)
+		if (Gdx.input.isKeyPressed(Input.Keys.LEFT) || controllerMoveDirection == 3) {
+			if (currentPage == 2)
 				currentPage--;
 			joystickSprite.setTexture(ImagePool.joystickLeft);
-		}
-		else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) || controllerMoveDirection == 1){
-			if(currentPage==1)
+		} else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) || controllerMoveDirection == 1) {
+			if (currentPage == 1)
 				currentPage++;
 			joystickSprite.setTexture(ImagePool.joystickRight);
-		}
-		else if (Gdx.input.isKeyPressed(Input.Keys.UP) || controllerMoveDirection == 0)
+		} else if (Gdx.input.isKeyPressed(Input.Keys.UP) || controllerMoveDirection == 0)
 			joystickSprite.setTexture(ImagePool.joystickUp);
 		else if (Gdx.input.isKeyPressed(Input.Keys.DOWN) || controllerMoveDirection == 2)
 			joystickSprite.setTexture(ImagePool.joystickDown);
@@ -128,6 +130,9 @@ public class HelpMenu implements Screen,ControllerListener {
 		controllerMoveDirection = -1;
 	}
 
+	/**
+	 * draw the scene
+	 */
 	private void draw() {
 		backGround.draw(batch);
 		macchinaSprite.draw(batch);
@@ -138,36 +143,35 @@ public class HelpMenu implements Screen,ControllerListener {
 
 		ImagePool.font.setColor(Color.WHITE);
 		// font.draw(batch, "INFO", 290, 250);
-		if(currentPage == 1){
+		if (currentPage == 1) {
 			batch.draw(ImagePool.goUp, 230, 321);
 			ImagePool.font.draw(batch, "G O    U P", 315, 341);
 			batch.draw(ImagePool.goRight, 230, 295);
 			ImagePool.font.draw(batch, "G O    R I G H T", 315, 315);
-	
+
 			batch.draw(ImagePool.goDown, 230, 270);
 			ImagePool.font.draw(batch, "G O    D O W N", 315, 289);
-	
+
 			batch.draw(ImagePool.goLeft, 230, 245);
 			ImagePool.font.draw(batch, "G O    L E F T", 315, 260);
-	
+
 			batch.draw(ImagePool.zed, 230, 221);
 			ImagePool.font.draw(batch, "R U N", 315, 237);
-	
+
 			batch.draw(ImagePool.space, 214, 198);
 			ImagePool.font.draw(batch, "S H O T", 315, 212);
-			
+
 			batch.draw(ImagePool.goRight, 460, 200);
 
-		}
-		else{
-			batch.draw(ImagePool.x,230,321);
-			ImagePool.font.draw(batch,"C H A N G E  W E A P O N",285,341);
-			
-			batch.draw(ImagePool.esc,230,291);
-			ImagePool.font.draw(batch,"P A U S E ",285,311);
+		} else {
+			batch.draw(ImagePool.x, 230, 321);
+			ImagePool.font.draw(batch, "C H A N G E  W E A P O N", 285, 341);
+
+			batch.draw(ImagePool.esc, 230, 291);
+			ImagePool.font.draw(batch, "P A U S E ", 285, 311);
 
 		}
-			
+
 	}
 
 	@Override
@@ -201,19 +205,27 @@ public class HelpMenu implements Screen,ControllerListener {
 	@Override
 	public void connected(Controller controller) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void disconnected(Controller controller) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
+	/**
+	 * handle the input that user generates with the controller
+	 * 
+	 * @param buttonCode
+	 *            is the code of the button pressed
+	 * @param controller
+	 *            is the controller that generates the input
+	 */
 	@Override
 	public boolean buttonDown(Controller controller, int buttonCode) {
-		if( buttonCode == 0 && gameMenu.getScreen().getClass().getName().contains("HelpMenu"))
-				hasPressedEnter = true;
+		if (buttonCode == 0 && gameMenu.getScreen().getClass().getName().contains("HelpMenu"))
+			hasPressedEnter = true;
 		return false;
 	}
 
@@ -229,6 +241,14 @@ public class HelpMenu implements Screen,ControllerListener {
 		return false;
 	}
 
+	/**
+	 * update the direction selected with the controller
+	 * 
+	 * @param controller
+	 *            is the controller that generates the event
+	 * @param value
+	 *            is the direction selected
+	 */
 	@Override
 	public boolean povMoved(Controller controller, int povCode, PovDirection value) {
 		boolean inputIsValid = false;
@@ -245,7 +265,7 @@ public class HelpMenu implements Screen,ControllerListener {
 				controllerMoveDirection = 2;
 			else if (value == PovDirection.west)
 				controllerMoveDirection = 3;
-		}		
+		}
 		return false;
 	}
 
@@ -268,4 +288,3 @@ public class HelpMenu implements Screen,ControllerListener {
 	}
 
 }
-

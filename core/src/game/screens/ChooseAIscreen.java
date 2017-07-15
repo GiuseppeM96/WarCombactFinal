@@ -22,6 +22,7 @@ import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 import game.manager.GameMenu;
+import game.pools.GameConfig;
 import game.pools.ImagePool;
 
 public class ChooseAIscreen implements Screen, ControllerListener {
@@ -59,8 +60,8 @@ public class ChooseAIscreen implements Screen, ControllerListener {
 		batch = new SpriteBatch();
 		font = new BitmapFont();
 		viewport = new ExtendViewport(500, 500, ImagePool.camera);
-		controller = new Controllers();
-		controller.addListener(this);
+		//controller = new Controllers();
+		GameConfig.controller.addListener(this);
 		hasPressedEnter = false;
 		macchinaSprite = new Sprite(ImagePool.macchina);
 		joystickSprite = new Sprite(ImagePool.joystick);
@@ -108,6 +109,11 @@ public class ChooseAIscreen implements Screen, ControllerListener {
 		choosed = false;
 	}
 
+	/**
+	 * init the vector that contains the position where the itemSelected image
+	 * could stay and the size of the itemSelected that depends by the key
+	 * selected
+	 */
 	private void initVector() {
 		vectorDimension[0] = new Vector2(myAI.getWidth() + myAI.getWidth() / 2,
 				myAI.getHeight() + myAI.getHeight() / 2);
@@ -142,6 +148,9 @@ public class ChooseAIscreen implements Screen, ControllerListener {
 
 	}
 
+	/**
+	 * handle the input
+	 */
 	private void update() {
 		boolean selectedIsMoved = false;
 		if ((Gdx.input.isKeyJustPressed(Input.Keys.RIGHT) || controllerMoveDirection == 1) && !choosed)
@@ -184,6 +193,9 @@ public class ChooseAIscreen implements Screen, ControllerListener {
 
 	}
 
+	/**
+	 * draw the scene
+	 */
 	private void draw() {
 		backGround.draw(batch);
 		macchinaSprite.draw(batch);
@@ -252,6 +264,11 @@ public class ChooseAIscreen implements Screen, ControllerListener {
 
 	}
 
+	/**
+	 * handle the input that user generates with the controller
+	 * @param buttonCode is the code of the button pressed
+	 * @param controller is the controller that generates the input
+	 */
 	@Override
 	public boolean buttonDown(Controller controller, int buttonCode) {
 		if (buttonCode == 0 && gameMenu.getScreen().getClass().getName().contains("ChooseAIscreen"))
@@ -270,6 +287,11 @@ public class ChooseAIscreen implements Screen, ControllerListener {
 		return false;
 	}
 
+	/**
+	 * update the direction selected with the controller
+	 * @param controller is the controller that generates the event
+	 * @param value is the direction selected
+	 */
 	@Override
 	public boolean povMoved(Controller controller, int povCode, PovDirection value) {
 		boolean inputIsValid = false;

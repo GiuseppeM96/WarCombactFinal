@@ -29,6 +29,7 @@ import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 import game.manager.GameMenu;
+import game.pools.GameConfig;
 import game.pools.ImagePool;
 
 public class ScoreMenu implements Screen,ControllerListener {
@@ -124,10 +125,13 @@ public class ScoreMenu implements Screen,ControllerListener {
 			printWriter.println(bestPlayer[i] + ";" + bestPlayerScore[i]);
 		}
 		printWriter.flush();
-		controller = new Controllers();
-		controller.addListener(this);
+		//controller = new Controllers();
+		GameConfig.controller.addListener(this);
 	}
 
+	/**
+	 * update the high score
+	 */
 	public void updateTop5() {
 		playerScore = gameMenu.world.score;
 		playerName = gameMenu.userInfo.getName();
@@ -165,7 +169,9 @@ public class ScoreMenu implements Screen,ControllerListener {
 		stage.act();
 		stage.draw();
 	}
-
+	/**
+	 * handle the input and evolve the scene
+	 */
 	private void update() {
 		if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER) || hasPressedEnter) {
 			hasPressedEnter = false;
@@ -174,7 +180,9 @@ public class ScoreMenu implements Screen,ControllerListener {
 			gameMenu.swap(0);
 		}
 	}
-
+	/**
+	 * draw the scene
+	 */
 	private void draw() {
 		backGround.draw(batch);
 		macchinaSprite.draw(batch);
@@ -244,6 +252,14 @@ public class ScoreMenu implements Screen,ControllerListener {
 		
 	}
 
+	/**
+	 * handle the input that user generates with the controller
+	 * 
+	 * @param buttonCode
+	 *            is the code of the button pressed
+	 * @param controller
+	 *            is the controller that generates the input
+	 */
 	@Override
 	public boolean buttonDown(Controller controller, int buttonCode) {
 		if(buttonCode == 0 && gameMenu.getScreen().getClass().getName().contains("ScoreMenu"))

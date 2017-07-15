@@ -1,5 +1,5 @@
 package game.utility;
 
 public enum StepDirection {
-	ERR,UP,DX,DOWN,SX;
+	ERR, UP, DX, DOWN, SX;
 }

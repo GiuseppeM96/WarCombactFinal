@@ -22,12 +22,11 @@ import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 import game.manager.GameMenu;
+import game.pools.GameConfig;
 import game.pools.ImagePool;
 
-public class StartMultiplayerScreen implements Screen,ControllerListener{
+public class StartMultiplayerScreen implements Screen, ControllerListener {
 
-	
-	
 	private GameMenu gameMenu;
 
 	Controllers controller;
@@ -44,7 +43,7 @@ public class StartMultiplayerScreen implements Screen,ControllerListener{
 	private Vector2[][] vectorDimension;
 	private Vector2 itemSelected;
 	TextField name;
-	
+
 	Stage stage;
 	OrthographicCamera camera;
 	Viewport viewport;
@@ -54,19 +53,17 @@ public class StartMultiplayerScreen implements Screen,ControllerListener{
 
 	private int controllerMoveDirection;
 
-
-	
 	/*
 	 * 
-	 * da questa classe mettiamo New Match e Add Match
-	 * appena premo AddMatch se il server di gameMenu!=null crea il NetGameScreen e va in WaitScreen
+	 * da questa classe mettiamo New Match e Add Match appena premo AddMatch se
+	 * il server di gameMenu!=null crea il NetGameScreen e va in WaitScreen
 	 * NewMatch va in SettingsMultiplayerScreen
-	 *  
-	 * */
+	 * 
+	 */
 	public StartMultiplayerScreen(GameMenu gameMenu) {
 		this.gameMenu = gameMenu;
-		controller = new Controllers();
-		controller.addListener(this);
+		// controller = new Controllers();
+		GameConfig.controller.addListener(this);
 		hasPressedEnter = false;
 		controllerMoveDirection = -1;
 		batch = new SpriteBatch();
@@ -75,7 +72,7 @@ public class StartMultiplayerScreen implements Screen,ControllerListener{
 		joystickSprite = new Sprite(ImagePool.joystick);
 		selectedSprite = new Sprite(ImagePool.selected);
 		backGround = new Sprite(ImagePool.backGround);
-		
+
 		viewport = new ExtendViewport(500, 500, ImagePool.camera);
 
 		Table mainTable = new Table();
@@ -84,20 +81,20 @@ public class StartMultiplayerScreen implements Screen,ControllerListener{
 		mainTable.setFillParent(true);
 		mainTable.bottom();
 
-		name= new TextField("", ImagePool.skin);
+		name = new TextField("", ImagePool.skin);
 		name = new TextField("", ImagePool.skin);
 		name.setMessageText("______");
 		name.setFocusTraversal(true);
 		name.setPosition(290, 250);
-		
-		createMatch= new TextButton("Create Match", ImagePool.skin);
+
+		createMatch = new TextButton("Create Match", ImagePool.skin);
 		createMatch.setColor(Color.RED);
 		createMatch.setPosition(100, 70);
-		
-		existingMatch= new TextButton("Existing Match",ImagePool.skin);
+
+		existingMatch = new TextButton("Existing Match", ImagePool.skin);
 		existingMatch.setColor(Color.RED);
 		existingMatch.setPosition(320, 70);
-		
+
 		back = new TextButton("Back", ImagePool.skin);
 		back.setColor(Color.BLUE);
 		back.setPosition(270, 10);
@@ -108,17 +105,24 @@ public class StartMultiplayerScreen implements Screen,ControllerListener{
 		mainTable.add(existingMatch);
 		mainTable.add(name);
 
-		vectorPosition= new Vector2[2][2];
-		vectorDimension= new Vector2[2][2];
+		vectorPosition = new Vector2[2][2];
+		vectorDimension = new Vector2[2][2];
 		initVector();
-		
+
 		stage.addActor(mainTable);
 		Gdx.input.setInputProcessor(stage);
 		joystickSprite.setPosition(500, -30);
-		selectedSprite.setSize(vectorDimension[(int) itemSelected.x][(int) itemSelected.y].x, vectorDimension[(int) itemSelected.x][(int) itemSelected.y].y);
-		selectedSprite.setPosition(vectorPosition[(int) itemSelected.x][(int) itemSelected.y].x, vectorPosition[(int) itemSelected.x][(int) itemSelected.y].y);
+		selectedSprite.setSize(vectorDimension[(int) itemSelected.x][(int) itemSelected.y].x,
+				vectorDimension[(int) itemSelected.x][(int) itemSelected.y].y);
+		selectedSprite.setPosition(vectorPosition[(int) itemSelected.x][(int) itemSelected.y].x,
+				vectorPosition[(int) itemSelected.x][(int) itemSelected.y].y);
 	}
 
+	/**
+	 * init the vector that contains the position where the itemSelected image
+	 * could stay and the size of the itemSelected that depends by the key
+	 * selected
+	 */
 	private void initVector() {
 		vectorDimension[0][0] = new Vector2(createMatch.getWidth() + createMatch.getWidth() / 2,
 				createMatch.getHeight() + createMatch.getHeight() / 2);
@@ -129,30 +133,34 @@ public class StartMultiplayerScreen implements Screen,ControllerListener{
 
 		vectorPosition[0][0] = new Vector2(52, 57);
 		vectorPosition[0][1] = new Vector2(275, 57);
-		vectorPosition[1][0] = new Vector2(252, 0);	
-		itemSelected= new Vector2(0,0);
+		vectorPosition[1][0] = new Vector2(252, 0);
+		itemSelected = new Vector2(0, 0);
 	}
 
-		@Override
-		public void show() {
-			// TODO Auto-generated method stub
+	@Override
+	public void show() {
+		// TODO Auto-generated method stub
 
-		}
+	}
 
-		@Override
-		public void render(float delta) {
-			batch.begin();
-			Gdx.gl20.glClearColor(.0f, .0f, .0f, 1);
-			Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+	@Override
+	public void render(float delta) {
+		batch.begin();
+		Gdx.gl20.glClearColor(.0f, .0f, .0f, 1);
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-			draw();
-			update();
+		draw();
+		update();
 
-			batch.end();
-			stage.act();
-			stage.draw();
+		batch.end();
+		stage.act();
+		stage.draw();
 
-		}
+	}
+
+	/**
+	 * draw the scene
+	 */
 	private void draw() {
 		backGround.draw(batch);
 		macchinaSprite.draw(batch);
@@ -162,18 +170,21 @@ public class StartMultiplayerScreen implements Screen,ControllerListener{
 			selectedSprite.draw(batch);
 
 		ImagePool.font.setColor(Color.WHITE);
-		ImagePool.font.draw(batch, "C H O O S E   Y O U R   M O D E", 230, 341);			
-		ImagePool.font.draw(batch, "I N S E R T  N A M E",270,300);
+		ImagePool.font.draw(batch, "C H O O S E   Y O U R   M O D E", 230, 341);
+		ImagePool.font.draw(batch, "I N S E R T  N A M E", 270, 300);
 	}
 
+	/**
+	 * handle the input and evolve the scene
+	 */
 	private void update() {
-		if(Gdx.input.isKeyJustPressed(Input.Keys.ENTER) || hasPressedEnter){
+		if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER) || hasPressedEnter) {
 			hasPressedEnter = false;
-			if(itemSelected.x == 1)
+			if (itemSelected.x == 1)
 				gameMenu.swap(0);
-			else{
+			else {
 				gameMenu.userInfo.setName(name.getText());
-				switch ((int)itemSelected.y) {
+				switch ((int) itemSelected.y) {
 				case 0:
 					gameMenu.swap(8);
 					break;
@@ -185,106 +196,107 @@ public class StartMultiplayerScreen implements Screen,ControllerListener{
 				}
 			}
 		}
-		boolean selectedIsMoved=false;
-		if (Gdx.input.isKeyPressed(Input.Keys.LEFT) || controllerMoveDirection == 3) 
+		boolean selectedIsMoved = false;
+		if (Gdx.input.isKeyPressed(Input.Keys.LEFT) || controllerMoveDirection == 3)
 			joystickSprite.setTexture(ImagePool.joystickLeft);
-		else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) || controllerMoveDirection == 1) 
+		else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) || controllerMoveDirection == 1)
 			joystickSprite.setTexture(ImagePool.joystickRight);
-		else if (Gdx.input.isKeyPressed(Input.Keys.UP) || controllerMoveDirection == 0) 
+		else if (Gdx.input.isKeyPressed(Input.Keys.UP) || controllerMoveDirection == 0)
 			joystickSprite.setTexture(ImagePool.joystickUp);
-		else if (Gdx.input.isKeyPressed(Input.Keys.DOWN) || controllerMoveDirection == 2) 
+		else if (Gdx.input.isKeyPressed(Input.Keys.DOWN) || controllerMoveDirection == 2)
 			joystickSprite.setTexture(ImagePool.joystickDown);
 		else
 			joystickSprite.setTexture(ImagePool.joystick);
 
-	
-		if(Gdx.input.isKeyJustPressed(Input.Keys.RIGHT) || controllerMoveDirection == 1){
-			if(itemSelected.x==0 && itemSelected.y==0){
+		if (Gdx.input.isKeyJustPressed(Input.Keys.RIGHT) || controllerMoveDirection == 1) {
+			if (itemSelected.x == 0 && itemSelected.y == 0) {
 				itemSelected.y++;
-				selectedIsMoved=true;
+				selectedIsMoved = true;
 			}
-		}
-		else if(Gdx.input.isKeyJustPressed(Input.Keys.LEFT) || controllerMoveDirection == 3){
-			if(itemSelected.x==0 && itemSelected.y==1){
+		} else if (Gdx.input.isKeyJustPressed(Input.Keys.LEFT) || controllerMoveDirection == 3) {
+			if (itemSelected.x == 0 && itemSelected.y == 1) {
 				itemSelected.y--;
-				selectedIsMoved=true;
+				selectedIsMoved = true;
 
 			}
-		}
-		else if(Gdx.input.isKeyJustPressed(Input.Keys.DOWN) || controllerMoveDirection == 2){
-			if(itemSelected.x==0){
-				itemSelected.x=1;
-				itemSelected.y=0;
-				selectedIsMoved=true;
+		} else if (Gdx.input.isKeyJustPressed(Input.Keys.DOWN) || controllerMoveDirection == 2) {
+			if (itemSelected.x == 0) {
+				itemSelected.x = 1;
+				itemSelected.y = 0;
+				selectedIsMoved = true;
 
 			}
-		}
-		else if(Gdx.input.isKeyJustPressed(Input.Keys.UP) || controllerMoveDirection == 0){
-			if(itemSelected.x==1){
-				selectedIsMoved=true;
-				itemSelected.x=0;
+		} else if (Gdx.input.isKeyJustPressed(Input.Keys.UP) || controllerMoveDirection == 0) {
+			if (itemSelected.x == 1) {
+				selectedIsMoved = true;
+				itemSelected.x = 0;
 
 			}
 		}
 		controllerMoveDirection = -1;
-		if(selectedIsMoved){
-			selectedSprite.setSize(vectorDimension[(int) itemSelected.x][(int) itemSelected.y].x, vectorDimension[(int) itemSelected.x][(int) itemSelected.y].y);
-			selectedSprite.setPosition(vectorPosition[(int) itemSelected.x][(int) itemSelected.y].x, vectorPosition[(int) itemSelected.x][(int) itemSelected.y].y);
+		if (selectedIsMoved) {
+			selectedSprite.setSize(vectorDimension[(int) itemSelected.x][(int) itemSelected.y].x,
+					vectorDimension[(int) itemSelected.x][(int) itemSelected.y].y);
+			selectedSprite.setPosition(vectorPosition[(int) itemSelected.x][(int) itemSelected.y].x,
+					vectorPosition[(int) itemSelected.x][(int) itemSelected.y].y);
 		}
 	}
-				
-
-	
-
 
 	@Override
 	public void resize(int width, int height) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void pause() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void resume() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void hide() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void dispose() {
 		stage.dispose();
-		
+
 	}
 
 	@Override
 	public void connected(Controller controller) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void disconnected(Controller controller) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
+	/**
+	 * handle the input that user generates with the controller
+	 * 
+	 * @param buttonCode
+	 *            is the code of the button pressed
+	 * @param controller
+	 *            is the controller that generates the input
+	 */
 	@Override
 	public boolean buttonDown(Controller controller, int buttonCode) {
 
-		if(buttonCode == 0 && gameMenu.getScreen().getClass().getName().contains("StartMultiplayerScreen"))
-		{
-				hasPressedEnter = true;
+		if (buttonCode == 0 && gameMenu.getScreen().getClass().getName().contains("StartMultiplayerScreen")) {
+			hasPressedEnter = true;
 		}
 		return false;
 	}
@@ -301,6 +313,14 @@ public class StartMultiplayerScreen implements Screen,ControllerListener{
 		return false;
 	}
 
+	/**
+	 * update the direction selected with the controller
+	 * 
+	 * @param controller
+	 *            is the controller that generates the event
+	 * @param value
+	 *            is the direction selected
+	 */
 	@Override
 	public boolean povMoved(Controller controller, int povCode, PovDirection value) {
 		boolean inputIsValid = false;
@@ -317,7 +337,8 @@ public class StartMultiplayerScreen implements Screen,ControllerListener{
 				controllerMoveDirection = 2;
 			else if (value == PovDirection.west)
 				controllerMoveDirection = 3;
-		}		return false;
+		}
+		return false;
 	}
 
 	@Override

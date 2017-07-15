@@ -23,7 +23,7 @@ import game.pools.ImagePool;
 
 public class CastleScreen implements Screen, ControllerListener {
 	boolean hasPressedEnter;
-	Controllers controller ;
+	Controllers controller;
 	StaticObject king;
 	public boolean collided;
 	SpriteBatch worldBatch;
@@ -35,14 +35,15 @@ public class CastleScreen implements Screen, ControllerListener {
 	public int level;
 
 	/**
-	 * Create a screen where player go to the King depending on level 
+	 * Create a screen where player go to the King depending on level
+	 * 
 	 * @param game
 	 */
 	public CastleScreen(GameMenu game, int level) {
 		super();
 		hasPressedEnter = false;
-		controller = new Controllers();
-		controller.addListener(this);
+		// controller = new Controllers();
+		GameConfig.controller.addListener(this);
 		gameMenu = game;
 		this.level = level;
 		dialogue = 0;
@@ -75,7 +76,9 @@ public class CastleScreen implements Screen, ControllerListener {
 
 	/**
 	 * Makes the scene evolve
-	 * @param delta time interval
+	 * 
+	 * @param delta
+	 *            time interval
 	 */
 	private void update(float delta) {
 		if (!collided) {
@@ -181,6 +184,14 @@ public class CastleScreen implements Screen, ControllerListener {
 
 	}
 
+	/**
+	 * handle the input that user generates with the controller
+	 * 
+	 * @param buttonCode
+	 *            is the code of the button pressed
+	 * @param controller
+	 *            is the controller that generates the input
+	 */
 	@Override
 	public boolean buttonDown(Controller controller, int buttonCode) {
 		if (buttonCode == 0 && gameMenu.getScreen().getClass().getName().contains("CastleScreen"))

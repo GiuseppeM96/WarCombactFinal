@@ -24,6 +24,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 
 import game.manager.GameMenu;
 import game.net.MyServer;
+import game.pools.GameConfig;
 import game.pools.ImagePool;
 
 public class SettingMultiplayerScreen implements Screen, ControllerListener {
@@ -61,8 +62,8 @@ public class SettingMultiplayerScreen implements Screen, ControllerListener {
 
 		this.gameMenu = gameMenu;
 		this.creatingServer = creatingServer;
-		controller = new Controllers();
-		controller.addListener(this);
+		// controller = new Controllers();
+		GameConfig.controller.addListener(this);
 		controllerMoveDirection = -1;
 		hasPressedEnter = false;
 		macchinaSprite = new Sprite(ImagePool.macchina);
@@ -74,7 +75,7 @@ public class SettingMultiplayerScreen implements Screen, ControllerListener {
 		input.setMessageText("_____");
 		input.setFocusTraversal(true);
 		input.setPosition(280, 280);
-		
+
 		port = new TextField("", ImagePool.skin);
 		port.setMessageText("_____");
 		port.setFocusTraversal(true);
@@ -118,6 +119,11 @@ public class SettingMultiplayerScreen implements Screen, ControllerListener {
 		 */
 	}
 
+	/**
+	 * init the vector that contains the position where the itemSelected image
+	 * could stay and the size of the itemSelected that depends by the key
+	 * selected
+	 */
 	private void initVector() {
 		vectorDimension[0] = new Vector2(go.getWidth() + go.getWidth() / 2, go.getHeight() + go.getHeight() / 2);
 		vectorDimension[1] = new Vector2(back.getWidth() + back.getWidth() / 2,
@@ -145,6 +151,9 @@ public class SettingMultiplayerScreen implements Screen, ControllerListener {
 		stage.draw();
 	}
 
+	/**
+	 * handle the input and evolve the scene
+	 */
 	private void update() {
 		if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER) || hasPressedEnter) {
 			hasPressedEnter = false;
@@ -152,10 +161,10 @@ public class SettingMultiplayerScreen implements Screen, ControllerListener {
 				gameMenu.swap(7);
 			else if (itemSelected == 0) {
 				if (creatingServer)
-					gameMenu.server = new MyServer(convert(input.getText()),convert(port.getText()));
+					gameMenu.server = new MyServer(convert(input.getText()), convert(port.getText()));
 				else
 					gameMenu.serverAddress = input.getText();
-					gameMenu.port= convert(port.getText());
+				gameMenu.port = convert(port.getText());
 				gameMenu.swap(10);
 			}
 		}
@@ -190,6 +199,9 @@ public class SettingMultiplayerScreen implements Screen, ControllerListener {
 		}
 	}
 
+	/**
+	 * draw the scene
+	 */
 	private void draw() {
 		backGround.draw(batch);
 		macchinaSprite.draw(batch);
@@ -236,6 +248,9 @@ public class SettingMultiplayerScreen implements Screen, ControllerListener {
 
 	}
 
+	/*
+	 * convert the string to int
+	 */
 	private int convert(String cod) {
 		char[] tmp = cod.toCharArray();
 		int result = 0;
@@ -258,6 +273,14 @@ public class SettingMultiplayerScreen implements Screen, ControllerListener {
 
 	}
 
+	/**
+	 * handle the input that user generates with the controller
+	 * 
+	 * @param buttonCode
+	 *            is the code of the button pressed
+	 * @param controller
+	 *            is the controller that generates the input
+	 */
 	@Override
 	public boolean buttonDown(Controller controller, int buttonCode) {
 		if (buttonCode == 0 && gameMenu.getScreen().getClass().getName().contains("SettingMultiplayerScreen"))
@@ -277,6 +300,14 @@ public class SettingMultiplayerScreen implements Screen, ControllerListener {
 		return false;
 	}
 
+	/**
+	 * update the direction selected with the controller
+	 * 
+	 * @param controller
+	 *            is the controller that generates the event
+	 * @param value
+	 *            is the direction selected
+	 */
 	@Override
 	public boolean povMoved(Controller controller, int povCode, PovDirection value) {
 		boolean inputIsValid = false;

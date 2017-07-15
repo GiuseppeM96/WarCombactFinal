@@ -58,9 +58,10 @@ public class EnemyThread extends Thread {
 								e.shoting = false;
 								e.shotAnimationTime = 0.f;
 							}
-						} else if(!e.standing){
+						} else if (!e.standing) {
 							try {
-								e.move((int)(World.classe.getMethod("getMoveDirection",Vector2.class).invoke(e,playerPosition)), dt / 1000);
+								e.move((int) (World.classe.getMethod("getMoveDirection", Vector2.class).invoke(e,
+										playerPosition)), dt / 1000);
 							} catch (IllegalAccessException e1) {
 								// TODO Auto-generated catch block
 								e1.printStackTrace();
@@ -83,15 +84,13 @@ public class EnemyThread extends Thread {
 								World.score += 100;
 							} else if (tmp instanceof Character) {
 
-							}
-							else if (tmp != null) {
+							} else if (tmp != null) {
 								e.collided = true;
 								e.cont--;
 								e.stateEnemyTime = 0.f;
 							}
 							e.stateEnemyTime += dt / 1000;
-						}
-						else{
+						} else {
 							StaticObject tmp = World.checkCollisionObject(e);
 							if (tmp instanceof ShotPlayer || !e.alive) {
 								enemyDied.add(e);

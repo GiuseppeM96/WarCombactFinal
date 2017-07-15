@@ -24,14 +24,15 @@ import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 import game.manager.GameMenu;
+import game.pools.GameConfig;
 import game.pools.ImagePool;
 
-public class PauseMenu implements Screen,ControllerListener {
+public class PauseMenu implements Screen, ControllerListener {
 
 	private GameMenu gameMenu;
 
 	Controllers controller;
-	
+
 	int checkPause = 0;
 	private Vector2[][] matrixPosition;
 	private Vector2[][] matrixDimension;
@@ -42,7 +43,7 @@ public class PauseMenu implements Screen,ControllerListener {
 	private TextButton resume;
 	private TextButton backToMenu;
 	private TextButton save;
-	
+
 	private Sprite macchinaSprite;
 	private Sprite joystickSprite;
 	private Sprite selectedSprite;
@@ -63,20 +64,20 @@ public class PauseMenu implements Screen,ControllerListener {
 
 	public PauseMenu(GameMenu gameMenu) {
 		this.gameMenu = gameMenu;
-		
-		matchSaved=false;
-		
-		controller = new Controllers();
-		controller.addListener(this);
+
+		matchSaved = false;
+
+		// controller = new Controllers();
+		GameConfig.controller.addListener(this);
 		controllerMoveDirection = -1;
-		
+
 		batch = new SpriteBatch();
 
 		macchinaSprite = new Sprite(ImagePool.macchina);
 		joystickSprite = new Sprite(ImagePool.joystick);
 		selectedSprite = new Sprite(ImagePool.selected);
-		backGround= new Sprite(ImagePool.backGround);
-		
+		backGround = new Sprite(ImagePool.backGround);
+
 		viewport = new ExtendViewport(500, 500, ImagePool.camera);
 
 		Table mainTable = new Table();
@@ -101,17 +102,17 @@ public class PauseMenu implements Screen,ControllerListener {
 		resume.setColor(Color.RED);
 		resume.setPosition(180, 80);// aggiungere pos
 
-		save= new TextButton("Save",ImagePool.skin);
+		save = new TextButton("Save", ImagePool.skin);
 		save.setColor(Color.DARK_GRAY);
 		save.setPosition(80, 10);
-		
+
 		mainTable.setLayoutEnabled(false);
 		mainTable.add(backToMenu);
 		mainTable.add(settings);
 		mainTable.add(resume);
 		mainTable.add(help);
 		mainTable.add(save);
-		
+
 		stage.addActor(mainTable);
 		Gdx.input.setInputProcessor(stage);
 		matrixPosition = new Vector2[2][3];
@@ -123,6 +124,11 @@ public class PauseMenu implements Screen,ControllerListener {
 		selectedSprite.setSize(matrixDimension[0][1].x, matrixDimension[0][1].y);
 	}
 
+	/**
+	 * init the matrix that contains the position where the itemSelected image
+	 * could stay and the size of the itemSelected that depends by the key
+	 * selected
+	 */
 	private void initMatrix() {
 		matrixDimension[0][1] = new Vector2(resume.getWidth() + resume.getWidth() / 2,
 				resume.getHeight() + resume.getHeight() / 2);
@@ -132,14 +138,14 @@ public class PauseMenu implements Screen,ControllerListener {
 				help.getHeight() + help.getHeight() / 2);
 		matrixDimension[1][2] = new Vector2(settings.getWidth() + settings.getWidth() / 2,
 				settings.getHeight() + settings.getHeight() / 2);
-		matrixDimension[1][0]= new Vector2(save.getWidth() + save.getWidth() / 2,
+		matrixDimension[1][0] = new Vector2(save.getWidth() + save.getWidth() / 2,
 				save.getHeight() + save.getHeight() / 2);
-		
+
 		matrixPosition[0][1] = new Vector2(148, 67);
 		matrixPosition[0][2] = new Vector2(290, 67);
 		matrixPosition[1][1] = new Vector2(185, 0);
 		matrixPosition[1][2] = new Vector2(330, -3);
-		matrixPosition[1][0] = new Vector2(62,0);
+		matrixPosition[1][0] = new Vector2(62, 0);
 
 	}
 
@@ -161,22 +167,25 @@ public class PauseMenu implements Screen,ControllerListener {
 		stage.draw();
 	}
 
+	/**
+	 * handle the input and evolve the scene
+	 */
 	private void update() {
 		if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER) || hasPressedEnter) {
 			Gdx.input.setInputProcessor(null);
-			hasPressedEnter=false;
+			hasPressedEnter = false;
 			switch ((int) itemSelected.x) {
 			case 0:
 				switch ((int) itemSelected.y) {
 				case 1:
 					gameMenu.world.resumeEnemy();
 					gameMenu.swap(5);
-					matchSaved=false;
+					matchSaved = false;
 					break;
 				case 2:
 					gameMenu.start = true;
-					gameMenu.loadGame=false;
-					matchSaved=false;
+					gameMenu.loadGame = false;
+					matchSaved = false;
 					gameMenu.swap(0);
 				default:
 					break;
@@ -192,7 +201,7 @@ public class PauseMenu implements Screen,ControllerListener {
 					break;
 				case 0:
 					try {
-						matchSaved=true;
+						matchSaved = true;
 						gameMenu.save();
 					} catch (IOException e) {
 						// TODO Auto-generated catch block
@@ -204,10 +213,10 @@ public class PauseMenu implements Screen,ControllerListener {
 				}
 			}
 		}
-		if (Gdx.input.isKeyPressed(Input.Keys.LEFT)  || controllerMoveDirection == 3) {
+		if (Gdx.input.isKeyPressed(Input.Keys.LEFT) || controllerMoveDirection == 3) {
 			joystickSprite.setTexture(ImagePool.joystickLeft);
-			if (Gdx.input.isKeyJustPressed(Input.Keys.LEFT)  || controllerMoveDirection == 3)
-				if (itemSelected.y > Math.abs((int)itemSelected.x-1)) {
+			if (Gdx.input.isKeyJustPressed(Input.Keys.LEFT) || controllerMoveDirection == 3)
+				if (itemSelected.y > Math.abs((int) itemSelected.x - 1)) {
 					itemSelected.y--;
 					selectedSprite.setPosition(matrixPosition[(int) itemSelected.x][(int) itemSelected.y].x,
 							matrixPosition[(int) itemSelected.x][(int) itemSelected.y].y);
@@ -215,9 +224,9 @@ public class PauseMenu implements Screen,ControllerListener {
 							matrixDimension[(int) itemSelected.x][(int) itemSelected.y].y);
 				}
 
-		} else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)  || controllerMoveDirection == 1) {
+		} else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) || controllerMoveDirection == 1) {
 			joystickSprite.setTexture(ImagePool.joystickRight);
-			if (Gdx.input.isKeyJustPressed(Input.Keys.RIGHT)  || controllerMoveDirection == 1)
+			if (Gdx.input.isKeyJustPressed(Input.Keys.RIGHT) || controllerMoveDirection == 1)
 				if (itemSelected.y <= 1) {
 					itemSelected.y++;
 					selectedSprite.setPosition(matrixPosition[(int) itemSelected.x][(int) itemSelected.y].x,
@@ -225,11 +234,11 @@ public class PauseMenu implements Screen,ControllerListener {
 					selectedSprite.setSize(matrixDimension[(int) itemSelected.x][(int) itemSelected.y].x,
 							matrixDimension[(int) itemSelected.x][(int) itemSelected.y].y);
 				}
-		} else if (Gdx.input.isKeyPressed(Input.Keys.UP)  || controllerMoveDirection == 0) {
+		} else if (Gdx.input.isKeyPressed(Input.Keys.UP) || controllerMoveDirection == 0) {
 			joystickSprite.setTexture(ImagePool.joystickUp);
-			if (Gdx.input.isKeyJustPressed(Input.Keys.UP)  || controllerMoveDirection == 0){
+			if (Gdx.input.isKeyJustPressed(Input.Keys.UP) || controllerMoveDirection == 0) {
 				if (itemSelected.x > 0) {
-					 if(itemSelected.y==0)
+					if (itemSelected.y == 0)
 						itemSelected.y++;
 					itemSelected.x--;
 					selectedSprite.setPosition(matrixPosition[(int) itemSelected.x][(int) itemSelected.y].x,
@@ -238,11 +247,11 @@ public class PauseMenu implements Screen,ControllerListener {
 							matrixDimension[(int) itemSelected.x][(int) itemSelected.y].y);
 				}
 			}
-		} else if (Gdx.input.isKeyPressed(Input.Keys.DOWN)  || controllerMoveDirection == 2)  {
+		} else if (Gdx.input.isKeyPressed(Input.Keys.DOWN) || controllerMoveDirection == 2) {
 			joystickSprite.setTexture(ImagePool.joystickDown);
-			if (Gdx.input.isKeyJustPressed(Input.Keys.DOWN)  || controllerMoveDirection == 2) {
-				if (itemSelected.x < 1) { 
-					 if(itemSelected.y==0)
+			if (Gdx.input.isKeyJustPressed(Input.Keys.DOWN) || controllerMoveDirection == 2) {
+				if (itemSelected.x < 1) {
+					if (itemSelected.y == 0)
 						itemSelected.y++;
 					itemSelected.x++;
 					selectedSprite.setPosition(matrixPosition[(int) itemSelected.x][(int) itemSelected.y].x,
@@ -258,6 +267,9 @@ public class PauseMenu implements Screen,ControllerListener {
 
 	}
 
+	/**
+	 * draw the scene
+	 */
 	private void draw() {
 		backGround.draw(batch);
 		macchinaSprite.draw(batch);
@@ -271,7 +283,7 @@ public class PauseMenu implements Screen,ControllerListener {
 		checkPause++;
 		if (checkPause == 100)
 			checkPause = 0;
-		if(matchSaved)
+		if (matchSaved)
 			ImagePool.font.draw(batch, "M A T C H  S A V E D ! !", 270, 230);
 	}
 
@@ -308,15 +320,23 @@ public class PauseMenu implements Screen,ControllerListener {
 	@Override
 	public void connected(Controller controller) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void disconnected(Controller controller) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
+	/**
+	 * handle the input that user generates with the controller
+	 * 
+	 * @param buttonCode
+	 *            is the code of the button pressed
+	 * @param controller
+	 *            is the controller that generates the input
+	 */
 	@Override
 	public boolean buttonDown(Controller controller, int buttonCode) {
 		if (buttonCode == 0 && gameMenu.getScreen().getClass().getName().contains("PauseMenu"))
@@ -324,6 +344,14 @@ public class PauseMenu implements Screen,ControllerListener {
 		return false;
 	}
 
+	/**
+	 * handle the input that user generates with the controller
+	 * 
+	 * @param buttonCode
+	 *            is the code of the button released
+	 * @param controller
+	 *            is the controller that generates the input
+	 */
 	@Override
 	public boolean buttonUp(Controller controller, int buttonCode) {
 		// TODO Auto-generated method stub
@@ -336,6 +364,14 @@ public class PauseMenu implements Screen,ControllerListener {
 		return false;
 	}
 
+	/**
+	 * update the direction selected with the controller
+	 * 
+	 * @param controller
+	 *            is the controller that generates the event
+	 * @param value
+	 *            is the direction selected
+	 */
 	@Override
 	public boolean povMoved(Controller controller, int povCode, PovDirection value) {
 		boolean inputIsValid = false;
@@ -352,7 +388,8 @@ public class PauseMenu implements Screen,ControllerListener {
 				controllerMoveDirection = 2;
 			else if (value == PovDirection.west)
 				controllerMoveDirection = 3;
-		}		return false;
+		}
+		return false;
 	}
 
 	@Override
