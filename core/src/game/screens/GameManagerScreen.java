@@ -78,17 +78,11 @@ public class GameManagerScreen implements Screen, ControllerListener {
 	float shotAnimationTime = 0.f;
 	float diedAnimationTime = 0.f;
 	int introDuration = 200;
-<<<<<<< HEAD
-	Controllers controller= new Controllers();
 	static boolean  gameIsInPause=false;
 	PovDirection povDirection; 
-=======
 	Controllers controller;// = new Controllers();
-	static boolean gameIsInPause = false;
 	int currentAxis = 0;
 	float valueMov = 0;
-	PovDirection povDirection;
->>>>>>> 7b7e9129b58c7896f941408456f3dca70027de41
 	boolean canDraw;
 	boolean canRemove;
 
@@ -312,8 +306,8 @@ public class GameManagerScreen implements Screen, ControllerListener {
 	 * Draw all objects in the world
 	 */
 	private void drawWorld() {
+		canRemove = false;
 		if (canDraw) {
-			canRemove = false;
 			ArrayList<StaticObject> objects;
 			objects = worldGame.getListObject();
 			Texture tmp = null;

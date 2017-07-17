@@ -301,10 +301,10 @@ public class GameMenu extends Game {
 
 		String path;
 		if (free)
-			path = "Free/" + userInfo.userName + ".txt";
+			path = "src/Free/" + userInfo.userName + ".txt";
 		else
-			path = "Story/" + userInfo.userName + ".txt";
-		File fileMap = new File(getClass().getClassLoader().getResource(path).getFile());
+			path = "src/Story/" + userInfo.userName + ".txt";
+		File fileMap = new File(path);
 		if (fileMap.exists())
 			fileMap.createNewFile();
 		fileMap.setWritable(true);

@@ -219,8 +219,7 @@ public class GameModMenu implements Screen, ControllerListener {
 			case 0:
 				if (GameMenu.loadGame)
 					if (itemSelected.y == 0) {
-						File f = new File(
-								getClass().getClassLoader().getResource("Story/" + name.getText() + ".txt").getFile());
+						File f = new File("src/Story/" + name.getText() + ".txt");
 						if (f.exists()) {
 							Gdx.input.setInputProcessor(null);
 							gameIsStarting = true;
@@ -231,16 +230,16 @@ public class GameModMenu implements Screen, ControllerListener {
 							lastNameInsert = name.getText();
 						}
 					} else {
-						File f = new File(
-								getClass().getClassLoader().getResource("Free/" + name.getText() + ".txt").getFile());
+						File f = new File("src/Free/" + name.getText() + ".txt");
 						if (f.exists()) {
-							System.out.println(f.getAbsolutePath());
 							Gdx.input.setInputProcessor(null);
 							gameIsStarting = true;
 							wrongName = false;
 							gameMenu.userInfo.setName(name.getText());
-						} else
+						} else{
 							wrongName = true;
+							lastNameInsert = name.getText();
+						}
 					}
 				else {
 					Gdx.input.setInputProcessor(null);

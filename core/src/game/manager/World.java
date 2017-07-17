@@ -40,7 +40,6 @@ import game.threads.EnemyThread;
 import game.personalAI.*;
 
 public class World {
-<<<<<<< HEAD
 	
 	public String mission;
 	public int found;
@@ -50,33 +49,13 @@ public class World {
 	public String className;
 	public static int score = 0;
 	static public Class<? extends Enemy> classe;
-	static public ArrayList<StaticObject> objects = new ArrayList<StaticObject>();
-	static public ArrayList<Enemy> enemies = new ArrayList<Enemy>();
-	static public ArrayList<Enemy> newEnemies = new ArrayList<Enemy>();
-	static public Character player = new Character();
-	static public ArrayList<ShotPlayer> shotsPlayer = new ArrayList<ShotPlayer>();
-	static public ArrayList<ShotEnemy> shotsEnemy = new ArrayList<ShotEnemy>();
-	static Well well;
-	Map gameMap = new Map(level);
-=======
-
-	static public Class<? extends Enemy> classe;
-	public String mission;
-	public int found;
 	static public ArrayList<StaticObject> objects;
 	static public ArrayList<Enemy> enemies;
 	static public Character player;
 	static public ArrayList<ShotPlayer> shotsPlayer;
 	static public ArrayList<ShotEnemy> shotsEnemy;
-	static public int level;
-	public boolean levelCompleted;
 	static Well well;
 	Map gameMap;
-	public EnemyThread enemiesOne;
-	public String className;
-	public static int score;
->>>>>>> 7b7e9129b58c7896f941408456f3dca70027de41
-
 	public static boolean playerShot;
 	public static boolean enemyAdded;
 
@@ -218,8 +197,7 @@ public class World {
 	 */
 	private void loadObjectFromFile(File fileMap) throws IOException {
 		// FileReader reader =new FileReader(fileMap);
-		BufferedReader buffer = new BufferedReader(
-				new InputStreamReader(getClass().getClassLoader().getResourceAsStream(fileMap.getPath())));
+		BufferedReader buffer = new BufferedReader(new InputStreamReader(getClass().getClassLoader().getResourceAsStream(fileMap.getPath())));
 		if (GameMenu.loadGame) {
 			String line = buffer.readLine();
 
