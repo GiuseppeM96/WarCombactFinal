@@ -78,7 +78,10 @@ public class GameManagerScreen implements Screen, ControllerListener {
 	float shotAnimationTime = 0.f;
 	float diedAnimationTime = 0.f;
 	int introDuration = 200;
+<<<<<<< HEAD
 	static boolean  gameIsInPause=false;
+=======
+>>>>>>> 236d70dac9c585a6f9e815f28a220078258de531
 	PovDirection povDirection; 
 	Controllers controller;// = new Controllers();
 	int currentAxis = 0;

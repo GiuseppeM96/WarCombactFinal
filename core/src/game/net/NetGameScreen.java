@@ -72,6 +72,10 @@ public class NetGameScreen implements Screen, ActionListener, ControllerListener
 	private boolean gameIsInPause;
 	public boolean finish;
 	boolean timeOut;
+<<<<<<< HEAD
+=======
+	int matchTime;
+>>>>>>> 236d70dac9c585a6f9e815f28a220078258de531
 
 	/**
 	 * Constructor
@@ -96,6 +100,18 @@ public class NetGameScreen implements Screen, ActionListener, ControllerListener
 		shotAnimationTime=0.f;
 		matchTimer=new Timer(120000, this);
 		this.gameMenu=gameMenu;
+<<<<<<< HEAD
+=======
+		wait = true;
+		canRemove = false;
+		canDraw = true;
+		finish = false;
+		timeOut = false;
+		shotAnimationTime = 0.f;
+		matchTimer = new Timer(120000, this);
+		matchTime = 0;
+		this.gameMenu = gameMenu;
+>>>>>>> 236d70dac9c585a6f9e815f28a220078258de531
 		try {
 			s = new Socket(server_ip, port);
 			out = new PrintWriter(s.getOutputStream());
@@ -377,13 +393,25 @@ public class NetGameScreen implements Screen, ActionListener, ControllerListener
 				MusicPool.addLifePoints.play();
 			worldGame.currentPlayer.addLife();
 			out.println(1+";"+0+";"+(int)collidedObject.getPosition().x+";"+(int)collidedObject.getPosition().y+";"+0+";");
+<<<<<<< HEAD
+=======
+			out.println(1 + ";" + 0 + ";" + (int) collidedObject.getPosition().x + ";"
+					+ (int) collidedObject.getPosition().y + ";" + 0 + ";");
+>>>>>>> 236d70dac9c585a6f9e815f28a220078258de531
 			out.flush();
 			worldGame.objects.remove(collidedObject);
 		} else if (collidedObject instanceof AddShotGunShots) {
 			if (SettingsMenu.isAudioEnable)
 				MusicPool.addShotSound.play();
+<<<<<<< HEAD
 				worldGame.currentPlayer.addShots("ShotGun");
 			out.println(1+";"+1+";"+(int)collidedObject.getPosition().x+";"+(int)collidedObject.getPosition().y+";"+0+";");
+=======
+			worldGame.currentPlayer.addShots("ShotGun");
+			out.println(1+";"+1+";"+(int)collidedObject.getPosition().x+";"+(int)collidedObject.getPosition().y+";"+0+";");
+			out.println(1 + ";" + 1 + ";" + (int) collidedObject.getPosition().x + ";"
+					+ (int) collidedObject.getPosition().y + ";" + 0 + ";");
+>>>>>>> 236d70dac9c585a6f9e815f28a220078258de531
 			out.flush();
 			worldGame.objects.remove(collidedObject);
 		} else if (collidedObject instanceof AddMachineGunShots) {
@@ -391,6 +419,11 @@ public class NetGameScreen implements Screen, ActionListener, ControllerListener
 				MusicPool.addShotSound.play();
 			worldGame.currentPlayer.addShots("MachineGun");
 			out.println(1+";"+2+";"+(int)collidedObject.getPosition().x+";"+(int)collidedObject.getPosition().y+";"+0+";");
+<<<<<<< HEAD
+=======
+			out.println(1 + ";" + 2 + ";" + (int) collidedObject.getPosition().x + ";"
+					+ (int) collidedObject.getPosition().y + ";" + 0 + ";");
+>>>>>>> 236d70dac9c585a6f9e815f28a220078258de531
 			out.flush();
 			worldGame.objects.remove(collidedObject);
 		} else if (collidedObject instanceof Shot) {
@@ -624,10 +657,23 @@ public class NetGameScreen implements Screen, ActionListener, ControllerListener
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
+<<<<<<< HEAD
 		
 		
 			gameMenu.scorePlayers.add(new ScorePlayer(gameMenu.userInfo.getName(), ((int) worldGame.score / (worldGame.diedTimes + 1))));
 			out.println(5 + ";" + gameMenu.userInfo.getName() + ";" + ((int) worldGame.score / (worldGame.diedTimes + 1))+ ";" + worldGame.currentPlayer.code + ";" + 0 + ";");
+=======
+		
+			gameMenu.scorePlayers.add(new ScorePlayer(gameMenu.userInfo.getName(), ((int) worldGame.score/(worldGame.diedTimes+1))));
+			out.println(5+";"+gameMenu.userInfo.getName()+";"+((int) worldGame.score/(worldGame.diedTimes+1))+";"+worldGame.currentPlayer.code+";"+0+";");
+		matchTime++;
+		if (matchTime >= 0) {
+			gameMenu.scorePlayers.add(
+					new ScorePlayer(gameMenu.userInfo.getName(), ((int) worldGame.score / (worldGame.diedTimes + 1))));
+			out.println(
+					5 + ";" + gameMenu.userInfo.getName() + ";" + ((int) worldGame.score / (worldGame.diedTimes + 1))
+							+ ";" + worldGame.currentPlayer.code + ";" + 0 + ";");
+>>>>>>> 236d70dac9c585a6f9e815f28a220078258de531
 			out.flush();
 			if (gameMenu.server != null) {
 				ScoreThread close = new ScoreThread(gameMenu.server);
@@ -635,6 +681,12 @@ public class NetGameScreen implements Screen, ActionListener, ControllerListener
 			}
 			matchTimer.stop();
 			timeOut=true;
+<<<<<<< HEAD
+=======
+		
+			timeOut = true;
+		}
+>>>>>>> 236d70dac9c585a6f9e815f28a220078258de531
 	}
 
 	@Override

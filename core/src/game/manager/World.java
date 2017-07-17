@@ -41,6 +41,7 @@ import game.personalAI.*;
 
 public class World {
 	
+<<<<<<< HEAD
 	public String mission;
 	public int found;
 	static public int level;
@@ -49,6 +50,12 @@ public class World {
 	public String className;
 	public static int score = 0;
 	static public Class<? extends Enemy> classe;
+=======
+
+	static public Class<? extends Enemy> classe;
+	public String mission;
+	public int found;
+>>>>>>> 236d70dac9c585a6f9e815f28a220078258de531
 	static public ArrayList<StaticObject> objects;
 	static public ArrayList<Enemy> enemies;
 	static public Character player;
@@ -56,6 +63,13 @@ public class World {
 	static public ArrayList<ShotEnemy> shotsEnemy;
 	static Well well;
 	Map gameMap;
+<<<<<<< HEAD
+=======
+	public EnemyThread enemiesOne;
+	public String className;
+	public static int score;
+
+>>>>>>> 236d70dac9c585a6f9e815f28a220078258de531
 	public static boolean playerShot;
 	public static boolean enemyAdded;
 
