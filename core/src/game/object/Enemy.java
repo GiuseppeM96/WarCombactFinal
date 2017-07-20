@@ -8,6 +8,8 @@ import com.badlogic.gdx.math.Vector2;
 import game.manager.World;
 import game.pools.ConstantField;
 import game.pools.GameConfig;
+import game.pools.MusicPool;
+import game.screens.SettingsMenu;
 import game.utility.StepDirection;
 
 public class Enemy extends DynamicObject {
@@ -222,6 +224,8 @@ public class Enemy extends DynamicObject {
 	}
 
 	public void addShot() {
+		if(SettingsMenu.isAudioEnable)
+			MusicPool.shotGunSound.play();
 		World.shotsEnemy.addAll(newShots);
 		newShots.clear();
 	}

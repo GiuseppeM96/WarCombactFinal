@@ -219,8 +219,7 @@ public class GameModMenu implements Screen, ControllerListener {
 			case 0:
 				if (GameMenu.loadGame)
 					if (itemSelected.y == 0) {
-						File f = new File(
-								getClass().getClassLoader().getResource("Story/" + name.getText() + ".txt").getFile());
+						File f = new File("src/Story/" + name.getText() + ".txt");
 						if (f.exists()) {
 							Gdx.input.setInputProcessor(null);
 							gameIsStarting = true;
@@ -231,16 +230,16 @@ public class GameModMenu implements Screen, ControllerListener {
 							lastNameInsert = name.getText();
 						}
 					} else {
-						File f = new File(
-								getClass().getClassLoader().getResource("Free/" + name.getText() + ".txt").getFile());
+						File f = new File("src/Free/" + name.getText() + ".txt");
 						if (f.exists()) {
-							System.out.println(f.getAbsolutePath());
 							Gdx.input.setInputProcessor(null);
 							gameIsStarting = true;
 							wrongName = false;
 							gameMenu.userInfo.setName(name.getText());
-						} else
+						} else{
 							wrongName = true;
+							lastNameInsert = name.getText();
+						}
 					}
 				else {
 					Gdx.input.setInputProcessor(null);
@@ -257,53 +256,55 @@ public class GameModMenu implements Screen, ControllerListener {
 			/* continuare con matrice con il set screen dello swap */
 			}
 		}
-		if (Gdx.input.isKeyPressed(Input.Keys.LEFT) || controllerMoveDirection == 3) {
-			joystickSprite.setTexture(ImagePool.joystickLeft);
-			if (Gdx.input.isKeyJustPressed(Input.Keys.LEFT) || controllerMoveDirection == 3)
-				if (itemSelected.y > 0) {
-					itemSelected.y--;
-					selectedSprite.setPosition(matrixPosition[(int) itemSelected.x][(int) itemSelected.y].x,
-							matrixPosition[(int) itemSelected.x][(int) itemSelected.y].y);
-					selectedSprite.setSize(matrixDimension[(int) itemSelected.x][(int) itemSelected.y].x,
-							matrixDimension[(int) itemSelected.x][(int) itemSelected.y].y);
+		if(!gameIsStarting){
+			if(Gdx.input.isKeyPressed(Input.Keys.LEFT) || controllerMoveDirection == 3) {
+				joystickSprite.setTexture(ImagePool.joystickLeft);
+				if (Gdx.input.isKeyJustPressed(Input.Keys.LEFT) || controllerMoveDirection == 3)
+					if (itemSelected.y > 0) {
+						itemSelected.y--;
+						selectedSprite.setPosition(matrixPosition[(int) itemSelected.x][(int) itemSelected.y].x,
+								matrixPosition[(int) itemSelected.x][(int) itemSelected.y].y);
+						selectedSprite.setSize(matrixDimension[(int) itemSelected.x][(int) itemSelected.y].x,
+								matrixDimension[(int) itemSelected.x][(int) itemSelected.y].y);
+					}
+	
+			} else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) || controllerMoveDirection == 1) {
+				joystickSprite.setTexture(ImagePool.joystickRight);
+				if (Gdx.input.isKeyJustPressed(Input.Keys.RIGHT) || controllerMoveDirection == 1)
+					if (itemSelected.y < 1 && itemSelected.x == 0) {
+						itemSelected.y++;
+						selectedSprite.setPosition(matrixPosition[(int) itemSelected.x][(int) itemSelected.y].x,
+								matrixPosition[(int) itemSelected.x][(int) itemSelected.y].y);
+						selectedSprite.setSize(matrixDimension[(int) itemSelected.x][(int) itemSelected.y].x,
+								matrixDimension[(int) itemSelected.x][(int) itemSelected.y].y);
+					}
+			} else if (Gdx.input.isKeyPressed(Input.Keys.UP) || controllerMoveDirection == 0) {
+				joystickSprite.setTexture(ImagePool.joystickUp);
+				if (Gdx.input.isKeyJustPressed(Input.Keys.UP) || controllerMoveDirection == 0) {
+					if (itemSelected.x == 1) {
+						itemSelected.x = 0;
+						selectedSprite.setPosition(matrixPosition[(int) itemSelected.x][(int) itemSelected.y].x,
+								matrixPosition[(int) itemSelected.x][(int) itemSelected.y].y);
+						selectedSprite.setSize(matrixDimension[(int) itemSelected.x][(int) itemSelected.y].x,
+								matrixDimension[(int) itemSelected.x][(int) itemSelected.y].y);
+					}
 				}
-
-		} else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) || controllerMoveDirection == 1) {
-			joystickSprite.setTexture(ImagePool.joystickRight);
-			if (Gdx.input.isKeyJustPressed(Input.Keys.RIGHT) || controllerMoveDirection == 1)
-				if (itemSelected.y < 1 && itemSelected.x == 0) {
-					itemSelected.y++;
-					selectedSprite.setPosition(matrixPosition[(int) itemSelected.x][(int) itemSelected.y].x,
-							matrixPosition[(int) itemSelected.x][(int) itemSelected.y].y);
-					selectedSprite.setSize(matrixDimension[(int) itemSelected.x][(int) itemSelected.y].x,
-							matrixDimension[(int) itemSelected.x][(int) itemSelected.y].y);
+			} else if (Gdx.input.isKeyPressed(Input.Keys.DOWN) || controllerMoveDirection == 2) {
+				joystickSprite.setTexture(ImagePool.joystickDown);
+				if (Gdx.input.isKeyJustPressed(Input.Keys.DOWN) || controllerMoveDirection == 2) {
+					if (itemSelected.x == 0) {
+						itemSelected.x++;
+						itemSelected.y = 0;
+						selectedSprite.setPosition(matrixPosition[(int) itemSelected.x][(int) itemSelected.y].x,
+								matrixPosition[(int) itemSelected.x][(int) itemSelected.y].y);
+						selectedSprite.setSize(matrixDimension[(int) itemSelected.x][(int) itemSelected.y].x,
+								matrixDimension[(int) itemSelected.x][(int) itemSelected.y].y);
+					}
 				}
-		} else if (Gdx.input.isKeyPressed(Input.Keys.UP) || controllerMoveDirection == 0) {
-			joystickSprite.setTexture(ImagePool.joystickUp);
-			if (Gdx.input.isKeyJustPressed(Input.Keys.UP) || controllerMoveDirection == 0) {
-				if (itemSelected.x == 1) {
-					itemSelected.x = 0;
-					selectedSprite.setPosition(matrixPosition[(int) itemSelected.x][(int) itemSelected.y].x,
-							matrixPosition[(int) itemSelected.x][(int) itemSelected.y].y);
-					selectedSprite.setSize(matrixDimension[(int) itemSelected.x][(int) itemSelected.y].x,
-							matrixDimension[(int) itemSelected.x][(int) itemSelected.y].y);
-				}
-			}
-		} else if (Gdx.input.isKeyPressed(Input.Keys.DOWN) || controllerMoveDirection == 2) {
-			joystickSprite.setTexture(ImagePool.joystickDown);
-			if (Gdx.input.isKeyJustPressed(Input.Keys.DOWN) || controllerMoveDirection == 2) {
-				if (itemSelected.x == 0) {
-					itemSelected.x++;
-					itemSelected.y = 0;
-					selectedSprite.setPosition(matrixPosition[(int) itemSelected.x][(int) itemSelected.y].x,
-							matrixPosition[(int) itemSelected.x][(int) itemSelected.y].y);
-					selectedSprite.setSize(matrixDimension[(int) itemSelected.x][(int) itemSelected.y].x,
-							matrixDimension[(int) itemSelected.x][(int) itemSelected.y].y);
-				}
-			}
-		} else
-			joystickSprite.setTexture(ImagePool.joystick);
-		controllerMoveDirection = -1;
+			} else
+				joystickSprite.setTexture(ImagePool.joystick);
+			controllerMoveDirection = -1;
+		}
 
 	}
 

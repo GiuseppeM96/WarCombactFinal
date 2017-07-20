@@ -100,7 +100,6 @@ public class FreeGameScreen implements Screen, ActionListener, ControllerListene
 		diedAnimationTime = 0.f;
 		shotAnimationTime = 0.f;
 		statePlayerTime = 0.f;
-	//	controller = new Controllers();
 		GameConfig.controller.addListener(this);
 		gameIsInPause = false;
 		draw = true;

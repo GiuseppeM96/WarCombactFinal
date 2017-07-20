@@ -99,8 +99,7 @@ public class PoitionScreen implements Screen {
 	 */
 	private void initVillage() throws IOException {
 		// FileReader reader = new FileReader("GameComplete.txt");
-		BufferedReader buffer = new BufferedReader(
-				new InputStreamReader(getClass().getClassLoader().getResourceAsStream("GameComplete.txt")));
+		BufferedReader buffer = new BufferedReader(new InputStreamReader(getClass().getClassLoader().getResourceAsStream("GameComplete.txt")));
 		String line = buffer.readLine();
 		while (line != null) {
 			String type = new String(), codx = new String(), cody = new String();

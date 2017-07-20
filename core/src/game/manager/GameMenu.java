@@ -17,6 +17,7 @@ import game.net.NetGameScreen;
 import game.net.ScorePlayer;
 import game.net.ServerThread;
 import game.object.StaticObject;
+import game.pools.ConstantField;
 import game.pools.GameConfig;
 import game.pools.ImagePool;
 import game.pools.MusicPool;
@@ -98,7 +99,7 @@ public class GameMenu extends Game {
 		startMenuScreen = new StartMenuScreen(this);
 		gameModMenu = new GameModMenu(this);
 		pauseMenu = new PauseMenu(this);
-		world = new World(1, new Vector2(320, 240), className);
+		world = new World(0,1, new Vector2(320, 240), className);
 		gameLevel = new GameManagerScreen(world, this, new Vector2(240, 340));
 		goToTheKing = new CastleScreen(this, 1);
 		takePoison = new BlackHouseScreen(this);
@@ -221,7 +222,7 @@ public class GameMenu extends Game {
 		switch (level) {
 		case 1:
 			clearWorld();
-			world = new World(1, new Vector2(240, 340), className);
+			world = new World(0,1, new Vector2(240, 340), className);
 			gameLevel = new GameManagerScreen(world, this, world.player.getPosition());
 			gameLevel.worldGame.enemiesOne.start();
 			free = false;
@@ -230,7 +231,8 @@ public class GameMenu extends Game {
 		case 2:
 			clearWorld();
 			Vector2 playerPosition = world.player.getPosition();
-			world = new World(2, playerPosition, className);
+			int tmpScore=world.score;
+			world = new World(tmpScore,2, playerPosition, className);
 			gameLevel = new GameManagerScreen(world, this,
 					new Vector2(gameLevel.gameCam.position.x, gameLevel.gameCam.position.y));
 			gameLevel.worldGame.enemiesOne.start();
@@ -240,7 +242,8 @@ public class GameMenu extends Game {
 		case 3:
 			clearWorld();
 			Vector2 position = world.player.getPosition();
-			world = new World(3, position, className);
+			int oldScore=world.score;
+			world = new World(oldScore,3, position, className);
 			gameLevel = new GameManagerScreen(world, this,
 					new Vector2(gameLevel.gameCam.position.x, gameLevel.gameCam.position.y));
 			gameLevel.worldGame.enemiesOne.start();
@@ -251,7 +254,7 @@ public class GameMenu extends Game {
 			clearWorld();
 			if (!loadGame) {
 				free = true;
-				world = new World(4, new Vector2(320, 240), className);
+				world = new World(0,4, new Vector2(320, 240), className);
 				freeModGame = new FreeGameScreen(this, world);
 			} else
 				loadGame();
@@ -274,7 +277,10 @@ public class GameMenu extends Game {
 	 * configure new level
 	 */
 	public void levelUp() {
+		
 		world.enemiesOne.stopThread = true;
+		if(SettingsMenu.isMusicEnable)
+			MusicPool.musicMenu.play();
 		loadGame = false;
 		if (!free) {
 			if (currentLevel == 1) {
@@ -301,10 +307,10 @@ public class GameMenu extends Game {
 
 		String path;
 		if (free)
-			path = "Free/" + userInfo.userName + ".txt";
+			path = "src/Free/" + userInfo.userName + ".txt";
 		else
-			path = "Story/" + userInfo.userName + ".txt";
-		File fileMap = new File(getClass().getClassLoader().getResource(path).getFile());
+			path = "src/Story/" + userInfo.userName + ".txt";
+		File fileMap = new File(path);
 		if (fileMap.exists())
 			fileMap.createNewFile();
 		fileMap.setWritable(true);
@@ -400,8 +406,10 @@ public class GameMenu extends Game {
 		currentLevel = 1;
 		start = true;
 		free = false;
-		world = new World(1, new Vector2(GameConfig.SCREEN_WIDTH / 2, GameConfig.SCREEN_HEIGHT / 2), className);
+		int tmpScore=world.score;
+		world = new World(tmpScore,1, new Vector2(GameConfig.SCREEN_WIDTH / 2, GameConfig.SCREEN_HEIGHT / 2), className);
 		world.score = 0;
+		world.player.lifePoints=ConstantField.PLAYER_LIFE_POINTS;
 		gameLevel = new GameManagerScreen(world, this, world.player.getPosition());
 	}
 
@@ -419,7 +427,7 @@ public class GameMenu extends Game {
 
 		clearWorld();
 
-		world = new World(1, new Vector2(50, 50), className);
+		world = new World(0,1, new Vector2(50, 50), className);
 		resetMatch();
 		if (!free)
 			gameLevel = new GameManagerScreen(world, this, new Vector2(world.player.getPosition()));

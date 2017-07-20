@@ -41,7 +41,8 @@ import game.personalAI.*;
 
 public class World {
 	
-
+	static public int level;
+	public boolean levelCompleted;
 	static public Class<? extends Enemy> classe;
 	public String mission;
 	public int found;
@@ -50,14 +51,11 @@ public class World {
 	static public Character player;
 	static public ArrayList<ShotPlayer> shotsPlayer;
 	static public ArrayList<ShotEnemy> shotsEnemy;
-	static public int level;
-	public boolean levelCompleted;
 	static Well well;
 	Map gameMap;
 	public EnemyThread enemiesOne;
 	public String className;
 	public static int score;
-
 	public static boolean playerShot;
 	public static boolean enemyAdded;
 
@@ -71,7 +69,7 @@ public class World {
 	 * @param className
 	 *            class that contain the AI that we want
 	 */
-	public World(int i, Vector2 playerPosition, String className) {
+	public World(int score,int i, Vector2 playerPosition, String className) {
 
 		objects = new ArrayList<StaticObject>();
 		shotsPlayer = new ArrayList<ShotPlayer>();
@@ -80,7 +78,7 @@ public class World {
 		shotsEnemy = new ArrayList<ShotEnemy>();
 		levelCompleted = false;
 		gameMap = new Map(level);
-		score = 0;
+		this.score = score;
 		playerShot = false;
 		enemyAdded = false;
 		this.className = className;
@@ -198,9 +196,8 @@ public class World {
 	 * @throws IOException
 	 */
 	private void loadObjectFromFile(File fileMap) throws IOException {
-		// FileReader reader =new FileReader(fileMap);
-		BufferedReader buffer = new BufferedReader(
-				new InputStreamReader(getClass().getClassLoader().getResourceAsStream(fileMap.getPath())));
+		FileReader reader =new FileReader(fileMap);
+		BufferedReader buffer = new BufferedReader(reader);
 		if (GameMenu.loadGame) {
 			String line = buffer.readLine();
 
@@ -375,21 +372,21 @@ public class World {
 		if (!GameMenu.loadGame) {
 			switch (level) {
 			case 1:
-				return "LevelOne.txt";
+				return "src/LevelOne.txt";
 			case 2:
-				return "LevelTwo.txt";
+				return "src/LevelTwo.txt";
 			case 3:
-				return "LevelThree.txt";
+				return "src/LevelThree.txt";
 			case 4:
-				return "FreeLevel.txt";
+				return "src/FreeLevel.txt";
 			default:
 				return null;
 			}
 		} else {
 			if (GameMenu.free) {
-				return "Free/" + GameMenu.userInfo.userName + ".txt";
+				return "src/Free/" + GameMenu.userInfo.userName + ".txt";
 			}
-			return "Story/" + GameMenu.userInfo.userName + ".txt";
+			return "src/Story/" + GameMenu.userInfo.userName + ".txt";
 
 		}
 	}
@@ -566,7 +563,7 @@ public class World {
 	 * empties all list of object in the world and stop thread
 	 */
 	public synchronized void clear() {
-		score = 0;
+		
 		enemiesOne.stopThread = true;
 		objects.clear();
 		well = null;
@@ -579,6 +576,7 @@ public class World {
 	 * function that create new enemy and add to the enemy list
 	 */
 	public void generateEnemy() {
+<<<<<<< HEAD
 		Enemy e=null;
 		try {
 			e = classe.newInstance();
@@ -594,10 +592,23 @@ public class World {
 		e.setDirection(2);
 		enemiesOne.stopThread = true;
 		while (enemiesOne.isAlive()) {
+=======
+		try {
+			Enemy e = classe.newInstance();
+			Vector2 position = new Vector2(well.getPosition());
+			e.setPosition(position);
+			e.setDirection(2);
+			enemiesOne.stopThread = true;
+			while (enemiesOne.isAlive()) {
+			}
+			enemies.add(e);
+			enemiesOne = new EnemyThread(player.getPosition());
+			enemiesOne.start();
+		} catch (InstantiationException | IllegalAccessException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+>>>>>>> de0bddb1263af3ad8e983264bca5a49cac3cf55c
 		}
-		enemies.add(e);
-		enemiesOne = new EnemyThread(player.getPosition());
-		enemiesOne.start();
 	}
 
 }

@@ -97,15 +97,6 @@ public class NetGameScreen implements Screen, ActionListener, ControllerListener
 		shotAnimationTime=0.f;
 		matchTimer=new Timer(120000, this);
 		this.gameMenu=gameMenu;
-		wait = true;
-		canRemove = false;
-		canDraw = true;
-		finish = false;
-		timeOut = false;
-		shotAnimationTime = 0.f;
-		matchTimer = new Timer(120000, this);
-		matchTime = 0;
-		this.gameMenu = gameMenu;
 		try {
 			s = new Socket(server_ip, port);
 			out = new PrintWriter(s.getOutputStream());
@@ -257,35 +248,37 @@ public class NetGameScreen implements Screen, ActionListener, ControllerListener
 	 *            time interval
 	 */
 	private void update(float dt) {
-		if (Gdx.input.isKeyPressed(Input.Keys.UP) || povDirection == PovDirection.north) {
-			moveAndCheckCollision(0, dt);
-			worldGame.currentPlayer.stateAnimationTime += dt;
-		} else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) || povDirection == PovDirection.east) {
-			moveAndCheckCollision(1, dt);
-			worldGame.currentPlayer.stateAnimationTime += dt;
-		} else if (Gdx.input.isKeyPressed(Input.Keys.LEFT) || povDirection == PovDirection.west) {
-			moveAndCheckCollision(3, dt);
-			worldGame.currentPlayer.stateAnimationTime += dt;
-		} else if (Gdx.input.isKeyPressed(Input.Keys.DOWN) || povDirection == PovDirection.south) {
-			moveAndCheckCollision(2, dt);
-			worldGame.currentPlayer.stateAnimationTime += dt;
+		if(!worldGame.currentPlayer.died){
+			if (Gdx.input.isKeyPressed(Input.Keys.UP) || povDirection == PovDirection.north) {
+				moveAndCheckCollision(0, dt);
+				worldGame.currentPlayer.stateAnimationTime += dt;
+			} else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) || povDirection == PovDirection.east) {
+				moveAndCheckCollision(1, dt);
+				worldGame.currentPlayer.stateAnimationTime += dt;
+			} else if (Gdx.input.isKeyPressed(Input.Keys.LEFT) || povDirection == PovDirection.west) {
+				moveAndCheckCollision(3, dt);
+				worldGame.currentPlayer.stateAnimationTime += dt;
+			} else if (Gdx.input.isKeyPressed(Input.Keys.DOWN) || povDirection == PovDirection.south) {
+				moveAndCheckCollision(2, dt);
+				worldGame.currentPlayer.stateAnimationTime += dt;
+			}
+			if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE) || worldGame.currentPlayer.controllerHasShoted) {
+				worldGame.currentPlayer.shoting = true;
+				sendShots();
+			}
+			if (Gdx.input.isKeyJustPressed(Input.Keys.X) || worldGame.currentPlayer.controllerHasChangedWeapon) {
+				if (SettingsMenu.isAudioEnable)
+					MusicPool.reloadSound.play();
+				worldGame.currentPlayer.changeWeapon();
+				worldGame.currentPlayer.controllerHasChangedWeapon = false;
+				out.println(3 + ";" + worldGame.currentPlayer.code + ";" + 0 + ";" + 0 + ";" + 0 + ";");
+				out.flush();
+			}
+			if (Gdx.input.isKeyPressed(Input.Keys.Z) || worldGame.currentPlayer.controllerHasChangedVelocity) {
+				worldGame.currentPlayer.changeSpeed(ConstantField.PLAYER_SUPER_VELOCITY);
+			} else
+				worldGame.currentPlayer.changeSpeed(ConstantField.PLAYER_STD_VELOCITY);
 		}
-		if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE) || worldGame.currentPlayer.controllerHasShoted) {
-			worldGame.currentPlayer.shoting = true;
-			sendShots();
-		}
-		if (Gdx.input.isKeyJustPressed(Input.Keys.X) || worldGame.currentPlayer.controllerHasChangedWeapon) {
-			if (SettingsMenu.isAudioEnable)
-				MusicPool.reloadSound.play();
-			worldGame.currentPlayer.changeWeapon();
-			worldGame.currentPlayer.controllerHasChangedWeapon = false;
-			out.println(3 + ";" + worldGame.currentPlayer.code + ";" + 0 + ";" + 0 + ";" + 0 + ";");
-			out.flush();
-		}
-		if (Gdx.input.isKeyPressed(Input.Keys.Z) || worldGame.currentPlayer.controllerHasChangedVelocity) {
-			worldGame.currentPlayer.changeSpeed(ConstantField.PLAYER_SUPER_VELOCITY);
-		} else
-			worldGame.currentPlayer.changeSpeed(ConstantField.PLAYER_STD_VELOCITY);
 		updatePlayerAnimation(worldGame.currentPlayer, dt);
 		for (NetCharacter c : worldGame.otherPlayers) {
 			updatePlayerAnimation(c, dt);
@@ -387,26 +380,20 @@ public class NetGameScreen implements Screen, ActionListener, ControllerListener
 				MusicPool.addLifePoints.play();
 			worldGame.currentPlayer.addLife();
 			out.println(1+";"+0+";"+(int)collidedObject.getPosition().x+";"+(int)collidedObject.getPosition().y+";"+0+";");
-			out.println(1 + ";" + 0 + ";" + (int) collidedObject.getPosition().x + ";"
-					+ (int) collidedObject.getPosition().y + ";" + 0 + ";");
 			out.flush();
 			worldGame.objects.remove(collidedObject);
 		} else if (collidedObject instanceof AddShotGunShots) {
 			if (SettingsMenu.isAudioEnable)
 				MusicPool.addShotSound.play();
-			worldGame.currentPlayer.addShots("ShotGun");
-			out.println(1+";"+1+";"+(int)collidedObject.getPosition().x+";"+(int)collidedObject.getPosition().y+";"+0+";");
-			out.println(1 + ";" + 1 + ";" + (int) collidedObject.getPosition().x + ";"
-					+ (int) collidedObject.getPosition().y + ";" + 0 + ";");
-			out.flush();
-			worldGame.objects.remove(collidedObject);
+				worldGame.currentPlayer.addShots("ShotGun");
+				out.println(1+";"+1+";"+(int)collidedObject.getPosition().x+";"+(int)collidedObject.getPosition().y+";"+0+";");
+				out.flush();
+				worldGame.objects.remove(collidedObject);
 		} else if (collidedObject instanceof AddMachineGunShots) {
 			if (SettingsMenu.isAudioEnable)
 				MusicPool.addShotSound.play();
 			worldGame.currentPlayer.addShots("MachineGun");
 			out.println(1+";"+2+";"+(int)collidedObject.getPosition().x+";"+(int)collidedObject.getPosition().y+";"+0+";");
-			out.println(1 + ";" + 2 + ";" + (int) collidedObject.getPosition().x + ";"
-					+ (int) collidedObject.getPosition().y + ";" + 0 + ";");
 			out.flush();
 			worldGame.objects.remove(collidedObject);
 		} else if (collidedObject instanceof Shot) {
@@ -643,24 +630,13 @@ public class NetGameScreen implements Screen, ActionListener, ControllerListener
 		
 			gameMenu.scorePlayers.add(new ScorePlayer(gameMenu.userInfo.getName(), ((int) worldGame.score/(worldGame.diedTimes+1))));
 			out.println(5+";"+gameMenu.userInfo.getName()+";"+((int) worldGame.score/(worldGame.diedTimes+1))+";"+worldGame.currentPlayer.code+";"+0+";");
-		matchTime++;
-		if (matchTime >= 0) {
-			gameMenu.scorePlayers.add(
-					new ScorePlayer(gameMenu.userInfo.getName(), ((int) worldGame.score / (worldGame.diedTimes + 1))));
-			out.println(
-					5 + ";" + gameMenu.userInfo.getName() + ";" + ((int) worldGame.score / (worldGame.diedTimes + 1))
-							+ ";" + worldGame.currentPlayer.code + ";" + 0 + ";");
 			out.flush();
 			if (gameMenu.server != null) {
 				ScoreThread close = new ScoreThread(gameMenu.server);
 				close.start();
 			}
-			System.out.println("Timer");
 			matchTimer.stop();
 			timeOut=true;
-		
-			timeOut = true;
-		}
 	}
 
 	@Override
