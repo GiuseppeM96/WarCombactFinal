@@ -14,6 +14,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import game.manager.GameMenu;
 import game.pools.GameConfig;
 import game.pools.ImagePool;
+import game.pools.MusicPool;
 
 public class IntroScreen implements Screen {
 
@@ -69,13 +70,15 @@ public class IntroScreen implements Screen {
 	public void render(float delta) {
 		drawDisplay();
 		write++;
-		if (write > 300)
+		if (write > 300){
+			MusicPool.musicMenu.stop();
 			if (level == 1)
 				gameMenu.swap(5);
 			else {
 				gameMenu.changeLevel(level);
 
 			}
+		}
 	}
 
 	/**

@@ -256,53 +256,55 @@ public class GameModMenu implements Screen, ControllerListener {
 			/* continuare con matrice con il set screen dello swap */
 			}
 		}
-		if (Gdx.input.isKeyPressed(Input.Keys.LEFT) || controllerMoveDirection == 3) {
-			joystickSprite.setTexture(ImagePool.joystickLeft);
-			if (Gdx.input.isKeyJustPressed(Input.Keys.LEFT) || controllerMoveDirection == 3)
-				if (itemSelected.y > 0) {
-					itemSelected.y--;
-					selectedSprite.setPosition(matrixPosition[(int) itemSelected.x][(int) itemSelected.y].x,
-							matrixPosition[(int) itemSelected.x][(int) itemSelected.y].y);
-					selectedSprite.setSize(matrixDimension[(int) itemSelected.x][(int) itemSelected.y].x,
-							matrixDimension[(int) itemSelected.x][(int) itemSelected.y].y);
+		if(!gameIsStarting){
+			if(Gdx.input.isKeyPressed(Input.Keys.LEFT) || controllerMoveDirection == 3) {
+				joystickSprite.setTexture(ImagePool.joystickLeft);
+				if (Gdx.input.isKeyJustPressed(Input.Keys.LEFT) || controllerMoveDirection == 3)
+					if (itemSelected.y > 0) {
+						itemSelected.y--;
+						selectedSprite.setPosition(matrixPosition[(int) itemSelected.x][(int) itemSelected.y].x,
+								matrixPosition[(int) itemSelected.x][(int) itemSelected.y].y);
+						selectedSprite.setSize(matrixDimension[(int) itemSelected.x][(int) itemSelected.y].x,
+								matrixDimension[(int) itemSelected.x][(int) itemSelected.y].y);
+					}
+	
+			} else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) || controllerMoveDirection == 1) {
+				joystickSprite.setTexture(ImagePool.joystickRight);
+				if (Gdx.input.isKeyJustPressed(Input.Keys.RIGHT) || controllerMoveDirection == 1)
+					if (itemSelected.y < 1 && itemSelected.x == 0) {
+						itemSelected.y++;
+						selectedSprite.setPosition(matrixPosition[(int) itemSelected.x][(int) itemSelected.y].x,
+								matrixPosition[(int) itemSelected.x][(int) itemSelected.y].y);
+						selectedSprite.setSize(matrixDimension[(int) itemSelected.x][(int) itemSelected.y].x,
+								matrixDimension[(int) itemSelected.x][(int) itemSelected.y].y);
+					}
+			} else if (Gdx.input.isKeyPressed(Input.Keys.UP) || controllerMoveDirection == 0) {
+				joystickSprite.setTexture(ImagePool.joystickUp);
+				if (Gdx.input.isKeyJustPressed(Input.Keys.UP) || controllerMoveDirection == 0) {
+					if (itemSelected.x == 1) {
+						itemSelected.x = 0;
+						selectedSprite.setPosition(matrixPosition[(int) itemSelected.x][(int) itemSelected.y].x,
+								matrixPosition[(int) itemSelected.x][(int) itemSelected.y].y);
+						selectedSprite.setSize(matrixDimension[(int) itemSelected.x][(int) itemSelected.y].x,
+								matrixDimension[(int) itemSelected.x][(int) itemSelected.y].y);
+					}
 				}
-
-		} else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) || controllerMoveDirection == 1) {
-			joystickSprite.setTexture(ImagePool.joystickRight);
-			if (Gdx.input.isKeyJustPressed(Input.Keys.RIGHT) || controllerMoveDirection == 1)
-				if (itemSelected.y < 1 && itemSelected.x == 0) {
-					itemSelected.y++;
-					selectedSprite.setPosition(matrixPosition[(int) itemSelected.x][(int) itemSelected.y].x,
-							matrixPosition[(int) itemSelected.x][(int) itemSelected.y].y);
-					selectedSprite.setSize(matrixDimension[(int) itemSelected.x][(int) itemSelected.y].x,
-							matrixDimension[(int) itemSelected.x][(int) itemSelected.y].y);
+			} else if (Gdx.input.isKeyPressed(Input.Keys.DOWN) || controllerMoveDirection == 2) {
+				joystickSprite.setTexture(ImagePool.joystickDown);
+				if (Gdx.input.isKeyJustPressed(Input.Keys.DOWN) || controllerMoveDirection == 2) {
+					if (itemSelected.x == 0) {
+						itemSelected.x++;
+						itemSelected.y = 0;
+						selectedSprite.setPosition(matrixPosition[(int) itemSelected.x][(int) itemSelected.y].x,
+								matrixPosition[(int) itemSelected.x][(int) itemSelected.y].y);
+						selectedSprite.setSize(matrixDimension[(int) itemSelected.x][(int) itemSelected.y].x,
+								matrixDimension[(int) itemSelected.x][(int) itemSelected.y].y);
+					}
 				}
-		} else if (Gdx.input.isKeyPressed(Input.Keys.UP) || controllerMoveDirection == 0) {
-			joystickSprite.setTexture(ImagePool.joystickUp);
-			if (Gdx.input.isKeyJustPressed(Input.Keys.UP) || controllerMoveDirection == 0) {
-				if (itemSelected.x == 1) {
-					itemSelected.x = 0;
-					selectedSprite.setPosition(matrixPosition[(int) itemSelected.x][(int) itemSelected.y].x,
-							matrixPosition[(int) itemSelected.x][(int) itemSelected.y].y);
-					selectedSprite.setSize(matrixDimension[(int) itemSelected.x][(int) itemSelected.y].x,
-							matrixDimension[(int) itemSelected.x][(int) itemSelected.y].y);
-				}
-			}
-		} else if (Gdx.input.isKeyPressed(Input.Keys.DOWN) || controllerMoveDirection == 2) {
-			joystickSprite.setTexture(ImagePool.joystickDown);
-			if (Gdx.input.isKeyJustPressed(Input.Keys.DOWN) || controllerMoveDirection == 2) {
-				if (itemSelected.x == 0) {
-					itemSelected.x++;
-					itemSelected.y = 0;
-					selectedSprite.setPosition(matrixPosition[(int) itemSelected.x][(int) itemSelected.y].x,
-							matrixPosition[(int) itemSelected.x][(int) itemSelected.y].y);
-					selectedSprite.setSize(matrixDimension[(int) itemSelected.x][(int) itemSelected.y].x,
-							matrixDimension[(int) itemSelected.x][(int) itemSelected.y].y);
-				}
-			}
-		} else
-			joystickSprite.setTexture(ImagePool.joystick);
-		controllerMoveDirection = -1;
+			} else
+				joystickSprite.setTexture(ImagePool.joystick);
+			controllerMoveDirection = -1;
+		}
 
 	}
 

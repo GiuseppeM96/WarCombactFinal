@@ -78,12 +78,8 @@ public class GameManagerScreen implements Screen, ControllerListener {
 	float shotAnimationTime = 0.f;
 	float diedAnimationTime = 0.f;
 	int introDuration = 200;
-<<<<<<< HEAD
 	static boolean  gameIsInPause=false;
-=======
->>>>>>> 236d70dac9c585a6f9e815f28a220078258de531
 	PovDirection povDirection; 
-	Controllers controller;// = new Controllers();
 	int currentAxis = 0;
 	float valueMov = 0;
 	boolean canDraw;
@@ -243,8 +239,6 @@ public class GameManagerScreen implements Screen, ControllerListener {
 			if (SettingsMenu.isAudioEnable)
 				MusicPool.addLifePoints.play();
 			worldGame.player.addLife();
-			if (worldGame.player.lifePoints > 1000)
-				worldGame.player.lifePoints = 1000;
 			statePlayerTime += dt;
 			worldGame.objects.remove(currentObject);
 		} else if (currentObject instanceof AddMachineGunShots) {
@@ -272,7 +266,7 @@ public class GameManagerScreen implements Screen, ControllerListener {
 			worldGame.movePlayerUp(dt);
 		else if (i == 3)
 			worldGame.movePlayerRight(dt);
-		if (worldGame.found >= 0)// worldGame.mission.length())
+		if (worldGame.found >= worldGame.mission.length())
 			worldGame.levelCompleted = true;
 	}
 

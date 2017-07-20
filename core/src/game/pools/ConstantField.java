@@ -8,4 +8,5 @@ public class ConstantField {
 	public final static int SHOT_VELOCITY = 700;
 	public static final int MAX_NUM_SHOT_MACHINEGUN = 150;
 	public static final int MAX_NUM_SHOT_SHOTGUN = 90;
+	public static final int PLAYER_LIFE_POINTS = 1000;
 }

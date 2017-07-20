@@ -94,7 +94,7 @@ public class NetWorld {
 		currentPlayer.setPosition(new Vector2(currentPlayer.code * 100, currentPlayer.code * 100));
 		otherPlayers = new ArrayList<NetCharacter>();
 		// File worldFile=new File("src/GameComplete.txt");
-		File worldFile = new File("NetMap.txt");
+		File worldFile = new File("src/NetMap.txt");
 		try {
 			loadObjectFromFile(worldFile);
 
@@ -116,9 +116,8 @@ public class NetWorld {
 	 * @throws IOException
 	 */
 	private void loadObjectFromFile(File fileMap) throws IOException {
-		// FileReader reader =new FileReader(fileMap);
-		BufferedReader buffer = new BufferedReader(
-				new InputStreamReader(getClass().getClassLoader().getResourceAsStream(fileMap.getPath())));
+		FileReader reader =new FileReader(fileMap);
+		BufferedReader buffer = new BufferedReader(reader);
 		String line = buffer.readLine();
 		while (line != null) {
 			String type = new String(), codx = new String(), cody = new String();

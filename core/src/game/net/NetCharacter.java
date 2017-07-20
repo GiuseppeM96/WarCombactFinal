@@ -79,6 +79,9 @@ public class NetCharacter extends DynamicObject {
 
 	public void addLife() {
 		lifePoints += AddLifePoints.addPoints;
+		if(lifePoints>ConstantField.PLAYER_LIFE_POINTS){
+			lifePoints=ConstantField.PLAYER_LIFE_POINTS;
+		}
 	}
 
 	/**
