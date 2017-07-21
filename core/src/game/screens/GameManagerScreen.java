@@ -243,6 +243,7 @@ public class GameManagerScreen implements Screen, ControllerListener {
 			worldGame.foundLetter += ((Letter) currentObject).getValue();
 			helpTime = 200;
 			worldGame.objects.remove(currentObject);
+			worldGame.foundLetter+=((Letter) currentObject).getValue();
 		}
 
 		else if (currentObject instanceof AddLifePoints) {
