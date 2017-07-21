@@ -71,7 +71,6 @@ public class GameMenu extends Game {
 	public static boolean loadGame;
 	public static int currentLevel;
 	public boolean myServerLunched;
-
 	public boolean start;
 	public String serverAddress;
 	public static boolean free;

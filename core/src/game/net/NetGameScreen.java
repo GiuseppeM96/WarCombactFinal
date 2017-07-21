@@ -84,7 +84,6 @@ public class NetGameScreen implements Screen, ActionListener, ControllerListener
 	 */
 	
 	public NetGameScreen(String ip, int port, GameMenu gameMenu) {
-		// controller = new Controllers();
 		GameConfig.controller.addListener(this);
 		server_ip = ip;
 		this.port = port;
@@ -370,8 +369,7 @@ public class NetGameScreen implements Screen, ActionListener, ControllerListener
 		StaticObject collidedObject = worldGame.checkCollisionObject(worldGame.currentPlayer);
 		if (collidedObject == null) {
 			worldGame.currentPlayer.stateAnimationTime += dt;
-			out.println(0 + ";" + worldGame.currentPlayer.code + ";" + worldGame.currentPlayer.getVelocity() + ";" + dt
-					+ ";" + dir + ";");
+			out.println(0 + ";" + worldGame.currentPlayer.code + ";" + worldGame.currentPlayer.getVelocity() + ";" + dt+ ";" + dir + ";");
 			out.flush();
 			if (SettingsMenu.isAudioEnable)
 				MusicPool.walkingSound.play();
@@ -415,7 +413,6 @@ public class NetGameScreen implements Screen, ActionListener, ControllerListener
 			ArrayList<StaticObject> objects;
 			objects = worldGame.objects;
 			Texture tmp = null;
-			int cont = 0;
 			for (StaticObject s : objects) {
 				boolean trov = false;
 				if (s instanceof Map)
@@ -446,8 +443,7 @@ public class NetGameScreen implements Screen, ActionListener, ControllerListener
 					tmp = ImagePool.hut;
 				else if (s instanceof Tree) {
 					tmp = ImagePool.tree;
-					batch.draw(ImagePool.treeAnimation.getKeyFrame(((Tree) s).animationTime, true), s.getPosition().x,
-							(int) s.getPosition().y);
+					batch.draw(ImagePool.treeAnimation.getKeyFrame(((Tree) s).animationTime, true), s.getPosition().x,(int) s.getPosition().y);
 					trov = true;
 				} else if (s instanceof NetCharacter) {
 					tmp = ImagePool.people;
