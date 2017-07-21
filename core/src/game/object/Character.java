@@ -8,18 +8,24 @@ import game.pools.ImagePool;
 
 public class Character extends DynamicObject {
 	public String weaponType;
-	Weapon currentWeapon = new Weapon();
-	public int lifePoints = 1000;
-	public int machineGunShots = 100;
-	public int shotGunShots = 60;
-	public boolean shoting = false;
-	public boolean died = false;
+	Weapon currentWeapon;
+	public int lifePoints;
+	public int machineGunShots;
+	public int shotGunShots;
+	public boolean shoting;
+	public boolean died;
 	public boolean controllerHasChangedWeapon;
 	public boolean controllerHasShoted;
 	public boolean controllerHasChangedVelocity;
 
 	public Character() {
 		super();
+		currentWeapon = new Weapon();
+		lifePoints = 1000;
+		machineGunShots = 100;
+		shotGunShots = 60;
+		shoting = false;
+		died = false;
 		shoting = false;
 		weaponType = "ShotGun";
 		setVelocity(ConstantField.PLAYER_STD_VELOCITY);
@@ -49,8 +55,8 @@ public class Character extends DynamicObject {
 
 	public void addLife() {
 		lifePoints += AddLifePoints.addPoints;
-		if(lifePoints>ConstantField.PLAYER_LIFE_POINTS){
-			lifePoints=ConstantField.PLAYER_LIFE_POINTS;
+		if (lifePoints > ConstantField.PLAYER_LIFE_POINTS) {
+			lifePoints = ConstantField.PLAYER_LIFE_POINTS;
 		}
 	}
 

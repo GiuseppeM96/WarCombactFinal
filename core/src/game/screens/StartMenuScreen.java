@@ -71,7 +71,6 @@ public class StartMenuScreen implements Screen, ControllerListener {
 
 	public StartMenuScreen(GameMenu gameMenu) {
 		this.gameMenu = gameMenu;
-		// controller = new Controllers();
 		GameConfig.controller.addListener(this);
 		controllerMoveDirection = -1;
 		hasPressedEnter = false;
@@ -167,10 +166,8 @@ public class StartMenuScreen implements Screen, ControllerListener {
 		batch.begin();
 		Gdx.gl20.glClearColor(.0f, .0f, .0f, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
 		draw();
 		update();
-
 		batch.end();
 		stage.act();
 		stage.draw();

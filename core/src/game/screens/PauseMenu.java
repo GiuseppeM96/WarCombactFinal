@@ -33,7 +33,7 @@ public class PauseMenu implements Screen, ControllerListener {
 
 	Controllers controller;
 
-	int checkPause = 0;
+	int checkPause;
 	private Vector2[][] matrixPosition;
 	private Vector2[][] matrixDimension;
 	private Vector2 itemSelected;
@@ -49,7 +49,7 @@ public class PauseMenu implements Screen, ControllerListener {
 	private Sprite selectedSprite;
 	private Sprite backGround;
 
-	static BitmapFont font = new BitmapFont();
+	static BitmapFont font;
 
 	public Stage stage;
 	OrthographicCamera camera;
@@ -64,13 +64,11 @@ public class PauseMenu implements Screen, ControllerListener {
 
 	public PauseMenu(GameMenu gameMenu) {
 		this.gameMenu = gameMenu;
-
+		checkPause = 0;
+		font = new BitmapFont();
 		matchSaved = false;
-
-		// controller = new Controllers();
 		GameConfig.controller.addListener(this);
 		controllerMoveDirection = -1;
-
 		batch = new SpriteBatch();
 
 		macchinaSprite = new Sprite(ImagePool.macchina);
@@ -92,15 +90,15 @@ public class PauseMenu implements Screen, ControllerListener {
 
 		help = new TextButton("Help", ImagePool.skin);
 		help.setColor(Color.BLUE);
-		help.setPosition(200, 10);// aggiungere
+		help.setPosition(200, 10);
 
 		settings = new TextButton("Settings", ImagePool.skin);
 		settings.setColor(Color.BLUE);
-		settings.setPosition(360, 10);// aggiungere pos
+		settings.setPosition(360, 10);
 
 		resume = new TextButton("Resume", ImagePool.skin);
 		resume.setColor(Color.RED);
-		resume.setPosition(180, 80);// aggiungere pos
+		resume.setPosition(180, 80);
 
 		save = new TextButton("Save", ImagePool.skin);
 		save.setColor(Color.DARK_GRAY);

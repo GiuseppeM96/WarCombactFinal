@@ -125,7 +125,6 @@ public class ScoreMenu implements Screen,ControllerListener {
 			printWriter.println(bestPlayer[i] + ";" + bestPlayerScore[i]);
 		}
 		printWriter.flush();
-		//controller = new Controllers();
 		GameConfig.controller.addListener(this);
 	}
 

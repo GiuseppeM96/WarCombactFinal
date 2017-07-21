@@ -53,7 +53,6 @@ public class HelpMenu implements Screen, ControllerListener {
 	public HelpMenu(GameMenu gameMenu) {
 
 		this.gameMenu = gameMenu;
-		// controller = new Controllers();
 		GameConfig.controller.addListener(this);
 		hasPressedEnter = false;
 		controllerMoveDirection = -1;
@@ -142,7 +141,6 @@ public class HelpMenu implements Screen, ControllerListener {
 			selectedSprite.draw(batch);
 
 		ImagePool.font.setColor(Color.WHITE);
-		// font.draw(batch, "INFO", 290, 250);
 		if (currentPage == 1) {
 			batch.draw(ImagePool.goUp, 230, 321);
 			ImagePool.font.draw(batch, "G O    U P", 315, 341);

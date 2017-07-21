@@ -48,21 +48,21 @@ public class GameModMenu implements Screen, ControllerListener {
 	boolean wrongName;
 	private TextButton storyMode;
 	private TextButton freeMode;
-	private TextButton back; // back lo hanno tutti
+	private TextButton back;
 
 	private Sprite macchinaSprite;
 	private Sprite joystickSprite;
 	private Sprite selectedSprite;
 	private Sprite backGround;
 
-	private Vector2[][] matrixPosition;// static ?
-	private Vector2[][] matrixDimension;// static ?
+	private Vector2[][] matrixPosition;
+	private Vector2[][] matrixDimension;
 	private Vector2 itemSelected;
 	String lastNameInsert;
 
 	public Stage stage;
-	Viewport viewport = new ExtendViewport(500, 500, ImagePool.camera);
-	SpriteBatch batch = new SpriteBatch();
+	Viewport viewport;
+	SpriteBatch batch;
 
 	TextField name;
 
@@ -70,7 +70,8 @@ public class GameModMenu implements Screen, ControllerListener {
 
 		this.gameMenu = gameMenu;
 		controllerMoveDirection = -1;
-		// controller = new Controllers();
+		batch = new SpriteBatch();
+		viewport = new ExtendViewport(500, 500, ImagePool.camera);
 		GameConfig.controller.addListener(this);
 		hasPressedEnter = false;
 		gameIsStarting = false;
@@ -236,7 +237,7 @@ public class GameModMenu implements Screen, ControllerListener {
 							gameIsStarting = true;
 							wrongName = false;
 							gameMenu.userInfo.setName(name.getText());
-						} else{
+						} else {
 							wrongName = true;
 							lastNameInsert = name.getText();
 						}
@@ -253,11 +254,11 @@ public class GameModMenu implements Screen, ControllerListener {
 				break;
 			default:
 				break;
-			/* continuare con matrice con il set screen dello swap */
+
 			}
 		}
-		if(!gameIsStarting){
-			if(Gdx.input.isKeyPressed(Input.Keys.LEFT) || controllerMoveDirection == 3) {
+		if (!gameIsStarting) {
+			if (Gdx.input.isKeyPressed(Input.Keys.LEFT) || controllerMoveDirection == 3) {
 				joystickSprite.setTexture(ImagePool.joystickLeft);
 				if (Gdx.input.isKeyJustPressed(Input.Keys.LEFT) || controllerMoveDirection == 3)
 					if (itemSelected.y > 0) {
@@ -267,7 +268,7 @@ public class GameModMenu implements Screen, ControllerListener {
 						selectedSprite.setSize(matrixDimension[(int) itemSelected.x][(int) itemSelected.y].x,
 								matrixDimension[(int) itemSelected.x][(int) itemSelected.y].y);
 					}
-	
+
 			} else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) || controllerMoveDirection == 1) {
 				joystickSprite.setTexture(ImagePool.joystickRight);
 				if (Gdx.input.isKeyJustPressed(Input.Keys.RIGHT) || controllerMoveDirection == 1)
@@ -388,8 +389,10 @@ public class GameModMenu implements Screen, ControllerListener {
 	@Override
 	public boolean povMoved(Controller controller, int povCode, PovDirection value) {
 		boolean inputIsValid = false;
+		
 		if (gameMenu.getScreen().getClass().getName().contains("GameModMenu"))
 			inputIsValid = true;
+		
 		if (inputIsValid) {
 			if (value == PovDirection.north)
 				controllerMoveDirection = 0;

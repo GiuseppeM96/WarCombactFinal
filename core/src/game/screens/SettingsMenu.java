@@ -61,7 +61,6 @@ public class SettingsMenu implements Screen,ControllerListener {
 
 	public SettingsMenu(GameMenu gameMenu) {
 		this.gameMenu = gameMenu;
-		//controller = new Controllers();
 		GameConfig.controller.addListener(this);
 		controllerMoveDirection = -1;
 		hasPressedEnter = false;

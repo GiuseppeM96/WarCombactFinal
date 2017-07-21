@@ -62,7 +62,6 @@ public class SettingMultiplayerScreen implements Screen, ControllerListener {
 
 		this.gameMenu = gameMenu;
 		this.creatingServer = creatingServer;
-		// controller = new Controllers();
 		GameConfig.controller.addListener(this);
 		controllerMoveDirection = -1;
 		hasPressedEnter = false;
@@ -112,11 +111,6 @@ public class SettingMultiplayerScreen implements Screen, ControllerListener {
 		selectedSprite.setSize(vectorDimension[itemSelected].x, vectorDimension[itemSelected].y);
 		selectedSprite.setPosition(vectorPosition[itemSelected].x, vectorPosition[itemSelected].y);
 
-		/*
-		 * facciamo scegliere il numero di giocatori e un bottone create quando
-		 * premo su create creo il NetGameScreen e parte un waitScreen che
-		 * sparirà non appena si sono connessi i players
-		 */
 	}
 
 	/**

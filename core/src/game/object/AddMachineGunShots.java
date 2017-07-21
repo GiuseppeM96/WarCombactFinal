@@ -7,10 +7,11 @@ import game.pools.GameConfig;
 
 public class AddMachineGunShots extends StaticObject {
 
-	public static int shots = 50;
+	public static int shots ;
 
 	public AddMachineGunShots() {
 		super();
+		shots = 50;
 		size = GameConfig.MACHINEGUN_SIZE;
 	}
 

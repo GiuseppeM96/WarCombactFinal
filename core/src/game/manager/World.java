@@ -40,7 +40,7 @@ import game.threads.EnemyThread;
 import game.personalAI.*;
 
 public class World {
-	
+
 	static public int level;
 	public boolean levelCompleted;
 	static public Class<? extends Enemy> classe;
@@ -71,21 +71,21 @@ public class World {
 	 * @param className
 	 *            class that contain the AI that we want
 	 */
-	public World(int score,int i, Vector2 playerPosition, String className) {
+	public World(int score, int i, Vector2 playerPosition, String className) {
 
 		objects = new ArrayList<StaticObject>();
 		shotsPlayer = new ArrayList<ShotPlayer>();
 		enemies = new ArrayList<Enemy>();
 		player = new Character();
 		shotsEnemy = new ArrayList<ShotEnemy>();
-		missionLetters=new ArrayList<Letter>();
+		missionLetters = new ArrayList<Letter>();
 		levelCompleted = false;
 		gameMap = new Map(level);
 		this.score = score;
 		playerShot = false;
 		enemyAdded = false;
 		this.className = className;
-		
+
 		if (className == "Enemy" || className == null || className == "game.object.Enemy")
 			try {
 				classe = (Class<? extends Enemy>) Class.forName("game.object.Enemy");
@@ -114,7 +114,7 @@ public class World {
 		}
 
 		found = 1;
-		// set message that must be completed 
+		// set message that must be completed
 		switch (i) {
 		case 1:
 			mission = "help";
@@ -126,19 +126,19 @@ public class World {
 			mission = "savevillage";
 			break;
 		default:
-			mission="";
+			mission = "";
 			break;
 		}
-		if(!mission.equals("")){
-			char [] arrayMission=new char[mission.length()];
+		if (!mission.equals("")) {
+			char[] arrayMission = new char[mission.length()];
 			mission.getChars(0, mission.length(), arrayMission, 0);
-			for(int j=0;j<mission.length();j++){
-				Letter tmpLetter=new Letter(arrayMission[j]);
-				tmpLetter.setPosition(new Vector2(300+j*30,20));
+			for (int j = 0; j < mission.length(); j++) {
+				Letter tmpLetter = new Letter(arrayMission[j]);
+				tmpLetter.setPosition(new Vector2(300 + j * 30, 20));
 				missionLetters.add(tmpLetter);
 			}
 		}
-		foundLetter="";
+		foundLetter = "";
 		level = i;
 		initWorld(playerPosition);
 		enemiesOne = new EnemyThread(player.getPosition());
@@ -212,8 +212,8 @@ public class World {
 	 * @throws IOException
 	 */
 	private void loadObjectFromFile(File fileMap) throws IOException {
-		
-		FileReader reader =new FileReader(fileMap);
+
+		FileReader reader = new FileReader(fileMap);
 		BufferedReader buffer = new BufferedReader(reader);
 		if (GameMenu.loadGame) {
 			String line = buffer.readLine();
@@ -250,11 +250,11 @@ public class World {
 			} else if (type.equals("l")) {
 				level = convert(codx);
 				found = cody.length();
-				foundLetter=cody;
-			}else if (type.equals("h")) {
+				foundLetter = cody;
+			} else if (type.equals("h")) {
 				player.shotGunShots = convert(codx);
 				player.machineGunShots = convert(cody);
-			}else {
+			} else {
 				StaticObject tmp = createNewObject(type, codx, cody);
 				if (tmp instanceof Map)
 					gameMap = (Map) tmp;
@@ -508,7 +508,7 @@ public class World {
 	 * evolves shots and check their collision
 	 */
 	public void updateShots() {
-		
+
 		ArrayList<ShotPlayer> shotPlayerDied = new ArrayList<ShotPlayer>();
 		ArrayList<ShotEnemy> shotEnemyDied = new ArrayList<ShotEnemy>();
 		for (ShotPlayer tmp : shotsPlayer) {
@@ -578,7 +578,7 @@ public class World {
 	 * empties all list of object in the world and stop thread
 	 */
 	public synchronized void clear() {
-		
+
 		enemiesOne.stopThread = true;
 		objects.clear();
 		well = null;

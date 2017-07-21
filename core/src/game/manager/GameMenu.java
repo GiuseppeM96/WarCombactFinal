@@ -41,7 +41,6 @@ import game.screens.WaitScreen;
 
 public class GameMenu extends Game {
 
-
 	static public String className;
 	public MyServer server;
 	public boolean startGameNet;
@@ -99,7 +98,7 @@ public class GameMenu extends Game {
 		startMenuScreen = new StartMenuScreen(this);
 		gameModMenu = new GameModMenu(this);
 		pauseMenu = new PauseMenu(this);
-		world = new World(0,1, new Vector2(320, 240), className);
+		world = new World(0, 1, new Vector2(320, 240), className);
 		gameLevel = new GameManagerScreen(world, this, new Vector2(240, 340));
 		goToTheKing = new CastleScreen(this, 1);
 		takePoison = new BlackHouseScreen(this);
@@ -221,7 +220,7 @@ public class GameMenu extends Game {
 		switch (level) {
 		case 1:
 			clearWorld();
-			world = new World(0,1, new Vector2(240, 340), className);
+			world = new World(0, 1, new Vector2(240, 340), className);
 			gameLevel = new GameManagerScreen(world, this, world.player.getPosition());
 			gameLevel.worldGame.enemiesOne.start();
 			free = false;
@@ -230,8 +229,8 @@ public class GameMenu extends Game {
 		case 2:
 			clearWorld();
 			Vector2 playerPosition = world.player.getPosition();
-			int tmpScore=world.score;
-			world = new World(tmpScore,2, playerPosition, className);
+			int tmpScore = world.score;
+			world = new World(tmpScore, 2, playerPosition, className);
 			gameLevel = new GameManagerScreen(world, this,
 					new Vector2(gameLevel.gameCam.position.x, gameLevel.gameCam.position.y));
 			gameLevel.worldGame.enemiesOne.start();
@@ -241,8 +240,8 @@ public class GameMenu extends Game {
 		case 3:
 			clearWorld();
 			Vector2 position = world.player.getPosition();
-			int oldScore=world.score;
-			world = new World(oldScore,3, position, className);
+			int oldScore = world.score;
+			world = new World(oldScore, 3, position, className);
 			gameLevel = new GameManagerScreen(world, this,
 					new Vector2(gameLevel.gameCam.position.x, gameLevel.gameCam.position.y));
 			gameLevel.worldGame.enemiesOne.start();
@@ -253,7 +252,7 @@ public class GameMenu extends Game {
 			clearWorld();
 			if (!loadGame) {
 				free = true;
-				world = new World(0,4, new Vector2(320, 240), className);
+				world = new World(0, 4, new Vector2(320, 240), className);
 				freeModGame = new FreeGameScreen(this, world);
 			} else
 				loadGame();
@@ -276,9 +275,9 @@ public class GameMenu extends Game {
 	 * configure new level
 	 */
 	public void levelUp() {
-		
+
 		world.enemiesOne.stopThread = true;
-		if(SettingsMenu.isMusicEnable)
+		if (SettingsMenu.isMusicEnable)
 			MusicPool.musicMenu.play();
 		loadGame = false;
 		if (!free) {
@@ -318,6 +317,7 @@ public class GameMenu extends Game {
 			tmp = new FileWriter(fileMap);
 			BufferedWriter buffer = new BufferedWriter(tmp);
 			PrintWriter printout = new PrintWriter(buffer);
+			printout.println(className);
 			int mapx = (int) world.gameMap.getPosition().x;
 			int mapy = (int) world.gameMap.getPosition().y;
 			ArrayList<StaticObject> objects = world.getListObject();
@@ -406,10 +406,11 @@ public class GameMenu extends Game {
 		currentLevel = 1;
 		start = true;
 		free = false;
-		int tmpScore=world.score;
-		world = new World(tmpScore,1, new Vector2(GameConfig.SCREEN_WIDTH / 2, GameConfig.SCREEN_HEIGHT / 2), className);
+		int tmpScore = world.score;
+		world = new World(tmpScore, 1, new Vector2(GameConfig.SCREEN_WIDTH / 2, GameConfig.SCREEN_HEIGHT / 2),
+				className);
 		world.score = 0;
-		world.player.lifePoints=ConstantField.PLAYER_LIFE_POINTS;
+		world.player.lifePoints = ConstantField.PLAYER_LIFE_POINTS;
 		gameLevel = new GameManagerScreen(world, this, world.player.getPosition());
 	}
 
@@ -427,7 +428,7 @@ public class GameMenu extends Game {
 
 		clearWorld();
 
-		world = new World(0,1, new Vector2(50, 50), className);
+		world = new World(0, 1, new Vector2(50, 50), className);
 		resetMatch();
 		if (!free)
 			gameLevel = new GameManagerScreen(world, this, new Vector2(world.player.getPosition()));
@@ -448,7 +449,6 @@ public class GameMenu extends Game {
 	private void resetMatch() {
 		currentLevel = world.level;
 	}
-
 
 	public ArrayList<ScorePlayer> getScoreList() {
 		return scorePlayers;

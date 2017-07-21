@@ -89,14 +89,8 @@ public class IntroScreen implements Screen {
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		batch.draw(backGround, 0, 0, screenWidth, screenHeight);
-		int x = (int) (ImagePool.camera.viewportWidth / 2) - text.getWidth() / 2;// (int)
-																					// (100*GameConfig.SCREEN_WIDTH/screenWidth);
-		int y = (int) (ImagePool.camera.viewportHeight / 2) - text.getHeight() / 2;// (int)
-																					// ((int)
-																					// ((screenHeight/2)-50)*GameConfig.SCREEN_HEIGHT/screenHeight);
-		/*
-		 * if(level==4) x=(int) (250*GameConfig.SCREEN_WIDTH/screenWidth);
-		 */
+		int x = (int) (ImagePool.camera.viewportWidth / 2) - text.getWidth() / 2;
+		int y = (int) (ImagePool.camera.viewportHeight / 2) - text.getHeight() / 2;
 		if (write % 50 >= 0 && write % 50 <= 40)
 			batch.draw(text, x, y);
 		batch.end();

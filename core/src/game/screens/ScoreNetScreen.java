@@ -180,11 +180,6 @@ public class ScoreNetScreen implements Screen, ControllerListener {
 		if (selectedSprite.getX() != 0)
 			selectedSprite.draw(batch);
 
-		/*
-		 * ImagePool.font.setColor(Color.GREEN); ImagePool.font.draw(batch,
-		 * " S C O R E :  " + playerName.toUpperCase() + "    " + playerScore,
-		 * 230, 341);
-		 */
 		ImagePool.font.setColor(Color.RED);
 		ImagePool.font.draw(batch, "S C O R E S :", 230, 331);
 		ImagePool.font.setColor(Color.WHITE);

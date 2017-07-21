@@ -10,11 +10,12 @@ import game.pools.ImagePool;
 public class ShotPlayer extends DynamicObject {
 	Weapon weapon;
 	int target;
-	public boolean visible = true;
+	public boolean visible;
 
 	public ShotPlayer(int target, Weapon weapon) {
 		super();
 		setVelocity(ConstantField.SHOT_VELOCITY);
+		visible = true;
 		this.target = target;
 		this.position = new Vector2(World.player.position);
 		this.direction = new Vector2(World.player.direction);

@@ -42,7 +42,6 @@ public class CastleScreen implements Screen, ControllerListener {
 	public CastleScreen(GameMenu game, int level) {
 		super();
 		hasPressedEnter = false;
-		// controller = new Controllers();
 		GameConfig.controller.addListener(this);
 		gameMenu = game;
 		this.level = level;
@@ -67,10 +66,8 @@ public class CastleScreen implements Screen, ControllerListener {
 	@Override
 	public void render(float delta) {
 		worldBatch.begin();
-
 		drawWorld();
 		update(delta);
-
 		worldBatch.end();
 	}
 

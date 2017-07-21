@@ -14,24 +14,34 @@ import game.utility.StepDirection;
 
 public class Enemy extends DynamicObject {
 
-	// public int AI;
 	public int researchDirection;
 	public int actionDistance;
-	public boolean collided = false;
-	public boolean alive = true;
-	public boolean shoting = false;
-	public float shotAnimationTime = 0.f;
-	public float stateEnemyTime = 0.f;
+	public boolean collided;
+	public boolean alive;
+	public boolean shoting;
+	public float shotAnimationTime;
+	public float stateEnemyTime;
 	protected StepDirection[] lastSteps;
-	protected final int numSteps = 20000;
-	int contDis = 0;
-	public int cont = 0;
-	public boolean standing = false;
-	public boolean shoted = false;
-	protected ArrayList<ShotEnemy> newShots = new ArrayList<ShotEnemy>();
+	protected final int numSteps;
+	int contDis;
+	public int cont;
+	public boolean standing;
+	public boolean shoted;
+	protected ArrayList<ShotEnemy> newShots;
 
 	public Enemy() {
 		super();
+		collided = false;
+		alive = true;
+		shoting = false;
+		shotAnimationTime = 0.f;
+		stateEnemyTime = 0.f;
+		numSteps = 20000;
+		contDis = 0;
+		cont = 0;
+		standing = false;
+		shoted = false;
+		newShots = new ArrayList<ShotEnemy>();
 		lastSteps = new StepDirection[numSteps];
 		for (int i = 0; i < lastSteps.length; i++)
 			lastSteps[i] = StepDirection.ERR;
@@ -224,7 +234,7 @@ public class Enemy extends DynamicObject {
 	}
 
 	public void addShot() {
-		if(SettingsMenu.isAudioEnable)
+		if (SettingsMenu.isAudioEnable)
 			MusicPool.shotGunSound.play();
 		World.shotsEnemy.addAll(newShots);
 		newShots.clear();

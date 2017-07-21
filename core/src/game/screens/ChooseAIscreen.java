@@ -60,7 +60,6 @@ public class ChooseAIscreen implements Screen, ControllerListener {
 		batch = new SpriteBatch();
 		font = new BitmapFont();
 		viewport = new ExtendViewport(500, 500, ImagePool.camera);
-		//controller = new Controllers();
 		GameConfig.controller.addListener(this);
 		hasPressedEnter = false;
 		macchinaSprite = new Sprite(ImagePool.macchina);
@@ -138,10 +137,8 @@ public class ChooseAIscreen implements Screen, ControllerListener {
 		batch.begin();
 		Gdx.gl20.glClearColor(.0f, .0f, .0f, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
 		draw();
 		update();
-
 		batch.end();
 		stage.act();
 		stage.draw();
@@ -266,8 +263,11 @@ public class ChooseAIscreen implements Screen, ControllerListener {
 
 	/**
 	 * handle the input that user generates with the controller
-	 * @param buttonCode is the code of the button pressed
-	 * @param controller is the controller that generates the input
+	 * 
+	 * @param buttonCode
+	 *            is the code of the button pressed
+	 * @param controller
+	 *            is the controller that generates the input
 	 */
 	@Override
 	public boolean buttonDown(Controller controller, int buttonCode) {
@@ -289,8 +289,11 @@ public class ChooseAIscreen implements Screen, ControllerListener {
 
 	/**
 	 * update the direction selected with the controller
-	 * @param controller is the controller that generates the event
-	 * @param value is the direction selected
+	 * 
+	 * @param controller
+	 *            is the controller that generates the event
+	 * @param value
+	 *            is the direction selected
 	 */
 	@Override
 	public boolean povMoved(Controller controller, int povCode, PovDirection value) {

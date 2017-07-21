@@ -53,16 +53,8 @@ public class StartMultiplayerScreen implements Screen, ControllerListener {
 
 	private int controllerMoveDirection;
 
-	/*
-	 * 
-	 * da questa classe mettiamo New Match e Add Match appena premo AddMatch se
-	 * il server di gameMenu!=null crea il NetGameScreen e va in WaitScreen
-	 * NewMatch va in SettingsMultiplayerScreen
-	 * 
-	 */
 	public StartMultiplayerScreen(GameMenu gameMenu) {
 		this.gameMenu = gameMenu;
-		// controller = new Controllers();
 		GameConfig.controller.addListener(this);
 		hasPressedEnter = false;
 		controllerMoveDirection = -1;
@@ -148,10 +140,8 @@ public class StartMultiplayerScreen implements Screen, ControllerListener {
 		batch.begin();
 		Gdx.gl20.glClearColor(.0f, .0f, .0f, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
 		draw();
 		update();
-
 		batch.end();
 		stage.act();
 		stage.draw();

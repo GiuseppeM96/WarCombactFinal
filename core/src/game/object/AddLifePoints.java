@@ -4,10 +4,11 @@ import game.pools.GameConfig;
 
 public class AddLifePoints extends StaticObject {
 
-	public static int addPoints = 100;
+	public static int addPoints ;
 
 	public AddLifePoints() {
 		super();
+		addPoints = 100;
 		size = GameConfig.LIFE_SIZE;
 	}
 

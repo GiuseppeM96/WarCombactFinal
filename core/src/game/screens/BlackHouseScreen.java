@@ -60,10 +60,8 @@ public class BlackHouseScreen implements Screen, ControllerListener {
 	@Override
 	public void render(float delta) {
 		worldBatch.begin();
-
 		drawWorld();
 		update(delta);
-
 		worldBatch.end();
 	}
 

@@ -164,9 +164,10 @@ public class GameManagerScreen implements Screen, ControllerListener {
 				if (shotAnimationTime > 0.3 && !World.playerShot) {
 					worldGame.playerHasShot();
 					if (SettingsMenu.isAudioEnable)
-						if(worldGame.player.weaponType.equals("ShotGun"))
+						if (worldGame.player.weaponType.equals("ShotGun"))
 							MusicPool.shotGunSound.play();
-						else MusicPool.machineGunSound.play();
+						else
+							MusicPool.machineGunSound.play();
 					World.playerShot = true;
 				}
 				if (shotAnimationTime > 0.6) {
@@ -184,7 +185,7 @@ public class GameManagerScreen implements Screen, ControllerListener {
 			Tree.animationTime += dt;
 			updateShots();
 			updateCam();
-			
+
 		} else {
 
 			diedAnimationTime += dt;
@@ -261,7 +262,7 @@ public class GameManagerScreen implements Screen, ControllerListener {
 			statePlayerTime += dt;
 			worldGame.objects.remove(currentObject);
 		} else if (currentObject instanceof Enemy) {
-			
+
 		} else if (levelIsCompeted(currentObject)) {
 			Gdx.input.setInputProcessor(null);
 			gameMenu.levelUp();
@@ -387,9 +388,7 @@ public class GameManagerScreen implements Screen, ControllerListener {
 				} else if (s instanceof Enemy) {
 					try {
 						switch ((int) World.classe.getMethod("getMoveDirection", Vector2.class).invoke(s,
-								World.player.getPosition())) {// (((Enemy)
-																// s).getMoveDirection(worldGame.player.getPosition()))
-																// {
+								World.player.getPosition())) {
 						case 0:
 							if (((Enemy) s).shoting)
 								worldBatch.draw(
