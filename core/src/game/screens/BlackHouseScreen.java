@@ -29,7 +29,9 @@ public class BlackHouseScreen implements Screen, ControllerListener {
 	int dialogue;
 	public int level;
 	boolean hasPressedEnter = false;
-
+	boolean potionCollected;
+	StaticObject potion;
+	
 	/**
 	 * Create a screen where player go to the magician to take wake-up position
 	 * 
@@ -37,17 +39,19 @@ public class BlackHouseScreen implements Screen, ControllerListener {
 	 */
 	public BlackHouseScreen(GameMenu game) {
 		super();
-		// controller = new Controllers();
 		GameConfig.controller.addListener(this);
 		gameMenu = game;
 		this.level = level;
+		potion=new StaticObject();
 		dialogue = 0;
+		potionCollected=false;
 		statePlayerTime = 0.f;
 		magician = new StaticObject();
 		magician.setPosition(new Vector2(300, 30));
 		collided = false;
 		player = new Character();
 		player.setPosition(new Vector2(0, 30));
+		potion.setPosition(new Vector2(100, 40));
 		worldBatch = new SpriteBatch();
 	}
 
@@ -76,7 +80,7 @@ public class BlackHouseScreen implements Screen, ControllerListener {
 			if (player.collide(magician)) {
 				collided = true;
 				statePlayerTime = 0.f;
-			} else {
+			}else {
 				player.move(1, delta);
 				statePlayerTime += delta;
 			}
@@ -85,14 +89,18 @@ public class BlackHouseScreen implements Screen, ControllerListener {
 				dialogue++;
 				hasPressedEnter = false;
 			}
+			
 		} else {
 			if (player.getPosition().x < 5) {
 				dialogue = 0;
 				statePlayerTime = 0.f;
 				collided = false;
 				gameMenu.intro(3);
-			} else
+			} else{
 				player.move(3, delta);
+				if(player.collide(potion))
+					potionCollected=true;
+			}
 			statePlayerTime += delta;
 		}
 
@@ -112,10 +120,13 @@ public class BlackHouseScreen implements Screen, ControllerListener {
 				worldBatch.draw(ImagePool.firstDialogueBlack, 0, 300);
 			else{
 				worldBatch.draw(ImagePool.secondDialogueBlack, 0, 300);
-				worldBatch.draw(ImagePool.specialPotion, player.position.x+35, 130);
 			}
 			worldBatch.draw(ImagePool.playerStopped, player.getPosition().x, player.getPosition().y);
+			if(!potionCollected)
+				worldBatch.draw(ImagePool.specialPotion, potion.position.x, potion.position.y);
 		} else {
+			if(!potionCollected)
+				worldBatch.draw(ImagePool.specialPotion, potion.position.x, potion.position.y);
 			worldBatch.draw(ImagePool.playerAnimationLeft.getKeyFrame(statePlayerTime, true), player.getPosition().x,
 					player.getPosition().y);
 		}

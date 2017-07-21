@@ -30,14 +30,4 @@ public class Weapon  {
 	public int getShotRange() {
 		return shotRange;
 	}
-
-	public boolean hasNotShots() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	public void updateNumShots() {
-		// TODO Auto-generated method stub
-
-	}
 }
