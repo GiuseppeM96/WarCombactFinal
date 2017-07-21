@@ -101,7 +101,7 @@ public class GameManagerScreen implements Screen, ControllerListener {
 		canRemove = false;
 		intro = true;
 		worldGame = world;
-		game = game;
+		this.game = game;
 		helpTime = 0;
 		diedAnimationTime = 0.f;
 		shotAnimationTime = 0.f;

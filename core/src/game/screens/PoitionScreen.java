@@ -64,7 +64,7 @@ public class PoitionScreen implements Screen {
 	 */
 	public PoitionScreen(WarCombat game) {
 		super();
-		game = game;
+		this.game = game;
 		cam = new OrthographicCamera(640, 480);
 		cam.position.x = GameConfig.MAP_SIZE.x / 2;
 		cam.position.y = GameConfig.MAP_SIZE.y / 2;

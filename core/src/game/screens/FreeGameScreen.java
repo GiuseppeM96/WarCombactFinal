@@ -110,7 +110,7 @@ public class FreeGameScreen implements Screen, ActionListener, ControllerListene
 		timerIncreaseDifficult.start();
 		timer.setActionCommand("timer");
 		timer.start();
-		game = game;
+		this.game = game;
 		worldBatch = new SpriteBatch();
 		score = new BitmapFont();
 		score.setColor(Color.WHITE);
