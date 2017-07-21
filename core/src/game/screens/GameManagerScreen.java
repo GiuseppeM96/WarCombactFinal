@@ -65,6 +65,7 @@ import game.pools.ImagePool;
 import game.pools.MusicPool;
 
 public class GameManagerScreen implements Screen, ControllerListener {
+	
 	Music music;
 	public World worldGame;
 	public OrthographicCamera gameCam;
