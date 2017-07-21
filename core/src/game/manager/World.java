@@ -576,23 +576,7 @@ public class World {
 	 * function that create new enemy and add to the enemy list
 	 */
 	public void generateEnemy() {
-<<<<<<< HEAD
-		Enemy e=null;
-		try {
-			e = classe.newInstance();
-		} catch (InstantiationException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		} catch (IllegalAccessException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		Vector2 position = new Vector2(well.getPosition());
-		e.setPosition(position);
-		e.setDirection(2);
-		enemiesOne.stopThread = true;
-		while (enemiesOne.isAlive()) {
-=======
+
 		try {
 			Enemy e = classe.newInstance();
 			Vector2 position = new Vector2(well.getPosition());
@@ -607,7 +591,6 @@ public class World {
 		} catch (InstantiationException | IllegalAccessException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
->>>>>>> de0bddb1263af3ad8e983264bca5a49cac3cf55c
 		}
 	}
 
