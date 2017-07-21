@@ -318,7 +318,6 @@ public class GameMenu extends Game {
 			tmp = new FileWriter(fileMap);
 			BufferedWriter buffer = new BufferedWriter(tmp);
 			PrintWriter printout = new PrintWriter(buffer);
-			printout.println(className);
 			int mapx = (int) world.gameMap.getPosition().x;
 			int mapy = (int) world.gameMap.getPosition().y;
 			ArrayList<StaticObject> objects = world.getListObject();

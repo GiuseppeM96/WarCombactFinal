@@ -66,7 +66,7 @@ public class EnemyThread extends Thread {
 								// TODO Auto-generated catch block
 								e1.printStackTrace();
 							} catch (IllegalArgumentException e1) {
-								// TODO Auto-generated catch block
+								System.out.println("errore");
 								e1.printStackTrace();
 							} catch (InvocationTargetException e1) {
 								// TODO Auto-generated catch block

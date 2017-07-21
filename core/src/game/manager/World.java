@@ -591,6 +591,7 @@ public class World {
 	 * function that create new enemy and add to the enemy list
 	 */
 	public void generateEnemy() {
+
 		try {
 			Enemy e = classe.newInstance();
 			Vector2 position = new Vector2(well.getPosition());
