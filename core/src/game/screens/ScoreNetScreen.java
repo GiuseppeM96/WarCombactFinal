@@ -97,14 +97,12 @@ public class ScoreNetScreen implements Screen, ControllerListener {
 		selectedSprite.setPosition(285, 27);
 		selectedSprite.setSize(back.getWidth() + back.getWidth() / 2, back.getHeight() + back.getHeight() / 2);
 
-		// controller = new Controllers();
 		GameConfig.controller.addListener(this);
 		boolean change = true;
 		scorePlayers = gameMenu.getScoreList();
 		scroll.setPosition(450, 190);
 		if (scorePlayers.size() > 4) {
 			scroll.setSize(33, 156 - (scorePlayers.size() - 4) * 15);
-			System.out.println(scroll.getHeight());
 		}
 		while (change) {
 			change = false;

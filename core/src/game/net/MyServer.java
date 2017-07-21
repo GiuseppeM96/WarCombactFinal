@@ -23,6 +23,7 @@ public class MyServer {
 	 * 
 	 */
 	public MyServer(int numPlayer, int port) {
+		
 		this.port = port;
 		try {
 			this.numPlayer = numPlayer;
@@ -32,6 +33,7 @@ public class MyServer {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
 	}
 
 	/**
@@ -100,7 +102,6 @@ public class MyServer {
 			// TODO Auto-generated catch block
 			System.out.println("ServerSocket Not Close");
 		}
-		System.out.println(connected.size());
 		connected.clear();
 
 	}

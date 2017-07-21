@@ -51,7 +51,6 @@ import game.screens.SettingsMenu;
 
 public class NetGameScreen implements Screen, ActionListener, ControllerListener {
 
-	// Controllers controller;
 	SpriteBatch batch;
 	NetWorld worldGame;
 	public Socket s;
@@ -83,6 +82,7 @@ public class NetGameScreen implements Screen, ActionListener, ControllerListener
 	 * @param gameMenu
 	 *            indicates the game application
 	 */
+	
 	public NetGameScreen(String ip, int port, GameMenu gameMenu) {
 		// controller = new Controllers();
 		GameConfig.controller.addListener(this);

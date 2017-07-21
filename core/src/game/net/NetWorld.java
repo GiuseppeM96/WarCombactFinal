@@ -291,11 +291,9 @@ public class NetWorld {
 	public void playerHasShot(NetCharacter currentPlayer) {
 		if (!currentPlayer.hasNotShots()) {
 			for (int i = 0; i < currentPlayer.getCurrentWeapon().getNumShots(); i++) {
-				System.out.println(currentPlayer.code);
 				Shot tmp = new Shot(i - currentPlayer.getCurrentWeapon().getNumShots() + 1,
 						currentPlayer.getCurrentWeapon(), currentPlayer.code, new Vector2(currentPlayer.getPosition()),
 						new Vector2(currentPlayer.getDirection()));
-				System.out.println(tmp.codeOwner);
 				newShots.add(tmp);
 			}
 			shots.addAll(newShots);

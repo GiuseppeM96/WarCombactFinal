@@ -197,7 +197,6 @@ public class GameMenu extends Game {
 			setScreen(waitScreen);
 			break;
 		case 11:
-			System.out.println(serverAddress);
 			MusicPool.musicMenu.stop();
 			netGame.matchTimer.start();
 			setScreen(netGame);
@@ -329,7 +328,8 @@ public class GameMenu extends Game {
 							codType(s.getType()) + ";" + (int) s.getPosition().x + ";" + (int) s.getPosition().y + ";");
 			}
 			printout.println("i;" + world.score + ";" + world.player.lifePoints + ";");
-			printout.println("l;" + currentLevel + ";" + world.found + ";");
+			printout.println("h;" + world.player.shotGunShots + ";" + world.player.machineGunShots + ";");
+			printout.println("l;" + currentLevel + ";" + world.foundLetter + ";");
 			printout.close();
 		} catch (IOException e1) {
 			e1.printStackTrace();
@@ -447,13 +447,9 @@ public class GameMenu extends Game {
 	}
 
 	private void resetMatch() {
-
 		currentLevel = world.level;
 	}
 
-	public void loadMultiplayer() {
-
-	}
 
 	public ArrayList<ScorePlayer> getScoreList() {
 		return scorePlayers;

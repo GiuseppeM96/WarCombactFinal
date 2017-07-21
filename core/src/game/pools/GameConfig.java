@@ -20,9 +20,8 @@ public class GameConfig {
 	public static Vector2 MACHINEGUN_SIZE = new Vector2(60, 30);
 	public static Vector2 SHOTGUN_SIZE = new Vector2(60, 30);
 	public static Vector2 MAP_SIZE = new Vector2(2816, 2212);
-	public static Vector2 SHOT_VERTICAL_SIZE = new Vector2(ImagePool.winterVerticalShot.getWidth(),
-			ImagePool.winterVerticalShot.getHeight());
-	public static Vector2 SHOT_SIZE = new Vector2(ImagePool.winterShot.getWidth(), ImagePool.winterShot.getHeight());
-	public static Vector2 LETTER_SIZE = new Vector2(ImagePool.A.getWidth(), ImagePool.A.getHeight());
+	public static Vector2 SHOT_VERTICAL_SIZE = new Vector2(6,15);
+	public static Vector2 SHOT_SIZE = new Vector2(15, 6);
+	public static Vector2 LETTER_SIZE = new Vector2(20, 30);
 	public static Controllers controller = new Controllers();
 }

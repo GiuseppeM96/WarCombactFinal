@@ -42,6 +42,7 @@ public class ImagePool {
 	public static Texture scroll = new Texture("img/skills/scroll.png");
 	public static Texture people = new Texture("img/personaggio/contadino.png");
 	public static Texture triangle = new Texture("img/skills/triangle.png");
+	public static Texture emptyLetter = new Texture("img/trattino.png");
 
 	public static Texture bash = new Texture("img/Albero/cespuglio.png");
 	public static Texture addLife = new Texture("img/skills/lifePoints.png");

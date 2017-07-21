@@ -322,11 +322,8 @@ public class FreeGameScreen implements Screen, ActionListener, ControllerListene
 						tmp = ImagePool.shot;
 				else
 					trov = true;
-			} else if (s instanceof Letter) {
-				tmp = getLetterImage((Letter) s);
 			} else if (s instanceof Enemy) {
 				try {
-					System.out.println(World.classe);
 					switch ((int) World.classe.getMethod("getMoveDirection", Vector2.class).invoke(s,
 							World.player.getPosition())) {
 					case 0:
@@ -443,39 +440,6 @@ public class FreeGameScreen implements Screen, ActionListener, ControllerListene
 		}
 	}
 
-	/**
-	 * find Texture that stand for parameter s
-	 * 
-	 * @param s
-	 * @return Texture depending value of s
-	 */
-	private Texture getLetterImage(Letter s) {
-		switch (s.getValue()) {
-		case 'a':
-			return ImagePool.A;
-		case 'e':
-			return ImagePool.E;
-		case 'g':
-			return ImagePool.G;
-		case 'h':
-			return ImagePool.H;
-		case 'i':
-			return ImagePool.I;
-		case 'l':
-			return ImagePool.L;
-		case 'n':
-			return ImagePool.N;
-		case 'o':
-			return ImagePool.O;
-		case 'p':
-			return ImagePool.P;
-		case 's':
-			return ImagePool.S;
-		case 'v':
-			return ImagePool.V;
-		}
-		return null;
-	}
 
 	public void wait(int time) {
 		long start = System.currentTimeMillis();

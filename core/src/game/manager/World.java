@@ -55,9 +55,11 @@ public class World {
 	Map gameMap;
 	public EnemyThread enemiesOne;
 	public String className;
+	public ArrayList<Letter> missionLetters;
 	public static int score;
 	public static boolean playerShot;
 	public static boolean enemyAdded;
+	public String foundLetter;
 
 	/**
 	 * Create a new world
@@ -76,12 +78,14 @@ public class World {
 		enemies = new ArrayList<Enemy>();
 		player = new Character();
 		shotsEnemy = new ArrayList<ShotEnemy>();
+		missionLetters=new ArrayList<Letter>();
 		levelCompleted = false;
 		gameMap = new Map(level);
 		this.score = score;
 		playerShot = false;
 		enemyAdded = false;
 		this.className = className;
+		
 		if (className == "Enemy" || className == null || className == "game.object.Enemy")
 			try {
 				classe = (Class<? extends Enemy>) Class.forName("game.object.Enemy");
@@ -110,19 +114,31 @@ public class World {
 		}
 
 		found = 1;
+		// set message that must be completed 
 		switch (i) {
 		case 1:
-			mission = "HELP";
+			mission = "help";
 			break;
 		case 2:
-			mission = "POISON";
+			mission = "poison";
 			break;
 		case 3:
-			mission = "SAVEVILLAGE";
+			mission = "savevillage";
 			break;
 		default:
+			mission="";
 			break;
 		}
+		if(!mission.equals("")){
+			char [] arrayMission=new char[mission.length()];
+			mission.getChars(0, mission.length(), arrayMission, 0);
+			for(int j=0;j<mission.length();j++){
+				Letter tmpLetter=new Letter(arrayMission[j]);
+				tmpLetter.setPosition(new Vector2(300+j*30,20));
+				missionLetters.add(tmpLetter);
+			}
+		}
+		foundLetter="";
 		level = i;
 		initWorld(playerPosition);
 		enemiesOne = new EnemyThread(player.getPosition());
@@ -196,6 +212,7 @@ public class World {
 	 * @throws IOException
 	 */
 	private void loadObjectFromFile(File fileMap) throws IOException {
+		
 		FileReader reader =new FileReader(fileMap);
 		BufferedReader buffer = new BufferedReader(reader);
 		if (GameMenu.loadGame) {
@@ -232,13 +249,16 @@ public class World {
 				player.lifePoints = convert(cody);
 			} else if (type.equals("l")) {
 				level = convert(codx);
-				found = convert(cody);
-			} else {
+				found = cody.length();
+				foundLetter=cody;
+			}else if (type.equals("h")) {
+				player.shotGunShots = convert(codx);
+				player.machineGunShots = convert(cody);
+			}else {
 				StaticObject tmp = createNewObject(type, codx, cody);
 				if (tmp instanceof Map)
 					gameMap = (Map) tmp;
 				else if (tmp instanceof Enemy) {
-					// ((Enemy)tmp).setAI(50);
 					enemies.add((Enemy) tmp);
 				} else if (tmp instanceof Well)
 					well = (Well) tmp;
@@ -246,7 +266,6 @@ public class World {
 					player = (Character) tmp;
 				} else
 					objects.add(tmp);
-
 			}
 			line = buffer.readLine();
 		}
@@ -489,6 +508,7 @@ public class World {
 	 * evolves shots and check their collision
 	 */
 	public void updateShots() {
+		
 		ArrayList<ShotPlayer> shotPlayerDied = new ArrayList<ShotPlayer>();
 		ArrayList<ShotEnemy> shotEnemyDied = new ArrayList<ShotEnemy>();
 		for (ShotPlayer tmp : shotsPlayer) {
@@ -524,7 +544,7 @@ public class World {
 					if (collisionObject != null)
 						tmp.visible = false;
 					if (collisionObject instanceof Character) {
-						player.lifePoints -= 30;
+						player.lifePoints -= 10;
 					}
 				}
 				if (tmp.visible) {
@@ -534,11 +554,6 @@ public class World {
 			}
 		}
 		shotsEnemy.removeAll(shotEnemyDied);
-	}
-
-	public void stopEnemy() {
-
-		enemiesOne.stop();
 	}
 
 	/**

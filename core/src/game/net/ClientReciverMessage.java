@@ -14,13 +14,11 @@ import game.object.AddShotGunShots;
 import game.object.StaticObject;
 
 public class ClientReciverMessage extends Thread {
+	
 	Socket socket;
 	BufferedReader in;
 	NetGameScreen clientScreen;
-	int i = 0;
-	boolean otherPlayerShot;
 	boolean stopThread;
-	boolean canClose;
 
 	/**
 	 * Create a Thread that listen message from server
@@ -32,9 +30,7 @@ public class ClientReciverMessage extends Thread {
 	 */
 	public ClientReciverMessage(Socket s, NetGameScreen clientScreen) {
 		socket = s;
-		otherPlayerShot = false;
 		stopThread = false;
-		canClose = false;
 
 		this.clientScreen = clientScreen;
 		try {
@@ -52,17 +48,15 @@ public class ClientReciverMessage extends Thread {
 				try {
 
 					String rcv = in.readLine();
+					
 					if (clientScreen.wait) {
 						clientScreen.worldGame.currentPlayer.code = convert(rcv);
 						clientScreen.wait = false;
 						float x, y;
-						x = clientScreen.worldGame.spawnPoints.get(
-								clientScreen.worldGame.currentPlayer.code % clientScreen.worldGame.spawnPoints.size())
-								.getPosition().x;
-						y = clientScreen.worldGame.spawnPoints.get(
-								clientScreen.worldGame.currentPlayer.code % clientScreen.worldGame.spawnPoints.size())
-								.getPosition().y;
+						x = clientScreen.worldGame.spawnPoints.get(clientScreen.worldGame.currentPlayer.code % clientScreen.worldGame.spawnPoints.size()).getPosition().x;
+						y = clientScreen.worldGame.spawnPoints.get(clientScreen.worldGame.currentPlayer.code % clientScreen.worldGame.spawnPoints.size()).getPosition().y;
 						clientScreen.worldGame.currentPlayer.setPosition(new Vector2(x, y));
+						
 					} else if (!rcv.contains(";")) {
 
 						if (rcv.equals("finish")) {
@@ -75,10 +69,8 @@ public class ClientReciverMessage extends Thread {
 								NetCharacter newPlayer = new NetCharacter();
 								newPlayer.code = newCode;
 								float x, y;
-								x = clientScreen.worldGame.spawnPoints
-										.get(newCode % clientScreen.worldGame.spawnPoints.size()).getPosition().x;
-								y = clientScreen.worldGame.spawnPoints
-										.get(newCode % clientScreen.worldGame.spawnPoints.size()).getPosition().y;
+								x = clientScreen.worldGame.spawnPoints.get(newCode % clientScreen.worldGame.spawnPoints.size()).getPosition().x;
+								y = clientScreen.worldGame.spawnPoints.get(newCode % clientScreen.worldGame.spawnPoints.size()).getPosition().y;
 								newPlayer.setPosition(new Vector2(x, y));
 								clientScreen.worldGame.otherPlayers.add(newPlayer);
 							}

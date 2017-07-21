@@ -71,19 +71,18 @@ public class GameManagerScreen implements Screen, ControllerListener {
 	Viewport viewport;
 	SpriteBatch worldBatch;
 	GameMenu gameMenu;
-	float statePlayerTime = 0.f;
+	float statePlayerTime;
 	BitmapFont score;
 	BitmapFont lifePerCent;
 	boolean intro;
-	float shotAnimationTime = 0.f;
-	float diedAnimationTime = 0.f;
-	int introDuration = 200;
-	static boolean  gameIsInPause=false;
-	PovDirection povDirection; 
-	int currentAxis = 0;
-	float valueMov = 0;
+	float shotAnimationTime;
+	float diedAnimationTime;
+	int introDuration;
+	static boolean gameIsInPause;
+	PovDirection povDirection;
 	boolean canDraw;
 	boolean canRemove;
+	private int helpTime;
 
 	/**
 	 * create a screen game
@@ -102,6 +101,12 @@ public class GameManagerScreen implements Screen, ControllerListener {
 		intro = true;
 		worldGame = world;
 		gameMenu = game;
+		helpTime = 0;
+		diedAnimationTime = 0.f;
+		shotAnimationTime = 0.f;
+		statePlayerTime = 0.f;
+		introDuration = 200;
+		gameIsInPause = false;
 		worldBatch = new SpriteBatch();
 		score = new BitmapFont();
 		score.setColor(Color.WHITE);
@@ -138,9 +143,11 @@ public class GameManagerScreen implements Screen, ControllerListener {
 				gameMenu.start = false;
 				gameMenu.swap(0);
 			}
+			if (Gdx.input.isKeyPressed(Input.Keys.F)) {
+				helpTime = 300;
+			}
 			if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE) || worldGame.player.controllerHasShoted) {
 				worldGame.player.shoting = true;
-				// worldGame.player.ControllerHasShoted=false;
 			}
 			if (Gdx.input.isKeyJustPressed(Input.Keys.X) || worldGame.player.controllerHasChangedWeapon) {
 				if (SettingsMenu.isAudioEnable)
@@ -157,7 +164,9 @@ public class GameManagerScreen implements Screen, ControllerListener {
 				if (shotAnimationTime > 0.3 && !World.playerShot) {
 					worldGame.playerHasShot();
 					if (SettingsMenu.isAudioEnable)
-						MusicPool.shotGunSound.play();
+						if(worldGame.player.weaponType.equals("ShotGun"))
+							MusicPool.shotGunSound.play();
+						else MusicPool.machineGunSound.play();
 					World.playerShot = true;
 				}
 				if (shotAnimationTime > 0.6) {
@@ -175,17 +184,14 @@ public class GameManagerScreen implements Screen, ControllerListener {
 			Tree.animationTime += dt;
 			updateShots();
 			updateCam();
+			
 		} else {
 
 			diedAnimationTime += dt;
 			if (diedAnimationTime > 0.9) {
-				// se livello 1 2 3 restart level
-				if (worldGame.level == 4) {
-					// carica menu gameOver con il punteggio
-				}
 				gameMenu.start = true;
 				worldGame.player.died = false;
-				worldGame.player.lifePoints = 1000;
+				worldGame.player.lifePoints = ConstantField.PLAYER_LIFE_POINTS;
 				gameMenu.swap(4);
 			}
 		}
@@ -232,6 +238,7 @@ public class GameManagerScreen implements Screen, ControllerListener {
 			if (SettingsMenu.isMusicEnable)
 				MusicPool.pickLetter.play();
 			worldGame.found++;
+			worldGame.foundLetter += ((Letter) currentObject).getValue();
 			worldGame.objects.remove(currentObject);
 		}
 
@@ -254,7 +261,7 @@ public class GameManagerScreen implements Screen, ControllerListener {
 			statePlayerTime += dt;
 			worldGame.objects.remove(currentObject);
 		} else if (currentObject instanceof Enemy) {
-			World.player.lifePoints -= 1;
+			
 		} else if (levelIsCompeted(currentObject)) {
 			Gdx.input.setInputProcessor(null);
 			gameMenu.levelUp();
@@ -278,11 +285,22 @@ public class GameManagerScreen implements Screen, ControllerListener {
 	 * @return
 	 */
 	private boolean levelIsCompeted(StaticObject currentObject) {
-		if (worldGame.levelCompleted && currentObject instanceof Castle
-				&& (worldGame.level == 1 || worldGame.level == 3))
-			return true;
-		if (worldGame.levelCompleted && currentObject instanceof BlackHouse && worldGame.level == 2)
-			return true;
+		if (currentObject instanceof Castle)
+			if (worldGame.level == 1 || worldGame.level == 3) {
+				if (worldGame.levelCompleted)
+					return true;
+				else
+					helpTime = 300;
+			}
+
+		if (currentObject instanceof BlackHouse)
+			if (worldGame.level == 2) {
+				if (worldGame.levelCompleted)
+					return true;
+				else
+					helpTime = 300;
+			}
+
 		return false;
 	}
 
@@ -551,7 +569,40 @@ public class GameManagerScreen implements Screen, ControllerListener {
 		drawInfoBar();
 		update(delta);
 
+		if (helpTime > 0) {
+
+			drawHelp();
+			helpTime--;
+		}
+
 		worldBatch.end();
+
+	}
+
+	private void drawHelp() {
+		char[] tmpFound = new char[worldGame.foundLetter.length()];
+		int length = tmpFound.length;
+		worldGame.foundLetter.getChars(0, worldGame.foundLetter.length(), tmpFound, 0);
+		for (Letter letter : worldGame.missionLetters) {
+			boolean find = false;
+			for (int i = 0; i < length; i++) {
+				if (tmpFound[i] == letter.getValue()) {
+					worldBatch.draw(getLetterImage(letter),
+							gameCam.position.x - gameCam.viewportWidth / 2 + letter.position.x,
+							gameCam.position.y - gameCam.viewportHeight / 2 + letter.position.y);
+					for (int j = i; j < length - 1; j++)
+						tmpFound[j] = tmpFound[j + 1];
+					length--;
+					find = true;
+					break;
+				}
+			}
+			if (!find) {
+				worldBatch.draw(ImagePool.emptyLetter,
+						gameCam.position.x - gameCam.viewportWidth / 2 + letter.position.x,
+						gameCam.position.y - gameCam.viewportHeight / 2 + letter.position.y);
+			}
+		}
 
 	}
 
@@ -769,7 +820,7 @@ public class GameManagerScreen implements Screen, ControllerListener {
 	 */
 	@Override
 	public boolean povMoved(Controller controller, int povCode, PovDirection value) {
-		if(gameMenu.getScreen().getClass().getName().contains("GameManagerScreen"))
+		if (gameMenu.getScreen().getClass().getName().contains("GameManagerScreen"))
 			povDirection = value;
 		return false;
 	}
