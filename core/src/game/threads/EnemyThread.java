@@ -82,8 +82,6 @@ public class EnemyThread extends Thread {
 							if (tmp instanceof ShotPlayer || !e.alive) {
 								enemyDied.add(e);
 								World.score += 100;
-							} else if (tmp instanceof Character) {
-								
 							} else if (tmp != null) {
 								e.collided = true;
 								e.cont--;
@@ -95,8 +93,6 @@ public class EnemyThread extends Thread {
 							if (tmp instanceof ShotPlayer || !e.alive) {
 								enemyDied.add(e);
 								World.score += 100;
-							} else if (tmp instanceof Character) {
-								
 							} else if (tmp != null) {
 								e.collided = true;
 								e.cont--;

@@ -264,7 +264,7 @@ public class GameManagerScreen implements Screen, ControllerListener {
 			statePlayerTime += dt;
 			worldGame.objects.remove(currentObject);
 		} else if (currentObject instanceof Enemy) {
-
+			worldGame.player.lifePoints-=10;
 		} else if (levelIsCompeted(currentObject)) {
 			Gdx.input.setInputProcessor(null);
 			game.levelUp();
