@@ -110,8 +110,10 @@ public class BlackHouseScreen implements Screen, ControllerListener {
 		} else if (dialogue < 2) {
 			if (dialogue == 0)
 				worldBatch.draw(ImagePool.firstDialogueBlack, 0, 300);
-			else
+			else{
 				worldBatch.draw(ImagePool.secondDialogueBlack, 0, 300);
+				worldBatch.draw(ImagePool.specialPotion, player.position.x+35, 130);
+			}
 			worldBatch.draw(ImagePool.playerStopped, player.getPosition().x, player.getPosition().y);
 		} else {
 			worldBatch.draw(ImagePool.playerAnimationLeft.getKeyFrame(statePlayerTime, true), player.getPosition().x,

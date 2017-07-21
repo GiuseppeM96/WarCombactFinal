@@ -65,6 +65,7 @@ import game.pools.ImagePool;
 import game.pools.MusicPool;
 
 public class GameManagerScreen implements Screen, ControllerListener {
+	
 	Music music;
 	public World worldGame;
 	public OrthographicCamera gameCam;
@@ -144,7 +145,7 @@ public class GameManagerScreen implements Screen, ControllerListener {
 				gameMenu.swap(0);
 			}
 			if (Gdx.input.isKeyPressed(Input.Keys.F)) {
-				helpTime = 300;
+				helpTime = 200;
 			}
 			if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE) || worldGame.player.controllerHasShoted) {
 				worldGame.player.shoting = true;
@@ -240,6 +241,7 @@ public class GameManagerScreen implements Screen, ControllerListener {
 				MusicPool.pickLetter.play();
 			worldGame.found++;
 			worldGame.foundLetter += ((Letter) currentObject).getValue();
+			helpTime=200;
 			worldGame.objects.remove(currentObject);
 		}
 
@@ -291,7 +293,7 @@ public class GameManagerScreen implements Screen, ControllerListener {
 				if (worldGame.levelCompleted)
 					return true;
 				else
-					helpTime = 300;
+					helpTime = 200;
 			}
 
 		if (currentObject instanceof BlackHouse)
@@ -299,7 +301,7 @@ public class GameManagerScreen implements Screen, ControllerListener {
 				if (worldGame.levelCompleted)
 					return true;
 				else
-					helpTime = 300;
+					helpTime = 200;
 			}
 
 		return false;

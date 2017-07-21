@@ -1,8 +1,7 @@
 package game.object;
 
-import game.interfaces.IShotable;
 
-public class Weapon implements IShotable {
+public class Weapon  {
 
 	public int shotRange = 3;
 	public int numShots = 3;
@@ -26,11 +25,6 @@ public class Weapon implements IShotable {
 
 	public void setShotRange(int shotRange) {
 		this.shotRange = shotRange;
-	}
-
-	@Override
-	public void shot() {
-
 	}
 
 	public int getShotRange() {

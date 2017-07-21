@@ -39,6 +39,8 @@ public class ImagePool {
 	public static Texture explotion = new Texture("img/skills/poisonAnimation.png");
 	public static Texture connecting = new Texture("img/skills/connectingAnimation.png");
 	public static Texture potion = new Texture("img/skills/potion.png");
+	public static Texture specialPotion = new Texture("img/skills/specialPotion.png");
+
 	public static Texture scroll = new Texture("img/skills/scroll.png");
 	public static Texture people = new Texture("img/personaggio/contadino.png");
 	public static Texture triangle = new Texture("img/skills/triangle.png");
