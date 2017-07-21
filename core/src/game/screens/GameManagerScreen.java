@@ -65,7 +65,7 @@ import game.pools.ImagePool;
 import game.pools.MusicPool;
 
 public class GameManagerScreen implements Screen, ControllerListener {
-	
+
 	Music music;
 	public World worldGame;
 	public OrthographicCamera gameCam;
@@ -241,7 +241,7 @@ public class GameManagerScreen implements Screen, ControllerListener {
 				MusicPool.pickLetter.play();
 			worldGame.found++;
 			worldGame.foundLetter += ((Letter) currentObject).getValue();
-			helpTime=200;
+			helpTime = 200;
 			worldGame.objects.remove(currentObject);
 		}
 
@@ -782,6 +782,8 @@ public class GameManagerScreen implements Screen, ControllerListener {
 				worldGame.player.controllerHasChangedVelocity = true;
 			else if (buttonCode == 9)
 				gameIsInPause = true;
+			else if (buttonCode == 1)
+				helpTime = 200;
 		}
 		return false;
 	}
