@@ -40,7 +40,7 @@ public class BlackHouseScreen implements Screen, ControllerListener {
 	public BlackHouseScreen(WarCombat game) {
 		super();
 		GameConfig.controller.addListener(this);
-		game = game;
+		this.game = game;
 		this.level = level;
 		potion=new StaticObject();
 		dialogue = 0;

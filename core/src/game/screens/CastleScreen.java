@@ -43,7 +43,7 @@ public class CastleScreen implements Screen, ControllerListener {
 		super();
 		hasPressedEnter = false;
 		GameConfig.controller.addListener(this);
-		game = game;
+		this.game = game;
 		this.level = level;
 		dialogue = 0;
 		backGround = new Map(1);
