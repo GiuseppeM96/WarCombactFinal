@@ -41,7 +41,7 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
-import game.manager.GameMenu;
+import game.manager.WarCombat;
 import game.manager.World;
 import game.object.AddLifePoints;
 import game.object.AddMachineGunShots;
@@ -71,7 +71,7 @@ public class GameManagerScreen implements Screen, ControllerListener {
 	public OrthographicCamera gameCam;
 	Viewport viewport;
 	SpriteBatch worldBatch;
-	GameMenu gameMenu;
+	WarCombat game;
 	float statePlayerTime;
 	BitmapFont score;
 	BitmapFont lifePerCent;
@@ -95,13 +95,13 @@ public class GameManagerScreen implements Screen, ControllerListener {
 	 * @param camPosition
 	 *            indicates where camera will be located
 	 */
-	public GameManagerScreen(World world, GameMenu game, Vector2 camPosition) {
+	public GameManagerScreen(World world, WarCombat game, Vector2 camPosition) {
 		super();
 		canDraw = true;
 		canRemove = false;
 		intro = true;
 		worldGame = world;
-		gameMenu = game;
+		game = game;
 		helpTime = 0;
 		diedAnimationTime = 0.f;
 		shotAnimationTime = 0.f;
@@ -141,8 +141,8 @@ public class GameManagerScreen implements Screen, ControllerListener {
 			if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE) || gameIsInPause) {
 				ImagePool.camera.zoom = 1.0f;
 				gameIsInPause = false;
-				gameMenu.start = false;
-				gameMenu.swap(0);
+				game.start = false;
+				game.swap(0);
 			}
 			if (Gdx.input.isKeyPressed(Input.Keys.F)) {
 				helpTime = 200;
@@ -191,10 +191,10 @@ public class GameManagerScreen implements Screen, ControllerListener {
 
 			diedAnimationTime += dt;
 			if (diedAnimationTime > 0.9) {
-				gameMenu.start = true;
+				game.start = true;
 				worldGame.player.died = false;
 				worldGame.player.lifePoints = ConstantField.PLAYER_LIFE_POINTS;
-				gameMenu.swap(4);
+				game.swap(4);
 			}
 		}
 	}
@@ -267,7 +267,7 @@ public class GameManagerScreen implements Screen, ControllerListener {
 
 		} else if (levelIsCompeted(currentObject)) {
 			Gdx.input.setInputProcessor(null);
-			gameMenu.levelUp();
+			game.levelUp();
 		} else if (i == 0)
 			worldGame.movePlayerDown(dt);
 		else if (i == 1)
@@ -773,7 +773,7 @@ public class GameManagerScreen implements Screen, ControllerListener {
 	 */
 	@Override
 	public boolean buttonDown(Controller controller, int buttonCode) {
-		if (gameMenu.getScreen().getClass().getName().contains("GameManagerScreen")) {
+		if (game.getScreen().getClass().getName().contains("GameManagerScreen")) {
 			if (buttonCode == 2)
 				worldGame.player.controllerHasChangedWeapon = true;
 			else if (buttonCode == 3)
@@ -796,7 +796,7 @@ public class GameManagerScreen implements Screen, ControllerListener {
 	 */
 	@Override
 	public boolean buttonUp(Controller controller, int buttonCode) {
-		if (gameMenu.getScreen().getClass().getName().contains("GameManagerScreen")) {
+		if (game.getScreen().getClass().getName().contains("GameManagerScreen")) {
 			if (buttonCode == 3)
 				worldGame.player.controllerHasShoted = false;
 			else if (buttonCode == 6)
@@ -821,7 +821,7 @@ public class GameManagerScreen implements Screen, ControllerListener {
 	 */
 	@Override
 	public boolean povMoved(Controller controller, int povCode, PovDirection value) {
-		if (gameMenu.getScreen().getClass().getName().contains("GameManagerScreen"))
+		if (game.getScreen().getClass().getName().contains("GameManagerScreen"))
 			povDirection = value;
 		return false;
 	}

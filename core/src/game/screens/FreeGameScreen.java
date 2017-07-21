@@ -42,7 +42,7 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
-import game.manager.GameMenu;
+import game.manager.WarCombat;
 import game.manager.World;
 import game.object.AddLifePoints;
 import game.object.AddMachineGunShots;
@@ -77,7 +77,7 @@ public class FreeGameScreen implements Screen, ActionListener, ControllerListene
 	public Timer timerIncreaseDifficult;
 	public OrthographicCamera gameCam;
 	Viewport viewport;
-	GameMenu gameMenu;
+	WarCombat game;
 	float statePlayerTime;
 	BitmapFont score;
 	BitmapFont lifePerCent;
@@ -95,7 +95,7 @@ public class FreeGameScreen implements Screen, ActionListener, ControllerListene
 	 * @param world
 	 *            Game Map
 	 */
-	public FreeGameScreen(GameMenu game, World world) {
+	public FreeGameScreen(WarCombat game, World world) {
 		super();
 		diedAnimationTime = 0.f;
 		shotAnimationTime = 0.f;
@@ -110,7 +110,7 @@ public class FreeGameScreen implements Screen, ActionListener, ControllerListene
 		timerIncreaseDifficult.start();
 		timer.setActionCommand("timer");
 		timer.start();
-		gameMenu = game;
+		game = game;
 		worldBatch = new SpriteBatch();
 		score = new BitmapFont();
 		score.setColor(Color.WHITE);
@@ -140,11 +140,11 @@ public class FreeGameScreen implements Screen, ActionListener, ControllerListene
 				statePlayerTime = 0;
 			if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE) || gameIsInPause) {
 				ImagePool.camera.zoom = 1.0f;
-				gameMenu.start = false;
+				game.start = false;
 				gameIsInPause = false;
 				timer.stop();
 				timerIncreaseDifficult.stop();
-				gameMenu.swap(0);
+				game.swap(0);
 			}
 			if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE) || worldGame.player.controllerHasShoted) {
 				worldGame.player.shoting = true;
@@ -191,8 +191,8 @@ public class FreeGameScreen implements Screen, ActionListener, ControllerListene
 
 				worldGame.player.died = false;
 				worldGame.player.lifePoints = 1000;
-				gameMenu.loadGame = false;
-				gameMenu.swap(4);
+				game.loadGame = false;
+				game.swap(4);
 			}
 		}
 	}
@@ -627,7 +627,7 @@ public class FreeGameScreen implements Screen, ActionListener, ControllerListene
 	public boolean buttonDown(Controller controller, int buttonCode) {
 		boolean inputIsValid = false;
 
-		if (gameMenu.getScreen().getClass().getName().contains("FreeGameScreen"))
+		if (game.getScreen().getClass().getName().contains("FreeGameScreen"))
 			inputIsValid = true;
 
 		if (inputIsValid) {
@@ -651,7 +651,7 @@ public class FreeGameScreen implements Screen, ActionListener, ControllerListene
 	public boolean buttonUp(Controller controller, int buttonCode) {
 		boolean inputIsValid = false;
 
-		if (gameMenu.getScreen().getClass().getName().contains("FreeGameScreen"))
+		if (game.getScreen().getClass().getName().contains("FreeGameScreen"))
 			inputIsValid = true;
 
 		if (inputIsValid) {
@@ -680,7 +680,7 @@ public class FreeGameScreen implements Screen, ActionListener, ControllerListene
 	 */
 	@Override
 	public boolean povMoved(Controller controller, int povCode, PovDirection value) {
-		if (gameMenu.getScreen().getClass().getName().contains("FreeGameScreen"))
+		if (game.getScreen().getClass().getName().contains("FreeGameScreen"))
 			povDirection = value;
 		return false;
 	}

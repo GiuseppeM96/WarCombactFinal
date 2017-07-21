@@ -18,7 +18,7 @@ import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
-import game.manager.GameMenu;
+import game.manager.WarCombat;
 import game.manager.World;
 import game.object.AddLifePoints;
 import game.object.AddMachineGunShots;
@@ -43,7 +43,7 @@ public class PoitionScreen implements Screen {
 	DynamicObject potion;
 	boolean collided;
 	SpriteBatch worldBatch;
-	GameMenu gameMenu;
+	WarCombat game;
 	Character player;
 	float statePlayerTime;
 	ArrayList<Character> people;
@@ -62,9 +62,9 @@ public class PoitionScreen implements Screen {
 	 * @param game
 	 *            indicates game application
 	 */
-	public PoitionScreen(GameMenu game) {
+	public PoitionScreen(WarCombat game) {
 		super();
-		gameMenu = game;
+		game = game;
 		cam = new OrthographicCamera(640, 480);
 		cam.position.x = GameConfig.MAP_SIZE.x / 2;
 		cam.position.y = GameConfig.MAP_SIZE.y / 2;
@@ -286,7 +286,7 @@ public class PoitionScreen implements Screen {
 			}
 		}
 		if (end)
-			gameMenu.swap(4);
+			game.swap(4);
 	}
 
 	/**

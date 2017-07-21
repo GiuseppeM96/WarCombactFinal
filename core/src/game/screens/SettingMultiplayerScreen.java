@@ -22,14 +22,14 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
-import game.manager.GameMenu;
+import game.manager.WarCombat;
 import game.net.MyServer;
 import game.pools.GameConfig;
 import game.pools.ImagePool;
 
 public class SettingMultiplayerScreen implements Screen, ControllerListener {
 
-	private GameMenu gameMenu;
+	private WarCombat game;
 
 	Controllers controller;
 	private TextButton go;
@@ -58,9 +58,9 @@ public class SettingMultiplayerScreen implements Screen, ControllerListener {
 
 	private int controllerMoveDirection;
 
-	public SettingMultiplayerScreen(GameMenu gameMenu, boolean creatingServer) {
+	public SettingMultiplayerScreen(WarCombat game, boolean creatingServer) {
 
-		this.gameMenu = gameMenu;
+		this.game = game;
 		this.creatingServer = creatingServer;
 		GameConfig.controller.addListener(this);
 		controllerMoveDirection = -1;
@@ -152,14 +152,14 @@ public class SettingMultiplayerScreen implements Screen, ControllerListener {
 		if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER) || hasPressedEnter) {
 			hasPressedEnter = false;
 			if (itemSelected == 1)
-				gameMenu.swap(7);
+				game.swap(7);
 			else if (itemSelected == 0) {
 				if (creatingServer)
-					gameMenu.server = new MyServer(convert(input.getText()), convert(port.getText()));
+					game.server = new MyServer(convert(input.getText()), convert(port.getText()));
 				else
-					gameMenu.serverAddress = input.getText();
-				gameMenu.port = convert(port.getText());
-				gameMenu.swap(10);
+					game.serverAddress = input.getText();
+				game.port = convert(port.getText());
+				game.swap(10);
 			}
 		}
 		boolean selectedIsMoved = false;
@@ -277,7 +277,7 @@ public class SettingMultiplayerScreen implements Screen, ControllerListener {
 	 */
 	@Override
 	public boolean buttonDown(Controller controller, int buttonCode) {
-		if (buttonCode == 0 && gameMenu.getScreen().getClass().getName().contains("SettingMultiplayerScreen"))
+		if (buttonCode == 0 && game.getScreen().getClass().getName().contains("SettingMultiplayerScreen"))
 			hasPressedEnter = true;
 		return false;
 	}
@@ -305,7 +305,7 @@ public class SettingMultiplayerScreen implements Screen, ControllerListener {
 	@Override
 	public boolean povMoved(Controller controller, int povCode, PovDirection value) {
 		boolean inputIsValid = false;
-		if (gameMenu.getScreen().getClass().getName().contains("SettingMultiplayerScreen"))
+		if (game.getScreen().getClass().getName().contains("SettingMultiplayerScreen"))
 			inputIsValid = true;
 
 		if (inputIsValid) {

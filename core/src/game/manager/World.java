@@ -215,7 +215,7 @@ public class World {
 
 		FileReader reader = new FileReader(fileMap);
 		BufferedReader buffer = new BufferedReader(reader);
-		if (GameMenu.loadGame) {
+		if (WarCombat.loadGame) {
 			String line = buffer.readLine();
 
 			try {
@@ -224,7 +224,7 @@ public class World {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			GameMenu.className = line;
+			WarCombat.className = line;
 
 		}
 		String line = buffer.readLine();
@@ -388,7 +388,7 @@ public class World {
 	 * @return Path of the file map depending on level
 	 */
 	public String getLevelFile(int level) {
-		if (!GameMenu.loadGame) {
+		if (!WarCombat.loadGame) {
 			switch (level) {
 			case 1:
 				return "src/LevelOne.txt";
@@ -402,10 +402,10 @@ public class World {
 				return null;
 			}
 		} else {
-			if (GameMenu.free) {
-				return "src/Free/" + GameMenu.userInfo.userName + ".txt";
+			if (WarCombat.free) {
+				return "src/Free/" + WarCombat.userInfo.userName + ".txt";
 			}
-			return "src/Story/" + GameMenu.userInfo.userName + ".txt";
+			return "src/Story/" + WarCombat.userInfo.userName + ".txt";
 
 		}
 	}

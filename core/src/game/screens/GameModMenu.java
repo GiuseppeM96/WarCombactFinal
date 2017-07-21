@@ -29,13 +29,13 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
-import game.manager.GameMenu;
+import game.manager.WarCombat;
 import game.pools.GameConfig;
 import game.pools.ImagePool;
 
 public class GameModMenu implements Screen, ControllerListener {
 
-	private GameMenu gameMenu;
+	private WarCombat game;
 
 	Controllers controller;
 	int controllerMoveDirection;
@@ -66,9 +66,9 @@ public class GameModMenu implements Screen, ControllerListener {
 
 	TextField name;
 
-	public GameModMenu(GameMenu gameMenu) {
+	public GameModMenu(WarCombat game) {
 
-		this.gameMenu = gameMenu;
+		this.game = game;
 		controllerMoveDirection = -1;
 		batch = new SpriteBatch();
 		viewport = new ExtendViewport(500, 500, ImagePool.camera);
@@ -203,12 +203,12 @@ public class GameModMenu implements Screen, ControllerListener {
 				animation = -1;
 				gameIsStarting = false;
 				if (itemSelected.y == 0) {
-					gameMenu.free = false;
-					gameMenu.loadGame();
-					gameMenu.intro(GameMenu.currentLevel);
+					game.free = false;
+					game.loadGame();
+					game.intro(WarCombat.currentLevel);
 				} else {
-					gameMenu.free = true;
-					gameMenu.intro(4);
+					game.free = true;
+					game.intro(4);
 				}
 
 			}
@@ -218,14 +218,14 @@ public class GameModMenu implements Screen, ControllerListener {
 			hasPressedEnter = false;
 			switch ((int) itemSelected.x) {
 			case 0:
-				if (GameMenu.loadGame)
+				if (WarCombat.loadGame)
 					if (itemSelected.y == 0) {
 						File f = new File("src/Story/" + name.getText() + ".txt");
 						if (f.exists()) {
 							Gdx.input.setInputProcessor(null);
 							gameIsStarting = true;
 							wrongName = false;
-							gameMenu.userInfo.setName(name.getText());
+							game.userInfo.setName(name.getText());
 						} else {
 							wrongName = true;
 							lastNameInsert = name.getText();
@@ -236,7 +236,7 @@ public class GameModMenu implements Screen, ControllerListener {
 							Gdx.input.setInputProcessor(null);
 							gameIsStarting = true;
 							wrongName = false;
-							gameMenu.userInfo.setName(name.getText());
+							game.userInfo.setName(name.getText());
 						} else {
 							wrongName = true;
 							lastNameInsert = name.getText();
@@ -245,12 +245,12 @@ public class GameModMenu implements Screen, ControllerListener {
 				else {
 					Gdx.input.setInputProcessor(null);
 					gameIsStarting = true;
-					gameMenu.userInfo.setName(name.getText());
+					game.userInfo.setName(name.getText());
 				}
 				break;
 			case 1:
-				GameMenu.loadGame = false;
-				gameMenu.swap(0);
+				WarCombat.loadGame = false;
+				game.swap(0);
 				break;
 			default:
 				break;
@@ -361,7 +361,7 @@ public class GameModMenu implements Screen, ControllerListener {
 	@Override
 	public boolean buttonDown(Controller controller, int buttonCode) {
 
-		if (buttonCode == 0 && gameMenu.getScreen().getClass().getName().contains("GameModMenu"))
+		if (buttonCode == 0 && game.getScreen().getClass().getName().contains("GameModMenu"))
 			hasPressedEnter = true;
 		return false;
 	}
@@ -390,7 +390,7 @@ public class GameModMenu implements Screen, ControllerListener {
 	public boolean povMoved(Controller controller, int povCode, PovDirection value) {
 		boolean inputIsValid = false;
 		
-		if (gameMenu.getScreen().getClass().getName().contains("GameModMenu"))
+		if (game.getScreen().getClass().getName().contains("GameModMenu"))
 			inputIsValid = true;
 		
 		if (inputIsValid) {

@@ -24,7 +24,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
-import game.manager.GameMenu;
+import game.manager.WarCombat;
 import game.pools.GameConfig;
 import game.pools.ImagePool;
 
@@ -32,7 +32,7 @@ public class HelpMenu implements Screen, ControllerListener {
 
 	Controllers controller;
 	int currentPage;
-	private GameMenu gameMenu;
+	private WarCombat game;
 
 	private TextButton newGame;
 
@@ -50,9 +50,9 @@ public class HelpMenu implements Screen, ControllerListener {
 	private int controllerMoveDirection;
 	private boolean hasPressedEnter;
 
-	public HelpMenu(GameMenu gameMenu) {
+	public HelpMenu(WarCombat game) {
 
-		this.gameMenu = gameMenu;
+		this.game = game;
 		GameConfig.controller.addListener(this);
 		hasPressedEnter = false;
 		controllerMoveDirection = -1;
@@ -109,7 +109,7 @@ public class HelpMenu implements Screen, ControllerListener {
 	 */
 	private void update() {
 		if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER) || hasPressedEnter) {
-			gameMenu.swap(0);
+			game.swap(0);
 			hasPressedEnter = false;
 		}
 		if (Gdx.input.isKeyPressed(Input.Keys.LEFT) || controllerMoveDirection == 3) {
@@ -222,7 +222,7 @@ public class HelpMenu implements Screen, ControllerListener {
 	 */
 	@Override
 	public boolean buttonDown(Controller controller, int buttonCode) {
-		if (buttonCode == 0 && gameMenu.getScreen().getClass().getName().contains("HelpMenu"))
+		if (buttonCode == 0 && game.getScreen().getClass().getName().contains("HelpMenu"))
 			hasPressedEnter = true;
 		return false;
 	}
@@ -251,7 +251,7 @@ public class HelpMenu implements Screen, ControllerListener {
 	public boolean povMoved(Controller controller, int povCode, PovDirection value) {
 		boolean inputIsValid = false;
 
-		if (gameMenu.getScreen().getClass().getName().contains("HelpMenu"))
+		if (game.getScreen().getClass().getName().contains("HelpMenu"))
 			inputIsValid = true;
 
 		if (inputIsValid) {

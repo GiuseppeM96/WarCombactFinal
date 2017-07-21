@@ -23,13 +23,13 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
-import game.manager.GameMenu;
+import game.manager.WarCombat;
 import game.pools.GameConfig;
 import game.pools.ImagePool;
 
 public class PauseMenu implements Screen, ControllerListener {
 
-	private GameMenu gameMenu;
+	private WarCombat game;
 
 	Controllers controller;
 
@@ -62,8 +62,8 @@ public class PauseMenu implements Screen, ControllerListener {
 
 	private int controllerMoveDirection;
 
-	public PauseMenu(GameMenu gameMenu) {
-		this.gameMenu = gameMenu;
+	public PauseMenu(WarCombat game) {
+		this.game = game;
 		checkPause = 0;
 		font = new BitmapFont();
 		matchSaved = false;
@@ -176,15 +176,15 @@ public class PauseMenu implements Screen, ControllerListener {
 			case 0:
 				switch ((int) itemSelected.y) {
 				case 1:
-					gameMenu.world.resumeEnemy();
-					gameMenu.swap(5);
+					game.world.resumeEnemy();
+					game.swap(5);
 					matchSaved = false;
 					break;
 				case 2:
-					gameMenu.start = true;
-					gameMenu.loadGame = false;
+					game.start = true;
+					game.loadGame = false;
 					matchSaved = false;
-					gameMenu.swap(0);
+					game.swap(0);
 				default:
 					break;
 				}
@@ -192,15 +192,15 @@ public class PauseMenu implements Screen, ControllerListener {
 			case 1:
 				switch ((int) itemSelected.y) {
 				case 1:
-					gameMenu.swap(2);
+					game.swap(2);
 					break;
 				case 2:
-					gameMenu.swap(1);
+					game.swap(1);
 					break;
 				case 0:
 					try {
 						matchSaved = true;
-						gameMenu.save();
+						game.save();
 					} catch (IOException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -337,7 +337,7 @@ public class PauseMenu implements Screen, ControllerListener {
 	 */
 	@Override
 	public boolean buttonDown(Controller controller, int buttonCode) {
-		if (buttonCode == 0 && gameMenu.getScreen().getClass().getName().contains("PauseMenu"))
+		if (buttonCode == 0 && game.getScreen().getClass().getName().contains("PauseMenu"))
 			hasPressedEnter = true;
 		return false;
 	}
@@ -374,7 +374,7 @@ public class PauseMenu implements Screen, ControllerListener {
 	public boolean povMoved(Controller controller, int povCode, PovDirection value) {
 		boolean inputIsValid = false;
 
-		if (gameMenu.getScreen().getClass().getName().contains("PauseMenu"))
+		if (game.getScreen().getClass().getName().contains("PauseMenu"))
 			inputIsValid = true;
 
 		if (inputIsValid) {

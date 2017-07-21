@@ -26,7 +26,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
-import game.manager.GameMenu;
+import game.manager.WarCombat;
 import game.manager.World;
 import game.object.AddLifePoints;
 import game.object.AddMachineGunShots;
@@ -65,7 +65,7 @@ public class NetGameScreen implements Screen, ActionListener, ControllerListener
 	Viewport viewport;
 	float shotAnimationTime;
 	private BitmapFont score;
-	GameMenu gameMenu;
+	WarCombat game;
 	public Timer matchTimer;
 	private PovDirection povDirection;
 	private boolean gameIsInPause;
@@ -79,11 +79,11 @@ public class NetGameScreen implements Screen, ActionListener, ControllerListener
 	 * @param ip
 	 *            indicates the server ip where you try to connect
 	 * @param port
-	 * @param gameMenu
+	 * @param game
 	 *            indicates the game application
 	 */
 	
-	public NetGameScreen(String ip, int port, GameMenu gameMenu) {
+	public NetGameScreen(String ip, int port, WarCombat game) {
 		GameConfig.controller.addListener(this);
 		server_ip = ip;
 		this.port = port;
@@ -95,7 +95,7 @@ public class NetGameScreen implements Screen, ActionListener, ControllerListener
 		timeOut=false;
 		shotAnimationTime=0.f;
 		matchTimer=new Timer(120000, this);
-		this.gameMenu=gameMenu;
+		this.game=game;
 		try {
 			s = new Socket(server_ip, port);
 			out = new PrintWriter(s.getOutputStream());
@@ -156,7 +156,7 @@ public class NetGameScreen implements Screen, ActionListener, ControllerListener
 				updateCam();
 			}
 		} else if (finish) {
-			gameMenu.swap(12);
+			game.swap(12);
 		}
 		batch.end();
 	}
@@ -624,11 +624,11 @@ public class NetGameScreen implements Screen, ActionListener, ControllerListener
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		
-			gameMenu.scorePlayers.add(new ScorePlayer(gameMenu.userInfo.getName(), ((int) worldGame.score/(worldGame.diedTimes+1))));
-			out.println(5+";"+gameMenu.userInfo.getName()+";"+((int) worldGame.score/(worldGame.diedTimes+1))+";"+worldGame.currentPlayer.code+";"+0+";");
+			game.scorePlayers.add(new ScorePlayer(game.userInfo.getName(), ((int) worldGame.score/(worldGame.diedTimes+1))));
+			out.println(5+";"+game.userInfo.getName()+";"+((int) worldGame.score/(worldGame.diedTimes+1))+";"+worldGame.currentPlayer.code+";"+0+";");
 			out.flush();
-			if (gameMenu.server != null) {
-				ScoreThread close = new ScoreThread(gameMenu.server);
+			if (game.server != null) {
+				ScoreThread close = new ScoreThread(game.server);
 				close.start();
 			}
 			matchTimer.stop();

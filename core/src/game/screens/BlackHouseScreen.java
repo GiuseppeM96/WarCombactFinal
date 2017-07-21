@@ -11,7 +11,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 
-import game.manager.GameMenu;
+import game.manager.WarCombat;
 import game.object.Character;
 import game.object.Map;
 import game.object.StaticObject;
@@ -23,7 +23,7 @@ public class BlackHouseScreen implements Screen, ControllerListener {
 	StaticObject magician;
 	boolean collided;
 	SpriteBatch worldBatch;
-	GameMenu gameMenu;
+	WarCombat game;
 	Character player;
 	float statePlayerTime;
 	int dialogue;
@@ -37,10 +37,10 @@ public class BlackHouseScreen implements Screen, ControllerListener {
 	 * 
 	 * @param game
 	 */
-	public BlackHouseScreen(GameMenu game) {
+	public BlackHouseScreen(WarCombat game) {
 		super();
 		GameConfig.controller.addListener(this);
-		gameMenu = game;
+		game = game;
 		this.level = level;
 		potion=new StaticObject();
 		dialogue = 0;
@@ -95,7 +95,7 @@ public class BlackHouseScreen implements Screen, ControllerListener {
 				dialogue = 0;
 				statePlayerTime = 0.f;
 				collided = false;
-				gameMenu.intro(3);
+				game.intro(3);
 			} else{
 				player.move(3, delta);
 				if(player.collide(potion))
@@ -185,7 +185,7 @@ public class BlackHouseScreen implements Screen, ControllerListener {
 	@Override
 	public boolean buttonDown(Controller controller, int buttonCode) {
 
-		if (buttonCode == 0 && gameMenu.getScreen().getClass().getName().contains("BlackHouseScreen"))
+		if (buttonCode == 0 && game.getScreen().getClass().getName().contains("BlackHouseScreen"))
 			hasPressedEnter = true;
 		return false;
 	}

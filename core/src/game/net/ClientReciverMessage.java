@@ -7,7 +7,7 @@ import java.net.Socket;
 
 import com.badlogic.gdx.math.Vector2;
 
-import game.manager.GameMenu;
+import game.manager.WarCombat;
 import game.object.AddLifePoints;
 import game.object.AddMachineGunShots;
 import game.object.AddShotGunShots;
@@ -62,7 +62,7 @@ public class ClientReciverMessage extends Thread {
 						if (rcv.equals("finish")) {
 							clientScreen.finish = true;
 						} else if (rcv.equals("go"))
-							clientScreen.gameMenu.startGameNet = true;
+							clientScreen.game.startGameNet = true;
 						else {
 							int newCode = convert(rcv);
 							if (newCode != clientScreen.worldGame.currentPlayer.code) {
@@ -130,7 +130,7 @@ public class ClientReciverMessage extends Thread {
 								}
 						} else if (m.action == 5) {
 							if (m.y != clientScreen.worldGame.currentPlayer.code)
-								clientScreen.gameMenu.scorePlayers.add(new ScorePlayer(m.name, m.x));
+								clientScreen.game.scorePlayers.add(new ScorePlayer(m.name, m.x));
 						} else if (m.action == 6) {
 							for (NetCharacter nc : clientScreen.worldGame.otherPlayers)
 								if (nc.code == m.code) {
@@ -143,9 +143,9 @@ public class ClientReciverMessage extends Thread {
 				} catch (IOException e) {
 
 					System.out.println("Server Disconnected");
-					if (clientScreen.gameMenu.server != null)
-						clientScreen.gameMenu.server.shutdownServer();
-					clientScreen.gameMenu.swap(0);
+					if (clientScreen.game.server != null)
+						clientScreen.game.server.shutdownServer();
+					clientScreen.game.swap(0);
 					break;
 				}
 			} else

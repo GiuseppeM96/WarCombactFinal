@@ -5,7 +5,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 
-import game.manager.GameMenu;
+import game.manager.WarCombat;
 
 public class MyServer {
 

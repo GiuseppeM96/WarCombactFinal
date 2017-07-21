@@ -3,13 +3,13 @@ package it.unical.game.desktop;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 
-import game.manager.GameMenu;
+import game.manager.WarCombat;
 
 
 public class DesktopLauncher {
 	public static void main (String[] arg) {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
-		new LwjglApplication(new GameMenu(), config);
+		new LwjglApplication(new WarCombat(), config);
 	}
 }
 

@@ -28,12 +28,12 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
-import game.manager.GameMenu;
+import game.manager.WarCombat;
 import game.pools.GameConfig;
 import game.pools.ImagePool;
 
 public class ScoreMenu implements Screen,ControllerListener {
-	GameMenu gameMenu;
+	WarCombat game;
 	Controllers controller;
 	private Sprite macchinaSprite;
 	private Sprite joystickSprite;
@@ -51,19 +51,19 @@ public class ScoreMenu implements Screen,ControllerListener {
 	int[] bestPlayerScore;
 	private boolean hasPressedEnter;
 
-	public ScoreMenu(GameMenu gameMenu) throws IOException {
+	public ScoreMenu(WarCombat game) throws IOException {
 
 		hasPressedEnter = false;
-		this.gameMenu = gameMenu;
+		this.game = game;
 		this.playerName = "";
-		this.playerScore = gameMenu.world.score;
+		this.playerScore = game.world.score;
 		bestPlayer = new String[5];
 		bestPlayerScore = new int[5];
 		batch = new SpriteBatch();
 		viewport = new ExtendViewport(500, 500, ImagePool.camera);
 
 		File scoreFile;
-		if (gameMenu.free)
+		if (game.free)
 			scoreFile = new File("src/scoreFree.txt");
 		else
 			scoreFile = new File("src/score.txt");
@@ -132,8 +132,8 @@ public class ScoreMenu implements Screen,ControllerListener {
 	 * update the high score
 	 */
 	public void updateTop5() {
-		playerScore = gameMenu.world.score;
-		playerName = gameMenu.userInfo.getName();
+		playerScore = game.world.score;
+		playerName = game.userInfo.getName();
 		if (playerScore < bestPlayerScore[4])
 			return;
 		bestPlayerScore[4] = playerScore;
@@ -175,8 +175,8 @@ public class ScoreMenu implements Screen,ControllerListener {
 		if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER) || hasPressedEnter) {
 			hasPressedEnter = false;
 			Gdx.input.setInputProcessor(null);
-			gameMenu.start=true;
-			gameMenu.swap(0);
+			game.start=true;
+			game.swap(0);
 		}
 	}
 	/**
@@ -261,7 +261,7 @@ public class ScoreMenu implements Screen,ControllerListener {
 	 */
 	@Override
 	public boolean buttonDown(Controller controller, int buttonCode) {
-		if(buttonCode == 0 && gameMenu.getScreen().getClass().getName().contains("ScoreMenu"))
+		if(buttonCode == 0 && game.getScreen().getClass().getName().contains("ScoreMenu"))
 				hasPressedEnter = true;
 		return false;
 	}

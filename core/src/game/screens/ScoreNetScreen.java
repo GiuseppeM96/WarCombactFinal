@@ -31,13 +31,13 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
-import game.manager.GameMenu;
+import game.manager.WarCombat;
 import game.net.ScorePlayer;
 import game.pools.GameConfig;
 import game.pools.ImagePool;
 
 public class ScoreNetScreen implements Screen, ControllerListener {
-	GameMenu gameMenu;
+	WarCombat game;
 	Controllers controller;
 	private Sprite macchinaSprite;
 	private Sprite joystickSprite;
@@ -58,13 +58,13 @@ public class ScoreNetScreen implements Screen, ControllerListener {
 	ArrayList<ScorePlayer> scorePlayers;
 	private int controllerMoveDirection;
 
-	public ScoreNetScreen(GameMenu gameMenu) {
+	public ScoreNetScreen(WarCombat game) {
 
 		controllerMoveDirection = -1;
 		hasPressedEnter = false;
-		this.gameMenu = gameMenu;
+		this.game = game;
 		this.playerName = "";
-		this.playerScore = gameMenu.world.score;
+		this.playerScore = game.world.score;
 		selectedIndex = 0;
 		bestPlayer = new String[5];
 		bestPlayerScore = new int[5];
@@ -99,7 +99,7 @@ public class ScoreNetScreen implements Screen, ControllerListener {
 
 		GameConfig.controller.addListener(this);
 		boolean change = true;
-		scorePlayers = gameMenu.getScoreList();
+		scorePlayers = game.getScoreList();
 		scroll.setPosition(450, 190);
 		if (scorePlayers.size() > 4) {
 			scroll.setSize(33, 156 - (scorePlayers.size() - 4) * 15);
@@ -143,8 +143,8 @@ public class ScoreNetScreen implements Screen, ControllerListener {
 		if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER) || hasPressedEnter) {
 			hasPressedEnter = false;
 			Gdx.input.setInputProcessor(null);
-			gameMenu.start = true;
-			gameMenu.swap(0);
+			game.start = true;
+			game.swap(0);
 		} else if (Gdx.input.isKeyPressed(Input.Keys.DOWN) || controllerMoveDirection == 2) {
 			joystickSprite.setTexture(ImagePool.joystickDown);
 			if (Gdx.input.isKeyJustPressed(Input.Keys.DOWN) || controllerMoveDirection == 2) {
@@ -242,7 +242,7 @@ public class ScoreNetScreen implements Screen, ControllerListener {
 	 */
 	@Override
 	public boolean buttonDown(Controller controller, int buttonCode) {
-		if (buttonCode == 0 && gameMenu.getScreen().getClass().getName().contains("ScoreNetScreen"))
+		if (buttonCode == 0 && game.getScreen().getClass().getName().contains("ScoreNetScreen"))
 			hasPressedEnter = true;
 		return false;
 	}
@@ -271,7 +271,7 @@ public class ScoreNetScreen implements Screen, ControllerListener {
 	public boolean povMoved(Controller controller, int povCode, PovDirection value) {
 		boolean inputIsValid = false;
 
-		if (gameMenu.getScreen().getClass().getName().contains("ScoreNetScreen"))
+		if (game.getScreen().getClass().getName().contains("ScoreNetScreen"))
 			inputIsValid = true;
 
 		if (inputIsValid) {

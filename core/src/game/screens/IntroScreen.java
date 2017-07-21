@@ -11,7 +11,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
-import game.manager.GameMenu;
+import game.manager.WarCombat;
 import game.pools.GameConfig;
 import game.pools.ImagePool;
 import game.pools.MusicPool;
@@ -23,7 +23,7 @@ public class IntroScreen implements Screen {
 	int level;
 	Texture backGround;
 	Texture text;
-	GameMenu gameMenu;
+	WarCombat game;
 	float screenWidth;
 	float screenHeight;
 
@@ -32,11 +32,11 @@ public class IntroScreen implements Screen {
 	 * 
 	 * @param level
 	 *            indicates level that will be loaded
-	 * @param gameMenu
+	 * @param game
 	 *            indicates game application
 	 */
-	public IntroScreen(int level, GameMenu gameMenu) {
-		this.gameMenu = gameMenu;
+	public IntroScreen(int level, WarCombat game) {
+		this.game = game;
 		write = 0;
 		this.level = level;
 		switch (level) {
@@ -73,9 +73,9 @@ public class IntroScreen implements Screen {
 		if (write > 300){
 			MusicPool.musicMenu.stop();
 			if (level == 1)
-				gameMenu.swap(5);
+				game.swap(5);
 			else {
-				gameMenu.changeLevel(level);
+				game.changeLevel(level);
 
 			}
 		}

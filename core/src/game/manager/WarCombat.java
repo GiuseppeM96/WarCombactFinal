@@ -39,7 +39,7 @@ import game.screens.StartMenuScreen;
 import game.screens.StartMultiplayerScreen;
 import game.screens.WaitScreen;
 
-public class GameMenu extends Game {
+public class WarCombat extends Game {
 
 	static public String className;
 	public MyServer server;

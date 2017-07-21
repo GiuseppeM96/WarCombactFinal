@@ -21,7 +21,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
-import game.manager.GameMenu;
+import game.manager.WarCombat;
 import game.pools.GameConfig;
 import game.pools.ImagePool;
 
@@ -30,7 +30,7 @@ public class ChooseAIscreen implements Screen, ControllerListener {
 	Controllers controller;
 	int controllerMoveDirection;
 
-	private GameMenu gameMenu;
+	private WarCombat game;
 
 	BitmapFont font;
 	boolean choosed;
@@ -54,9 +54,9 @@ public class ChooseAIscreen implements Screen, ControllerListener {
 	TextField name;
 	private boolean hasPressedEnter;
 
-	public ChooseAIscreen(GameMenu gameMenu) {
+	public ChooseAIscreen(WarCombat game) {
 
-		this.gameMenu = gameMenu;
+		this.game = game;
 		batch = new SpriteBatch();
 		font = new BitmapFont();
 		viewport = new ExtendViewport(500, 500, ImagePool.camera);
@@ -171,20 +171,20 @@ public class ChooseAIscreen implements Screen, ControllerListener {
 			hasPressedEnter = false;
 			if (itemSelected == 1) {
 				Gdx.input.setInputProcessor(null);
-				gameMenu.swap(0);
+				game.swap(0);
 			} else if (!choosed)
 				choosed = true;
 			else if (choosed) {
 				if (itemSelected == 0) {
-					gameMenu.className = "game.personalAI." + name.getText();
+					game.className = "game.personalAI." + name.getText();
 				} else {
-					gameMenu.className = "game.object.Enemy";
+					game.className = "game.object.Enemy";
 				}
 				name.setText("");
 				name.setMessageText("_____");
 				choosed = false;
 				Gdx.input.setInputProcessor(null);
-				gameMenu.swap(3);
+				game.swap(3);
 			}
 		}
 
@@ -271,7 +271,7 @@ public class ChooseAIscreen implements Screen, ControllerListener {
 	 */
 	@Override
 	public boolean buttonDown(Controller controller, int buttonCode) {
-		if (buttonCode == 0 && gameMenu.getScreen().getClass().getName().contains("ChooseAIscreen"))
+		if (buttonCode == 0 && game.getScreen().getClass().getName().contains("ChooseAIscreen"))
 			hasPressedEnter = true;
 		return false;
 	}
@@ -299,7 +299,7 @@ public class ChooseAIscreen implements Screen, ControllerListener {
 	public boolean povMoved(Controller controller, int povCode, PovDirection value) {
 		boolean inputIsValid = false;
 
-		if (gameMenu.getScreen().getClass().getName().contains("ChooseAIscreen"))
+		if (game.getScreen().getClass().getName().contains("ChooseAIscreen"))
 			inputIsValid = true;
 
 		if (inputIsValid) {

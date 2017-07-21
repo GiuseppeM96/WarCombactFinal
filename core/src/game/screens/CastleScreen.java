@@ -12,7 +12,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 
-import game.manager.GameMenu;
+import game.manager.WarCombat;
 import game.object.Castle;
 import game.object.Character;
 import game.object.DynamicObject;
@@ -27,7 +27,7 @@ public class CastleScreen implements Screen, ControllerListener {
 	StaticObject king;
 	public boolean collided;
 	SpriteBatch worldBatch;
-	GameMenu gameMenu;
+	WarCombat game;
 	Character player;
 	float statePlayerTime;
 	Map backGround;
@@ -39,11 +39,11 @@ public class CastleScreen implements Screen, ControllerListener {
 	 * 
 	 * @param game
 	 */
-	public CastleScreen(GameMenu game, int level) {
+	public CastleScreen(WarCombat game, int level) {
 		super();
 		hasPressedEnter = false;
 		GameConfig.controller.addListener(this);
-		gameMenu = game;
+		game = game;
 		this.level = level;
 		dialogue = 0;
 		backGround = new Map(1);
@@ -97,9 +97,9 @@ public class CastleScreen implements Screen, ControllerListener {
 				statePlayerTime = 0.f;
 				collided = false;
 				if (level == 1)
-					gameMenu.intro(2);
+					game.intro(2);
 				else {
-					gameMenu.gameCompleted();
+					game.gameCompleted();
 
 				}
 			} else
@@ -191,7 +191,7 @@ public class CastleScreen implements Screen, ControllerListener {
 	 */
 	@Override
 	public boolean buttonDown(Controller controller, int buttonCode) {
-		if (buttonCode == 0 && gameMenu.getScreen().getClass().getName().contains("CastleScreen"))
+		if (buttonCode == 0 && game.getScreen().getClass().getName().contains("CastleScreen"))
 			hasPressedEnter = true;
 		return false;
 	}

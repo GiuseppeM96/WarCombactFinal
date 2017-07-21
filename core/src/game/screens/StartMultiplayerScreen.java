@@ -21,13 +21,13 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
-import game.manager.GameMenu;
+import game.manager.WarCombat;
 import game.pools.GameConfig;
 import game.pools.ImagePool;
 
 public class StartMultiplayerScreen implements Screen, ControllerListener {
 
-	private GameMenu gameMenu;
+	private WarCombat game;
 
 	Controllers controller;
 	private TextButton createMatch;
@@ -53,8 +53,8 @@ public class StartMultiplayerScreen implements Screen, ControllerListener {
 
 	private int controllerMoveDirection;
 
-	public StartMultiplayerScreen(GameMenu gameMenu) {
-		this.gameMenu = gameMenu;
+	public StartMultiplayerScreen(WarCombat game) {
+		this.game = game;
 		GameConfig.controller.addListener(this);
 		hasPressedEnter = false;
 		controllerMoveDirection = -1;
@@ -171,15 +171,15 @@ public class StartMultiplayerScreen implements Screen, ControllerListener {
 		if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER) || hasPressedEnter) {
 			hasPressedEnter = false;
 			if (itemSelected.x == 1)
-				gameMenu.swap(0);
+				game.swap(0);
 			else {
-				gameMenu.userInfo.setName(name.getText());
+				game.userInfo.setName(name.getText());
 				switch ((int) itemSelected.y) {
 				case 0:
-					gameMenu.swap(8);
+					game.swap(8);
 					break;
 				case 1:
-					gameMenu.swap(9);
+					game.swap(9);
 					break;
 				default:
 					break;
@@ -285,7 +285,7 @@ public class StartMultiplayerScreen implements Screen, ControllerListener {
 	@Override
 	public boolean buttonDown(Controller controller, int buttonCode) {
 
-		if (buttonCode == 0 && gameMenu.getScreen().getClass().getName().contains("StartMultiplayerScreen")) {
+		if (buttonCode == 0 && game.getScreen().getClass().getName().contains("StartMultiplayerScreen")) {
 			hasPressedEnter = true;
 		}
 		return false;
@@ -315,7 +315,7 @@ public class StartMultiplayerScreen implements Screen, ControllerListener {
 	public boolean povMoved(Controller controller, int povCode, PovDirection value) {
 		boolean inputIsValid = false;
 
-		if (gameMenu.getScreen().getClass().getName().contains("StartMultiplayerScreen"))
+		if (game.getScreen().getClass().getName().contains("StartMultiplayerScreen"))
 			inputIsValid = true;
 
 		if (inputIsValid) {

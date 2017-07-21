@@ -34,12 +34,12 @@ import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
-import game.manager.GameMenu;
+import game.manager.WarCombat;
 import game.pools.GameConfig;
 import game.pools.ImagePool;
 
 public class StartMenuScreen implements Screen, ControllerListener {
-	private GameMenu gameMenu;
+	private WarCombat game;
 
 	Controllers controller;
 
@@ -69,8 +69,8 @@ public class StartMenuScreen implements Screen, ControllerListener {
 
 	private int controllerMoveDirection;
 
-	public StartMenuScreen(GameMenu gameMenu) {
-		this.gameMenu = gameMenu;
+	public StartMenuScreen(WarCombat game) {
+		this.game = game;
 		GameConfig.controller.addListener(this);
 		controllerMoveDirection = -1;
 		hasPressedEnter = false;
@@ -194,14 +194,14 @@ public class StartMenuScreen implements Screen, ControllerListener {
 			case 0:
 				switch ((int) itemSelected.y) {
 				case 0:
-					gameMenu.swap(6);
+					game.swap(6);
 					break;
 				case 1:
-					gameMenu.loadGame = true;
-					gameMenu.swap(3);
+					game.loadGame = true;
+					game.swap(3);
 					break;
 				case 2:
-					gameMenu.swap(7);
+					game.swap(7);
 				default:
 					break;
 				}
@@ -212,10 +212,10 @@ public class StartMenuScreen implements Screen, ControllerListener {
 					Gdx.app.exit();
 					break;
 				case 1:
-					gameMenu.swap(2);
+					game.swap(2);
 					break;
 				case 2:
-					gameMenu.swap(1);
+					game.swap(1);
 					break;
 				default:
 					break;
@@ -323,7 +323,7 @@ public class StartMenuScreen implements Screen, ControllerListener {
 	 */
 	@Override
 	public boolean buttonDown(Controller controller, int buttonCode) {
-		if (buttonCode == 0 && gameMenu.getScreen().getClass().getName().contains("StartMenuScreen"))
+		if (buttonCode == 0 && game.getScreen().getClass().getName().contains("StartMenuScreen"))
 			hasPressedEnter = true;
 		return false;
 	}
@@ -352,7 +352,7 @@ public class StartMenuScreen implements Screen, ControllerListener {
 	public boolean povMoved(Controller controller, int povCode, PovDirection value) {
 		boolean inputIsValid = false;
 
-		if (gameMenu.getScreen().getClass().getName().contains("StartMenuScreen"))
+		if (game.getScreen().getClass().getName().contains("StartMenuScreen"))
 			inputIsValid = true;
 
 		if (inputIsValid) {

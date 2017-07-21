@@ -25,13 +25,13 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
-import game.manager.GameMenu;
+import game.manager.WarCombat;
 import game.pools.GameConfig;
 import game.pools.ImagePool;
 import game.pools.MusicPool;
 
 public class SettingsMenu implements Screen,ControllerListener {
-	private GameMenu gameMenu;
+	private WarCombat game;
 
 	Controllers controller;
 	private int itemSelected;
@@ -59,8 +59,8 @@ public class SettingsMenu implements Screen,ControllerListener {
 	static public boolean isMusicEnable;
 	static public boolean isAudioEnable;
 
-	public SettingsMenu(GameMenu gameMenu) {
-		this.gameMenu = gameMenu;
+	public SettingsMenu(WarCombat game) {
+		this.game = game;
 		GameConfig.controller.addListener(this);
 		controllerMoveDirection = -1;
 		hasPressedEnter = false;
@@ -187,7 +187,7 @@ public class SettingsMenu implements Screen,ControllerListener {
 				isMusicEnable = !isMusicEnable;
 				break;
 			case 2:
-				gameMenu.swap(0);
+				game.swap(0);
 				break;
 			default:
 				break;
@@ -271,7 +271,7 @@ public class SettingsMenu implements Screen,ControllerListener {
 	 */
 	@Override
 	public boolean buttonDown(Controller controller, int buttonCode) {
-		if(buttonCode == 0 && gameMenu.getScreen().getClass().getName().contains("SettingsMenu"))
+		if(buttonCode == 0 && game.getScreen().getClass().getName().contains("SettingsMenu"))
 			hasPressedEnter = true;
 		return false;
 	}
@@ -304,7 +304,7 @@ public class SettingsMenu implements Screen,ControllerListener {
 	public boolean povMoved(Controller controller, int povCode, PovDirection value) {
 		boolean inputIsValid = false;
 
-		if (gameMenu.getScreen().getClass().getName().contains("SettingsMenu"))
+		if (game.getScreen().getClass().getName().contains("SettingsMenu"))
 			inputIsValid = true;
 
 		if (inputIsValid) {
